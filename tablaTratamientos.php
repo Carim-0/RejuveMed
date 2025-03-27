@@ -77,10 +77,11 @@
         }
     </style>
 
-<button class="profile-button" onclick="window.location.href='verPerfil.php'">Ver Perfil</button>
+    <button class="profile-button" onclick="window.location.href='verPerfil.php'">Ver Perfil</button>
 
     <div class="switch-button">
         <button onclick="window.location.href='tablaPersonal.php'">Ir a Personal</button>
+        <button onclick="window.location.href='tablaPacientes.php'">Ir a Pacientes</button>
     </div>
 
     <div class="container">
