@@ -82,6 +82,7 @@
     <div class="switch-button">
         <button onclick="window.location.href='tablaTratamientos.php'">Ir a Tratamientos</button>
         <button onclick="window.location.href='tablaPacientes.php'">Ir a Pacientes</button>
+        <button onclick="window.location.href='verPacientesCitas_Doctora.php'">Ir a Citas</button>
     </div>
 
     <button class="profile-button" onclick="window.location.href='verPerfil.php'">Ver Perfil</button>
