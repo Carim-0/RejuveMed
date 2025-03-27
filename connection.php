@@ -10,9 +10,7 @@
         // Check connection
         if ($con->connect_error) {
             throw new Exception("Connection failed: " . $con->connect_error);
-        } else {
-            echo "Connected to database";
-        }
+        } 
     } catch (Exception $e) {
         die("Database connection failed: " . $e->getMessage());
     }

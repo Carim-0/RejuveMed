@@ -32,50 +32,58 @@ session_start();
 
 ?>
 
+
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-    <title>Registrarse</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="login_style.css">
+    <title>Rejuvemet -> Agregar usuarios </title>
 </head>
 <body>
-    <style type="text/css">
-        #text{
-            height: 25px;
-            border-radius: 5px;
-            padding: 4px;
-            border: solid thin #aaa;
-            width: 100%;
-        }
-
-        #button{
-            padding: 10px;
-            width: 100px;
-            color: white;
-            background-color: lightblue;
-            border: none;
-        }
-
-        #box{
-            background-color: grey;
-            margin: auto;
-            width: 300px;
-            padding: 20px;
-        }
-    </style>
-
-    <div id="box">
-        <form method="post">
-            <div style="font-size: 20px; margin: 10px; color: white;">Registrarse</div>
-            
-            <input id="text" type="text" name="username" placeholder="Usuario"><br><br>
-            <input id="text" type="password" name="password" placeholder="Contraseña"><br><br>
-            <input id="text" type="edad" name="edad" placeholder="Edad"><br><br>
-            <input id="text" type="telefono" name="telefono" placeholder="Telefono"><br><br>
-
-            <input id="button" type="submit" value="Login"><br><br>
-            
-            <a href="login.php">Iniciar Sesión</a><br><br>`
-        </form>
-    </div>
+    <!--Inicializamos con el contenedor main-->
+    <main class="contenedor-main">
+      <!--Inicializamos de cabezera-->
+      <header class="cabezera">
+        <h1 class="titulo-main">Agregar usuario</h1>
+        <img src="IMG/IamgenLogin.png" alt="Imagen representativa de agregar usuario" height="100px" width="100px" >
+      </header>
+      <!--Inicializamos parte de ingreso de datos-->
+    <section class="seccion-input">
+      <div class="contenedor">
+        
+        <h2 class="seccion-titulo">Ingrese los respectivos datos </h2>
+               
+                
+                                <div id="box">
+                        <form method="post">
+                        <div class="estilo-input">
+                <p class="input-texto">Nombre: </p><input type="text" name="username" class="input" placeholder="Escribe tus nombres"><br><br>
+                </div>
+                <div class="estilo-input">
+                <p class="input-texto">Edad:</p><input type="text" name="edad" class="input-pequeño" placeholder="Escribe tu edad"><br><br>
+                <p class="input-texto">Telefono:</p><input type="text" name="telefono" class="input-medio" placeholder="Escribe tu telefono"><br><br>
+                </div>
+                <div class="estilo-input">
+                <p class="input-texto">Contraseña:</p><input type="password" name="password" class="input" placeholder="Elige una Contraseña"><br><br>
+                </div>
+                <p class="input-texto">Detalles:</p>
+                <div class="estilo-input">
+                <input type="text" name="detalles" class="input-ancho" placeholder=""><br><br>
+                </div>
+                <div class="estilo-input">
+                <input id="button" type="submit" value="Registrarse"><br><br>
+                </div>
+                            
+                            <a href="login.php">Iniciar Sesión</a><br><br>`
+                        </form>
+                    </div>
+      </div>
+    </section><!--fin de sección ingreso de datos-->
+    <script src="JS/app.js" defer></script>
+    </main><!--cierre contenedor main-->
+ 
+    
 </body>
 </html>
