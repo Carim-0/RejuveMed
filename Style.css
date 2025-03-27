@@ -1,0 +1,207 @@
+/*Definicion de cuerpo general*/
+
+/*Definimos los colores predertminados */
+:root {
+    --color-primario: #1a37b5;
+    --color-secundario: #FFF9EB;
+    --color-terciario: #C4C4C4;
+    --color-button: #fe652b;
+    --color-button-hover: #501801;
+    --color-text: #444444;
+    --color-fondo: #e2dfdf;
+    --color-white: #FFFFFF;
+}
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    height: 100vh;
+    background-color: var(--color-white);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.contenedor {
+    flex: 1;
+    padding: 10px 15px;
+    font-size: 16px;
+    border: 2px solid #333;
+    border-radius: 25px;
+    font-family: "Merriweather", serif;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+    width: 80%; /* Ajusta el ancho del contenedor */
+    max-width: 800px; /* Máximo ancho */
+    
+    
+}
+
+.contenedor-login {
+    flex: 1;
+    padding: 10px 15px;
+    font-size: 16px;
+    border: 2px solid #333;
+    border-radius: 25px;
+    font-family: "Merriweather", serif;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+    width: 80%; /* Ajusta el ancho del contenedor */
+    max-width: 500px; /* Máximo ancho */
+    background-color: var(--color-fondo);
+ 
+    
+}
+
+/*Definicion de atributos para el main*/
+.contenedor-main {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    width: 100%;
+}
+
+.titulo-main {
+    font-size: 48px;
+    font-family: "Merriweather", serif;
+    font-weight: 900;
+    font-style: italic;
+    color: var(--color-white);
+}
+.titulo-usuario {
+    font-size: 35px;
+    font-family: "Merriweather", serif;
+    font-weight: 900;
+    font-style:normal;
+    color: #000;
+}
+
+/* Definicion de atributos para el header */
+.cabezera {
+    flex: 40%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 40px 0 0;
+    background-color: var(--color-primario);
+}
+
+.cabezera-cliente {
+    color: #000;
+    flex: 40%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 40px 0 0;
+}
+
+
+/*Definicion de atributos para el input*/
+.estilo-input {
+    display: flex;
+    justify-content: center;
+    width: 100%;
+    max-width: 800px;
+    margin-top: 20px;
+}
+.input-pequeño{
+    width: 100%;
+    max-width:200px;
+    padding: 10px;
+    border: 2px solid #000;
+    border-radius: 25px;
+    font-size: 16px;
+    align-items: center;
+}
+.input-medio{
+    width: 100%;
+    max-width:500px;
+    padding: 10px;
+    border: 2px solid #000;
+    border-radius: 25px;
+    font-size: 16px;
+    align-items: center;
+}
+.input-ancho{
+    width: 100%;
+    max-width:800px;
+    height: 150px;
+    padding: 10px;
+    border: 2px solid #000;
+    border-radius: 25px;
+    font-size: 16px;
+    align-items: center;
+}
+.seccion-input {
+    flex: 60%;
+    background-color: var(--color-secundario);
+    border: 1px solid #000;
+    border-radius: 64px 64px 0 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 20px;
+    width: 100%;
+} 
+.input {
+    width: 100%;
+    padding: 10px;
+    border: 2px solid #000;
+    border-radius: 25px;
+    font-size: 16px;
+    align-items: center;
+}
+.input-texto{
+    font-size: 28px;
+}
+
+/* Definicion de atributos para el boton */
+
+button {
+    padding: 15px 30px;
+    font-family: "Inter", sans-serif;
+    font-size: 16px;
+    border: 2px solid #000;
+    border-radius: 25px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+    cursor: pointer;
+    align-items: centerS;
+}
+
+.buton-añadir {
+    color: var(--color-white);
+    border-radius: 25px;
+    align-items: center;
+    background-color: var(--color-button);
+
+}
+
+.button-añadir:hover {
+    background-color: var(--color-button-hover);
+}
+
+.buton-añadir-login {
+    width: 100%;
+    max-width:500px;
+    color: var(--color-white);
+    border-radius: 25px;
+    align-items: center;
+    background-color: #000;
+
+}
+
+.buton-añadir-login2 {
+    width: 100%;
+    max-width:500px;
+    color: var(--color-white);
+    border-radius: 25px;
+    align-items: center;
+    background-color: #000;
+
+}
+
+
+.button-añadir-login:hover {
+    background-color: var(--color-button-hover);
+}

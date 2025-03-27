@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="Style.css">
+    <title>Rejuvemet -> Login </title>
+</head>
+<body> 
+        <!--Inicializamos con el contenedor main-->
+        <main class="contenedor-main">
+            <!--Inicializamos de cabezera-->
+            <header class="cabezera-cliente">
+              <h1 class="titulo-usuario">Inicio de sesion para clientes</h1>
+            </header>
+            <!--Inicializamos parte de ingreso de datos-->
+          <section class="seccion-input">
+            <div class="contenedor-login">
+                      <div class="estilo-input">
+                      <img src="IMG/logoRejuvemet.png" alt="Imagen representativa login" height="200px" width="200px" aling="center">
+                      </div>
+                      <div class="estilo-input">
+                      <h2 class="seccion-titulo">Iniciar sesion</h2>
+                      </div>
+                      <div class="estilo-input">
+                      <input type="text" id="Usuario" class="input-medio" placeholder="Usuario: "><br><br>
+                      </div>
+                      <div class="estilo-input">
+                      <input type="text" id="Contraseña" class="input-medio" placeholder="Contraseña: "><br><br>
+                      </div>
+                      <div class="estilo-input">
+                      <button class="buton-añadir-login" onclick="iniciarSesion()" aling="center">Iniciar sesion</button>
+                      </div>
+                      <div class="estilo-input">
+                      <button class="buton-añadir-login2" onclick="window.location.href='index_agregar_usuario.html'">Registrate</button>
+                      </div>
+                      <br><br>
+                      <h2 class="seccion-titulo">Forgot password!</h2>
+                      
+                      
+            </div>
+          </section><!--fin de sección ingreso de datos-->
+          <script src="JS/app.js" defer></script>
+          </main><!--cierre contenedor main-->
+</body>
+</html>
