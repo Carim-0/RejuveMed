@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>RejuveMed - Ver Citas</title>
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/ver_citas.css">
+</head>
+<body>
+    <a href="javascript:history.back()" class="back-arrow">←</a>
+    
+    <!-- Título centrado en la parte superior -->
+    <h1 class="titulo-principal">RejuveMed</h1>
+    
+    <!-- Sección de estado y controles -->
+    <div class="seccion-controles">
+        <h2 class="subtitulo-estado">Estado de la cita</h2>
+        
+        <!-- Combobox cuadrado grande -->
+        <select class="combobox-cuadrado">
+            <option value="" disabled selected>Select occupation</option>
+        </select>
+        
+        <!-- Textbox cuadrado -->
+        <input type="text" class="textbox-cuadrado" placeholder="">
+    </div>
+
+    <script>
+        document.querySelector('.back-arrow').addEventListener('click', function(e) {
+            e.preventDefault();
+            window.history.back();
+        });
+    </script>
+</body>
+</html>
