@@ -62,9 +62,27 @@
         .treatment button:hover {
             background-color: #218838;
         }
+
+        .profile-button {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            padding: 10px 20px;
+            background-color: #007bff;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        .profile-button:hover {
+            background-color: #0056b3;
+        }
     </style>
 </head>
 <body>
+    <button class="profile-button" onclick="window.location.href='verPerfil.php'">Ver Perfil</button>
+
     <div class="container">
         <!-- Mensaje de bienvenida -->
         <h1><br>

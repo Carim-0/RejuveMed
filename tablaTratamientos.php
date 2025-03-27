@@ -59,7 +59,25 @@
         .switch-button button:hover {
             background-color: #0056b3;
         }
+
+        .profile-button {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            padding: 10px 20px;
+            background-color: #007bff;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        .profile-button:hover {
+            background-color: #0056b3;
+        }
     </style>
+
+<button class="profile-button" onclick="window.location.href='verPerfil.php'">Ver Perfil</button>
 
     <div class="switch-button">
         <button onclick="window.location.href='tablaPersonal.php'">Ir a Personal</button>

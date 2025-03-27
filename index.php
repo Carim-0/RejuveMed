@@ -19,5 +19,6 @@ session_start();
 
     <br>
     Hola, <?php echo $user_data['nombre']; ?>
+    
 </body>
 </html>

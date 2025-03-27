@@ -4,14 +4,22 @@
     include("connection.php");
 
     // Ensure the user is logged in
-    if (!isset($_SESSION['user_id']) || $_SESSION['user_type'] !== 'Paciente') {
-        die("Acceso denegado. Por favor, inicie sesión como paciente.");
+    if (!isset($_SESSION['user_id']) || !isset($_SESSION['user_type'])) {
+        die("Acceso denegado. Por favor, inicie sesión.");
     }
 
-    $IDpaciente = $_SESSION['user_id']; // Get the current user's ID
+    $user_id = $_SESSION['user_id']; // Get the current user's ID
+    $user_type = $_SESSION['user_type']; // Get the current user's type
 
-    // Fetch the user's data from the database
-    $query = "SELECT * FROM Pacientes WHERE IDpaciente = '$IDpaciente' LIMIT 1";
+    // Fetch the user's data based on their type
+    if ($user_type === 'Paciente') {
+        $query = "SELECT * FROM Pacientes WHERE IDpaciente = '$user_id' LIMIT 1";
+    } elseif ($user_type === 'Personal') {
+        $query = "SELECT * FROM Personal WHERE IDpersonal = '$user_id' LIMIT 1";
+    } else {
+        die("Tipo de usuario no válido.");
+    }
+
     $result = mysqli_query($con, $query);
 
     if ($result && mysqli_num_rows($result) > 0) {
@@ -26,7 +34,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Perfil del Paciente</title>
+    <title>Perfil del Usuario</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css">
     <link rel="stylesheet" href="user_style.css">
     <style>
@@ -47,15 +55,18 @@
 </head>
 <body>
     <div class="contenedor-login">
-        <h2 class="form-title">Perfil del Paciente</h2>
+        <h2 class="form-title">Perfil del Usuario</h2>
         <div class="data">
-            <p>ID: <span id="IDpaciente"><?php echo htmlspecialchars($user_data['IDpaciente']); ?></span></p>
+            <p>ID: <span id="user_id"><?php echo htmlspecialchars($user_type === 'Paciente' ? $user_data['IDpaciente'] : $user_data['IDpersonal']); ?></span></p>
             <p>Nombre: <span id="nombre"><?php echo htmlspecialchars($user_data['nombre']); ?></span></p>
             <p>Contraseña: <span id="password">********</span></p>
             <button class="btn-toggle-password" onclick="togglePassword()">Mostrar Contraseña</button>
-            <p>Edad: <span id="edad"><?php echo htmlspecialchars($user_data['edad']); ?></span></p>
             <p>Teléfono: <span id="telefono"><?php echo htmlspecialchars($user_data['telefono']); ?></span></p>
-            <p>Detalles: <span id="detalles"><?php echo htmlspecialchars($user_data['detalles']); ?></span></p>                      
+            <?php if ($user_type === 'Personal'): ?>
+                <p>Edad: <span id="edad"><?php echo htmlspecialchars($user_data['edad']); ?></span></p>
+                <p>Detalles: <span id="detalles"><?php echo htmlspecialchars($user_data['detalles']); ?></span></p>
+            <?php endif; ?>
+            <p>Tipo de cuenta: <span id="tipo_cuenta"><?php echo $user_type === 'Paciente' ? 'Paciente' : 'Personal'; ?></span></p>
         </div>
         <button class="btn-salir" onclick="window.location.href='logout.php'">
             <i class="fas fa-sign-out-alt"></i> Salir sesión
