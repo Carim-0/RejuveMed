@@ -382,6 +382,29 @@ if (isset($_GET['paciente_id'])) {
         width: 100%;
       }
     }
+
+    .bottom-buttons {
+      position: fixed;
+      bottom: 20px;
+      left: 20px;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .bottom-buttons button {
+      padding: 10px 20px;
+      background-color: #007bff;
+      color: white;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+      font-size: 14px;
+    }
+
+    .bottom-buttons button:hover {
+      background-color: #0056b3;
+    }
   </style>
 </head>
 
@@ -501,6 +524,12 @@ if (isset($_GET['paciente_id'])) {
         <p>Busque y seleccione un paciente de la lista para ver su información médica y citas.</p>
       </div>
     <?php endif; ?>
+  </div>
+
+  <!-- Bottom buttons -->
+  <div class="bottom-buttons">
+    <button onclick="window.location.href='tablaPersonal.php'">Ir a Personal</button>
+    <button onclick="window.location.href='tablaTratamientos.php'">Ir a Tratamientos</button>
   </div>
 
   <script>
