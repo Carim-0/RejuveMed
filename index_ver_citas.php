@@ -6,6 +6,28 @@ require_once 'functions.php';
 // Verificar login y obtener datos del paciente
 $user_data = check_login($con);
 $paciente_id = $_SESSION['user_id'];
+
+// Procesar cancelación de cita
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['cancelar_cita'])) {
+    $cita_id = $_POST['cita_id'];
+    
+    // Actualizar estado en la base de datos
+    $update_query = "UPDATE Citas SET estado = 'Cancelada' WHERE IDcita = ? AND IDpaciente = ?";
+    $stmt = $con->prepare($update_query);
+    $stmt->bind_param("ii", $cita_id, $paciente_id);
+    $stmt->execute();
+    
+    if ($stmt->affected_rows > 0) {
+        $mensaje = "Cita cancelada correctamente";
+    } else {
+        $mensaje = "Error al cancelar la cita";
+    }
+    $stmt->close();
+    
+    // Recargar la página para ver los cambios
+    header("Location: ".$_SERVER['PHP_SELF']);
+    exit();
+}
 ?>
 
 <!DOCTYPE html>
@@ -122,14 +144,15 @@ $paciente_id = $_SESSION['user_id'];
             padding: 15px;
             border-radius: 6px;
             margin-bottom: 15px;
+            position: relative;
         }
         
         .appointment-pendiente {
-            background-color: #ff5252; /* Rojo para citas pendientes */
+            background-color: #0066cc#ff5252;
         }
         
         .appointment-cancelada {
-            background-color: #0066cc; /* Azul para citas canceladas */
+            background-color: #ff5252;
         }
         
         .appointment-card p {
@@ -144,6 +167,40 @@ $paciente_id = $_SESSION['user_id'];
             font-weight: bold;
             text-transform: uppercase;
             margin-bottom: 10px;
+        }
+        
+        .btn-cancelar {
+            background-color: #ffffff;
+            color: #000000;
+            border: 1px solid #000000;
+            padding: 8px 15px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-weight: bold;
+            margin-top: 10px;
+            transition: all 0.3s;
+        }
+        
+        .btn-cancelar:hover {
+            background-color: #d32f2f;
+            color: red;
+        }
+        
+        .mensaje {
+            padding: 10px;
+            margin: 10px 0;
+            border-radius: 4px;
+            text-align: center;
+        }
+        
+        .mensaje-exito {
+            background-color: #dff0d8;
+            color: #3c763d;
+        }
+        
+        .mensaje-error {
+            background-color: #f2dede;
+            color: #a94442;
         }
         
         .no-appointments {
@@ -162,8 +219,15 @@ $paciente_id = $_SESSION['user_id'];
     <div class="header">
         <h1>RejuveMed</h1>
     </div>
-    
-    <!-- Contenedor principal con dos secciones -->
+
+    <!-- Mostrar mensajes -->
+    <?php if (!empty($mensaje)): ?>
+        <div class="mensaje <?php echo strpos($mensaje, 'Error') !== false ? 'mensaje-error' : 'mensaje-exito'; ?>">
+            <?php echo htmlspecialchars($mensaje); ?>
+        </div>
+    <?php endif; ?>
+
+    <!-- Contenedor principal -->
     <div class="form-container">
         <!-- Sección izquierda (historial clínico) -->
         <div class="left-section">
@@ -205,6 +269,7 @@ $paciente_id = $_SESSION['user_id'];
                 <?php
                 // Consulta para obtener las citas con información completa
                 $query = "SELECT 
+                            c.IDcita,
                             c.fecha, 
                             t.nombre as tratamiento, 
                             t.detalles as descripcion,
@@ -238,13 +303,21 @@ $paciente_id = $_SESSION['user_id'];
                         echo '<p><span class="appointment-field">Tratamiento:</span> '.htmlspecialchars($row['tratamiento']).'</p>';
                         echo '<p><span class="appointment-field">Precio:</span> '.htmlspecialchars($precio_formateado).'</p>';
                         echo '<p><span class="appointment-field">Descripción:</span> '.nl2br(htmlspecialchars($row['descripcion'])).'</p>';
+                        
+                        // Botón de cancelar (solo para citas pendientes)
+                        if (strtolower($row['estado']) == 'pendiente') {
+                            echo '<form method="POST" style="margin-top:10px;">';
+                            echo '<input type="hidden" name="cita_id" value="'.$row['IDcita'].'">';
+                            echo '<button type="submit" name="cancelar_cita" class="btn-cancelar">Cancelar Cita</button>';
+                            echo '</form>';
+                        }
+                        
                         echo '</div>';
                     }
                 } else {
                     echo '<p class="no-appointments">No tienes citas agendadas actualmente</p>';
                 }
                 
-                // Cerrar conexión
                 $con->close();
                 ?>
             </div>
