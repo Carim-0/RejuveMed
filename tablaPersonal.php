@@ -77,6 +77,24 @@
         .profile-button:hover {
             background-color: #0056b3;
         }
+
+        .add-button {
+            margin-top: 20px;
+            text-align: center;
+        }
+
+        .add-button button {
+            padding: 10px 20px;
+            background-color: #28a745;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        .add-button button:hover {
+            background-color: #218838;
+        }
     </style>
 
     <div class="switch-button">
@@ -104,7 +122,6 @@
                                 <td>Editar</td>
                                 <td>Eliminar</td>
                             </tr>
-                            <tr>
                             <?php
                                 while($row = mysqli_fetch_assoc($result))
                                 {
@@ -118,13 +135,14 @@
                                     echo "</tr>";
                                 }
                             ?>
-                            </tr>
                         </table>
                     </div>
                 </div>
             </div>
         </div>
+        <div class="add-button">
+            <button onclick="window.location.href='registrarPersonal.php'">Registrar Nuevo Personal</button>
+        </div>
     </div>
-    
 </body>
 </html>

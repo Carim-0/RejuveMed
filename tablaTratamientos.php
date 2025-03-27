@@ -75,6 +75,24 @@
         .profile-button:hover {
             background-color: #0056b3;
         }
+
+        .add-button {
+            margin-top: 20px;
+            text-align: center;
+        }
+
+        .add-button button {
+            padding: 10px 20px;
+            background-color: #28a745;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        .add-button button:hover {
+            background-color: #218838;
+        }
     </style>
 
     <button class="profile-button" onclick="window.location.href='verPerfil.php'">Ver Perfil</button>
@@ -118,6 +136,9 @@
                     </div>
                 </div>
             </div>
+        </div>
+        <div class="add-button">
+            <button onclick="window.location.href='registrarTratamiento.php'">Registrar Nuevo Tratamiento</button>
         </div>
     </div>
 </body>
