@@ -3,34 +3,260 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>RejuveMed - Ver Citas</title>
-    <link rel="stylesheet" href="css/style.css">
-    <link rel="stylesheet" href="css/ver_citas.css">
+    <title>RejuveMed - Estado de la cita</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        
+        .header h1 {
+            color: #333;
+            font-size: 2.5em;
+        }
+        
+        .back-button {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            font-size: 24px;
+            text-decoration: none;
+            color: #333;
+        }
+        
+        .status-text {
+            color: #0066cc;
+            margin-top: 40px;
+            margin-left: 20px;
+            font-size: 1.2em;
+            font-weight: bold;
+        }
+        
+        .form-container {
+            display: flex;
+            gap: 30px;
+            margin-left: 20px;
+            margin-top: 20px;
+        }
+        
+        .left-section, .right-section {
+            flex: 1;
+        }
+        
+        select, textarea, input {
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 15px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            box-sizing: border-box;
+        }
+        
+        select {
+            background-color: white;
+            cursor: pointer;
+        }
+        
+        textarea {
+            height: 200px;
+            resize: none;
+            background-color: #f9f9f9;
+        }
+        
+        .medical-history {
+            border: 1px solid #ccc;
+            border-radius: 8px;
+            padding: 20px;
+            background-color: white;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            margin-bottom: 20px;
+        }
+        
+        .medical-history h3 {
+            margin-top: 0;
+            color: #0066cc;
+        }
+        
+        .form-group {
+            margin-bottom: 15px;
+        }
+        
+        .form-group label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+            color: #555;
+        }
+        
+        .inline-fields {
+            display: flex;
+            gap: 15px;
+        }
+        
+        .inline-fields .form-group {
+            flex: 1;
+        }
+        
+        input[type="text"] {
+            background-color: #f9f9f9;
+        }
+        
+        .appointments-title {
+            color: #0066cc;
+            margin-bottom: 15px;
+        }
+        
+        .appointments-container {
+            border: 1px solid #ccc;
+            border-radius: 8px;
+            padding: 20px;
+            background-color: white;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+        
+        .appointment-card {
+            background-color: #0066cc;
+            color: white;
+            padding: 15px;
+            border-radius: 6px;
+            margin-bottom: 15px;
+        }
+        
+        .appointment-card p {
+            margin: 5px 0;
+        }
+        
+        .appointment-field {
+            font-weight: bold;
+        }
+    </style>
 </head>
 <body>
-    <a href="javascript:history.back()" class="back-arrow">←</a>
+    <!-- Flecha de retroceso -->
+    <a href="javascript:history.back()" class="back-button">←</a>
     
-    <!-- Título centrado en la parte superior -->
-    <h1 class="titulo-principal">RejuveMed</h1>
-    
-    <!-- Sección de estado y controles -->
-    <div class="seccion-controles">
-        <h2 class="subtitulo-estado">Estado de la cita</h2>
-        
-        <!-- Combobox cuadrado grande -->
-        <select class="combobox-cuadrado">
-            <option value="" disabled selected>Select occupation</option>
-        </select>
-        
-        <!-- Textbox cuadrado -->
-        <input type="text" class="textbox-cuadrado" placeholder="">
+    <!-- Título centrado -->
+    <div class="header">
+        <h1>RejuveMed</h1>
     </div>
-
-    <script>
-        document.querySelector('.back-arrow').addEventListener('click', function(e) {
-            e.preventDefault();
-            window.history.back();
-        });
-    </script>
+    
+    <!-- Texto "Estado de la cita" -->
+    <div class="status-text">Estado de la cita</div>
+    
+    <!-- Contenedor principal con dos secciones -->
+    <div class="form-container">
+        <!-- Sección izquierda (combobox y textarea) -->
+        <div class="left-section">
+            <!-- Combobox -->
+            <select name="occupation" id="occupation" required>
+                <option value="" selected disabled>Select occupation</option>
+                <?php
+                // aqui van las ocupaciones :p
+                ?>
+            </select>
+            
+            <!-- Textarea no editable -->
+            <textarea name="status_info" id="status_info" readonly placeholder="Información del estado de la cita aparecerá aquí..."></textarea>
+        </div>
+        
+        <!-- Sección derecha (historial clínico y citas) -->
+        <div class="right-section">
+            <div class="medical-history">
+                <h3>Historial clínico</h3>
+                
+                <div class="form-group">
+                    <label for="nombre">Nombre</label>
+                    <input type="text" id="nombre" name="nombre" readonly>
+                </div>
+                
+                <div class="form-group">
+                    <label for="apellidos">Apellidos</label>
+                    <input type="text" id="apellidos" name="apellidos" readonly>
+                </div>
+                
+                <div class="form-group">
+                    <label for="domicilio">Domicilio</label>
+                    <input type="text" id="domicilio" name="domicilio" readonly>
+                </div>
+                
+                <div class="inline-fields">
+                    <div class="form-group">
+                        <label for="edad">Edad</label>
+                        <input type="text" id="edad" name="edad" readonly style="width: 80px;">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="telefono">Teléfono</label>
+                        <input type="text" id="telefono" name="telefono" readonly>
+                    </div>
+                </div>
+                
+                <div class="form-group">
+                    <label for="alergias">Alergias a algún medicamento</label>
+                    <textarea id="alergias" name="alergias" readonly rows="4"></textarea>
+                </div>
+            </div>
+            
+            <!-- Sección de citas agendadas -->
+            <div class="appointments-container">
+                <h3 class="appointments-title">Citas Agendadas</h3>
+                
+                <?php
+                // Conexión a la base de datos y consulta de citas
+                //no se como esta en la nueva base de datos asi que lo deje asi xd
+                /*
+                $servername = "tu_servidor";
+                $username = "tu_usuario";
+                $password = "tu_contraseña";
+                $dbname = "tu_base_de_datos";
+                
+                try {
+                    $conn = new PDO("mysql:host=$servername;dbname=$dbname", $username, $password);
+                    $conn->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+                    
+                    $stmt = $conn->prepare("SELECT fecha, hora, servicio, nombre_paciente FROM citas ORDER BY fecha, hora");
+                    $stmt->execute();
+                    
+                    $citas = $stmt->fetchAll(PDO::FETCH_ASSOC);
+                    
+                    foreach ($citas as $cita) {
+                        echo '<div class="appointment-card">';
+                        echo '<p><span class="appointment-field">Fecha:</span> '.htmlspecialchars($cita['fecha']).'</p>';
+                        echo '<p><span class="appointment-field">Hora:</span> '.htmlspecialchars($cita['hora']).'</p>';
+                        echo '<p><span class="appointment-field">Servicio:</span> '.htmlspecialchars($cita['servicio']).'</p>';
+                        echo '<p><span class="appointment-field">Paciente:</span> '.htmlspecialchars($cita['nombre_paciente']).'</p>';
+                        echo '</div>';
+                    }
+                } catch(PDOException $e) {
+                    echo "Error: " . $e->getMessage();
+                }
+                $conn = null;
+                */
+                
+                // Ejemplo estático (eliminar cuando tengas la conexión real)
+                echo '<div class="appointment-card">';
+                echo '<p><span class="appointment-field">Fecha:</span> 2023-11-15</p>';
+                echo '<p><span class="appointment-field">Hora:</span> 14:30</p>';
+                echo '<p><span class="appointment-field">Servicio:</span> Consulta dermatológica</p>';
+                echo '<p><span class="appointment-field">Paciente:</span> María González</p>';
+                echo '</div>';
+                
+                echo '<div class="appointment-card">';
+                echo '<p><span class="appointment-field">Fecha:</span> 2023-11-16</p>';
+                echo '<p><span class="appointment-field">Hora:</span> 10:00</p>';
+                echo '<p><span class="appointment-field">Servicio:</span> Revisión anual</p>';
+                echo '<p><span class="appointment-field">Paciente:</span> Juan Pérez</p>';
+                echo '</div>';
+                ?>
+            </div>
+        </div>
+    </div>
 </body>
 </html>
