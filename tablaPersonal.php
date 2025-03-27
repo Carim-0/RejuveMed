@@ -17,11 +17,11 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="bootstrap.min.css">
-    <title>Registros de Pacientes</title>
+    <title>Registros de Personal</title>
 </head>
 <body>
     <style type="text/css">
-        #text{
+        #text {
             height: 25px;
             border-radius: 5px;
             padding: 4px;
@@ -29,7 +29,7 @@
             width: 100%;
         }
 
-        #button{
+        #button {
             padding: 10px;
             width: 100px;
             color: white;
@@ -37,7 +37,7 @@
             border: none;
         }
 
-        #box{
+        #box {
             background-color: grey;
             margin: auto;
             width: 300px;
@@ -79,8 +79,9 @@
         }
     </style>
 
-<div class="switch-button">
+    <div class="switch-button">
         <button onclick="window.location.href='tablaTratamientos.php'">Ir a Tratamientos</button>
+        <button onclick="window.location.href='tablaPacientes.php'">Ir a Pacientes</button>
     </div>
 
     <button class="profile-button" onclick="window.location.href='verPerfil.php'">Ver Perfil</button>
@@ -95,10 +96,10 @@
                     <div class="card-body">
                         <table class="table table-bordered text-center">
                             <tr class="bg-dark text-white">
-                                <td>ID del paciente</td>
+                                <td>ID del personal</td>
                                 <td>Nombre</td>
                                 <td>Edad</td>
-                                <td>Telefono</td>
+                                <td>Teléfono</td>
                                 <td>Editar</td>
                                 <td>Eliminar</td>
                             </tr>
