@@ -95,6 +95,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['cancelar_cita'])) {
             padding: 20px;
             background-color: white;
             box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            margin-bottom: 20px;
         }
         
         .medical-history h3 {
@@ -139,16 +140,22 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['cancelar_cita'])) {
             box-shadow: 0 2px 5px rgba(0,0,0,0.1);
         }
         
+        .appointment-item {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            margin-bottom: 15px;
+        }
+        
         .appointment-card {
+            flex: 1;
             color: white;
             padding: 15px;
             border-radius: 6px;
-            margin-bottom: 15px;
-            position: relative;
         }
         
         .appointment-pendiente {
-            background-color: #0066cc#ff5252;
+            background-color: #0066cc;
         }
         
         .appointment-cancelada {
@@ -170,20 +177,19 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['cancelar_cita'])) {
         }
         
         .btn-cancelar {
-            background-color: #ffffff;
-            color: #000000;
-            border: 1px solid #000000;
-            padding: 8px 15px;
-            border-radius: 4px;
+            background-color: #d32f2f;
+            color: white;
+            border: none;
+            padding: 10px 15px;
+            border-radius: 6px;
             cursor: pointer;
             font-weight: bold;
-            margin-top: 10px;
-            transition: all 0.3s;
+            transition: background-color 0.3s;
+            white-space: nowrap;
         }
         
         .btn-cancelar:hover {
-            background-color: #d32f2f;
-            color: red;
+            background-color: #b71c1c;
         }
         
         .mensaje {
@@ -296,6 +302,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['cancelar_cita'])) {
                         $clase_estado = strtolower($row['estado']) == 'pendiente' ? 
                                          'appointment-pendiente' : 'appointment-cancelada';
                         
+                        echo '<div class="appointment-item">';
                         echo '<div class="appointment-card '.$clase_estado.'">';
                         echo '<p class="appointment-status">Estado: '.htmlspecialchars($row['estado']).'</p>';
                         echo '<p><span class="appointment-field">Fecha:</span> '.htmlspecialchars($fecha_formateada).'</p>';
@@ -303,10 +310,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['cancelar_cita'])) {
                         echo '<p><span class="appointment-field">Tratamiento:</span> '.htmlspecialchars($row['tratamiento']).'</p>';
                         echo '<p><span class="appointment-field">Precio:</span> '.htmlspecialchars($precio_formateado).'</p>';
                         echo '<p><span class="appointment-field">Descripción:</span> '.nl2br(htmlspecialchars($row['descripcion'])).'</p>';
+                        echo '</div>';
                         
                         // Botón de cancelar (solo para citas pendientes)
                         if (strtolower($row['estado']) == 'pendiente') {
-                            echo '<form method="POST" style="margin-top:10px;">';
+                            echo '<form method="POST">';
                             echo '<input type="hidden" name="cita_id" value="'.$row['IDcita'].'">';
                             echo '<button type="submit" name="cancelar_cita" class="btn-cancelar">Cancelar Cita</button>';
                             echo '</form>';
@@ -317,7 +325,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['cancelar_cita'])) {
                 } else {
                     echo '<p class="no-appointments">No tienes citas agendadas actualmente</p>';
                 }
-                
+                //hola
                 $con->close();
                 ?>
             </div>
