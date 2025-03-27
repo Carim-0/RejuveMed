@@ -20,7 +20,7 @@
                 if ($user_data['password'] === $password) {
                     $_SESSION['user_id'] = $user_data['IDpaciente'];
                     $_SESSION['user_type'] = 'Paciente'; // Store user type
-                    echo "<script>alert('Login exitoso como Paciente'); window.location.href='tablaPacientes.php';</script>";
+                    echo "<script>alert('Login exitoso como Paciente'); window.location.href='catalogoTratamientos.php';</script>";
                     die;
                 }
             }
@@ -35,7 +35,13 @@
                 if ($user_data['password'] === $password) {
                     $_SESSION['user_id'] = $user_data['IDpersonal'];
                     $_SESSION['user_type'] = 'Personal'; // Store user type
-                    echo "<script>alert('Login exitoso como Personal'); window.location.href='tablaPacientes.php';</script>";
+
+                    // Redirect based on the "nombre" value
+                    if ($user_data['nombre'] === "Doctora") {
+                        echo "<script>alert('Login exitoso como Doctora'); window.location.href='tablaPersonal.php';</script>";
+                    } else {
+                        echo "<script>alert('Login exitoso como Personal'); window.location.href='tablaPacientes.php';</script>";
+                    }
                     die;
                 }
             }

@@ -1,3 +1,20 @@
+<?php
+    session_start();
+    
+    include("connection.php");
+    include("functions.php");    
+
+    $user_data = check_login($con);
+
+    // Fetch data from the "Tratamientos" table
+    $query = "SELECT IDtratamiento, nombre, imagenURL FROM Tratamientos";
+    $result = mysqli_query($con, $query);
+
+    if (!$result) {
+        die("Error al obtener los tratamientos: " . mysqli_error($con));
+    }
+?>
+
 <!DOCTYPE html>
 <html lang="es">
 <head>
@@ -5,62 +22,86 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Bienvenido Recepcionista</title>
     <link rel="stylesheet" href="tratamientos_style.css">
+    <style>
+        .treatments {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 20px;
+        }
+
+        .treatment {
+            text-align: center;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            padding: 10px;
+            width: 200px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        }
+
+        .treatment img {
+            width: 100%;
+            height: auto;
+            border-radius: 8px;
+        }
+
+        .treatment h3 {
+            font-size: 18px;
+            margin: 10px 0;
+        }
+
+        .treatment button {
+            background-color: #28a745;
+            color: white;
+            border: none;
+            padding: 10px;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        .treatment button:hover {
+            background-color: #218838;
+        }
+    </style>
 </head>
 <body>
     <div class="container">
         <!-- Mensaje de bienvenida -->
-        <h1>Bienvenido @Recepcionista</h1>
+        <h1><br>
+        Hola, <?php echo $user_data['nombre']; ?></h1>
 
         <!-- Opciones Agendar cita o ver citas -->
         <div class="options">
-            <button class="btn">Agendar una cita</button>
-            <button class="btn">Ver citas agendadas</button>
+        <button class="btn" onclick="window.location.href='pacienteAgendarCita.php'">Agendar una cita</button>
+            
         </div>
 
         <!-- Calendario e Icono -->
         <div class="calendar-section">
             <div class="calendar-icon">
-                <!-- Aquí referenciamos la imagen del calendario -->
                 <img src="IMG/calendar-icon.png" alt="Calendario" width="30" height="30">
             </div>
-            <p class="calendar-text">Visualizar citas agendadas</p>
+            <button class="btn" onclick="window.location.href='verCitasPaciente.php'">Ver citas agendadas</button>
         </div>
 
         <!-- Ver catálogo de tratamientos -->
-        <div class="catalog-section">
-            <button class="btn">Ver catálogo de tratamientos</button>
-            <button class="btn">Editar catálogo de tratamientos</button>
-        </div>
+        
 
         <!-- Tratamientos con imágenes -->
         <div class="treatments">
-            <div class="treatment">
-                <h3>Cuidado de la piel</h3>
-                <!-- Aquí referenciamos la imagen de cuidado de la piel -->
-                <img src="IMG/hands-image.jpg" alt="Cuidado de la piel" width="200">
-                <button class="btn">Ver tratamiento</button>
-            </div>
-
-            <div class="treatment">
-                <h3>Rejuvenecimiento facial</h3>
-                <!-- Aquí referenciamos la imagen de rejuvenecimiento facial -->
-                <img src="IMG/face-image.jpg" alt="Rejuvenecimiento facial" width="200">
-                <button class="btn">Ver tratamiento</button>
-            </div>
-
-            <div class="treatment">
-                <h3>Modelado corporal</h3>
-                <!-- Aquí referenciamos la imagen de modelado corporal -->
-                <img src="IMG/body-image.jpg" alt="Modelado corporal" width="200">
-                <button class="btn">Ver tratamiento</button>
-            </div>
-
-            <div class="treatment">
-                <h3>Tratamiento especializado</h3>
-                <!-- Aquí referenciamos la imagen de tratamiento especializado -->
-                <img src="IMG/nose-treatment.jpg" alt="Tratamiento especializado" width="200">
-                <button class="btn">Ver tratamiento</button>
-            </div>
+            <?php
+                // Loop through the fetched data and display each treatment
+                while ($row = mysqli_fetch_assoc($result)) {
+                    echo "<div class='treatment'>";
+                    echo "<h3>" . htmlspecialchars($row['nombre']) . "</h3>";
+                    echo "<img src='" . htmlspecialchars($row['imagenURL']) . "' alt='" . htmlspecialchars($row['nombre']) . "'>";
+                    echo "<form action='detalleTratamiento.php' method='GET'>";
+                    echo "<input type='hidden' name='IDtratamiento' value='" . htmlspecialchars($row['IDtratamiento']) . "'>";
+                    echo "<button type='submit'>Ver tratamiento</button>";
+                    echo "</form>";
+                    echo "</div>";
+                }
+            ?>
         </div>
     </div>
 </body>
