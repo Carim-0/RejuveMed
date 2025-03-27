@@ -1,3 +1,13 @@
+<?php
+session_start();
+require_once 'connection.php';
+require_once 'functions.php';
+
+// Verificar login y obtener datos del paciente
+$user_data = check_login($con);
+$paciente_id = $_SESSION['user_id'];
+?>
+
 <!DOCTYPE html>
 <html lang="es">
 <head>
@@ -136,6 +146,18 @@
         .appointment-field {
             font-weight: bold;
         }
+        
+        .appointment-card p:last-child {
+            margin-top: 10px;
+            line-height: 1.4;
+        }
+        
+        .no-appointments {
+            text-align: center;
+            color: #666;
+            font-style: italic;
+            padding: 20px;
+        }
     </style>
 </head>
 <body>
@@ -157,9 +179,9 @@
             <!-- Combobox -->
             <select name="occupation" id="occupation" required>
                 <option value="" selected disabled>Select occupation</option>
-                <?php
-                // aqui van las ocupaciones :p
-                ?>
+                <option value="Doctor">Doctor</option>
+                <option value="Enfermero">Enfermero</option>
+                <option value="Paciente">Paciente</option>
             </select>
             
             <!-- Textarea no editable -->
@@ -173,34 +195,27 @@
                 
                 <div class="form-group">
                     <label for="nombre">Nombre</label>
-                    <input type="text" id="nombre" name="nombre" readonly>
+                    <input type="text" id="nombre" name="nombre" readonly 
+                           value="<?php echo htmlspecialchars($user_data['nombre'] ?? ''); ?>">
                 </div>
                 
                 <div class="form-group">
-                    <label for="apellidos">Apellidos</label>
-                    <input type="text" id="apellidos" name="apellidos" readonly>
+                    <label for="edad">Edad</label>
+                    <input type="text" id="edad" name="edad" readonly style="width: 80px;" 
+                           value="<?php echo htmlspecialchars($user_data['edad'] ?? ''); ?>">
                 </div>
-                
-                <div class="form-group">
-                    <label for="domicilio">Domicilio</label>
-                    <input type="text" id="domicilio" name="domicilio" readonly>
-                </div>
-                
-                <div class="inline-fields">
-                    <div class="form-group">
-                        <label for="edad">Edad</label>
-                        <input type="text" id="edad" name="edad" readonly style="width: 80px;">
-                    </div>
                     
-                    <div class="form-group">
-                        <label for="telefono">Teléfono</label>
-                        <input type="text" id="telefono" name="telefono" readonly>
-                    </div>
+                <div class="form-group">
+                    <label for="telefono">Teléfono</label>
+                    <input type="text" id="telefono" name="telefono" readonly
+                           value="<?php echo htmlspecialchars($user_data['telefono'] ?? ''); ?>">
                 </div>
                 
                 <div class="form-group">
-                    <label for="alergias">Alergias a algún medicamento</label>
-                    <textarea id="alergias" name="alergias" readonly rows="4"></textarea>
+                    <label for="detalles">Detalles médicos</label>
+                    <textarea id="detalles" name="detalles" readonly rows="4"><?php 
+                        echo htmlspecialchars($user_data['detalles'] ?? ''); 
+                    ?></textarea>
                 </div>
             </div>
             
@@ -209,51 +224,43 @@
                 <h3 class="appointments-title">Citas Agendadas</h3>
                 
                 <?php
-                // Conexión a la base de datos y consulta de citas
-                //no se como esta en la nueva base de datos asi que lo deje asi xd
-                /*
-                $servername = "tu_servidor";
-                $username = "tu_usuario";
-                $password = "tu_contraseña";
-                $dbname = "tu_base_de_datos";
+                // Consulta para obtener las citas con información completa
+                $query = "SELECT 
+                            c.fecha, 
+                            t.nombre as tratamiento, 
+                            t.detalles as descripcion,
+                            t.precio
+                          FROM Citas c
+                          JOIN Tratamientos t ON c.IDtratamiento = t.IDtratamiento
+                          WHERE c.IDpaciente = '$paciente_id'
+                          ORDER BY c.fecha";
                 
-                try {
-                    $conn = new PDO("mysql:host=$servername;dbname=$dbname", $username, $password);
-                    $conn->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
-                    
-                    $stmt = $conn->prepare("SELECT fecha, hora, servicio, nombre_paciente FROM citas ORDER BY fecha, hora");
-                    $stmt->execute();
-                    
-                    $citas = $stmt->fetchAll(PDO::FETCH_ASSOC);
-                    
-                    foreach ($citas as $cita) {
+                $result = $con->query($query);
+                
+                if ($result->num_rows > 0) {
+                    while($row = $result->fetch_assoc()) {
+                        // Formatear fecha y hora
+                        $fecha_obj = new DateTime($row['fecha']);
+                        $fecha_formateada = $fecha_obj->format('d/m/Y');
+                        $hora_formateada = $fecha_obj->format('H:i');
+                        
+                        // Formatear precio
+                        $precio_formateado = '$' . number_format($row['precio'], 2);
+                        
                         echo '<div class="appointment-card">';
-                        echo '<p><span class="appointment-field">Fecha:</span> '.htmlspecialchars($cita['fecha']).'</p>';
-                        echo '<p><span class="appointment-field">Hora:</span> '.htmlspecialchars($cita['hora']).'</p>';
-                        echo '<p><span class="appointment-field">Servicio:</span> '.htmlspecialchars($cita['servicio']).'</p>';
-                        echo '<p><span class="appointment-field">Paciente:</span> '.htmlspecialchars($cita['nombre_paciente']).'</p>';
+                        echo '<p><span class="appointment-field">Fecha:</span> '.htmlspecialchars($fecha_formateada).'</p>';
+                        echo '<p><span class="appointment-field">Hora:</span> '.htmlspecialchars($hora_formateada).'</p>';
+                        echo '<p><span class="appointment-field">Tratamiento:</span> '.htmlspecialchars($row['tratamiento']).'</p>';
+                        echo '<p><span class="appointment-field">Precio:</span> '.htmlspecialchars($precio_formateado).'</p>';
+                        echo '<p><span class="appointment-field">Descripción:</span> '.nl2br(htmlspecialchars($row['descripcion'])).'</p>';
                         echo '</div>';
                     }
-                } catch(PDOException $e) {
-                    echo "Error: " . $e->getMessage();
+                } else {
+                    echo '<p class="no-appointments">No tienes citas agendadas actualmente</p>';
                 }
-                $conn = null;
-                */
                 
-                // Ejemplo estático (eliminar cuando tengas la conexión real)
-                echo '<div class="appointment-card">';
-                echo '<p><span class="appointment-field">Fecha:</span> 2023-11-15</p>';
-                echo '<p><span class="appointment-field">Hora:</span> 14:30</p>';
-                echo '<p><span class="appointment-field">Servicio:</span> Consulta dermatológica</p>';
-                echo '<p><span class="appointment-field">Paciente:</span> María González</p>';
-                echo '</div>';
-                
-                echo '<div class="appointment-card">';
-                echo '<p><span class="appointment-field">Fecha:</span> 2023-11-16</p>';
-                echo '<p><span class="appointment-field">Hora:</span> 10:00</p>';
-                echo '<p><span class="appointment-field">Servicio:</span> Revisión anual</p>';
-                echo '<p><span class="appointment-field">Paciente:</span> Juan Pérez</p>';
-                echo '</div>';
+                // Cerrar conexión
+                $con->close();
                 ?>
             </div>
         </div>
