@@ -13,7 +13,7 @@ $paciente_id = $_SESSION['user_id'];
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>RejuveMed - Estado de la cita</title>
+    <title>RejuveMed - Historial Clínico</title>
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -41,14 +41,6 @@ $paciente_id = $_SESSION['user_id'];
             color: #333;
         }
         
-        .status-text {
-            color: #0066cc;
-            margin-top: 40px;
-            margin-left: 20px;
-            font-size: 1.2em;
-            font-weight: bold;
-        }
-        
         .form-container {
             display: flex;
             gap: 30px;
@@ -60,7 +52,7 @@ $paciente_id = $_SESSION['user_id'];
             flex: 1;
         }
         
-        select, textarea, input {
+        textarea, input {
             width: 100%;
             padding: 10px;
             margin-bottom: 15px;
@@ -69,13 +61,8 @@ $paciente_id = $_SESSION['user_id'];
             box-sizing: border-box;
         }
         
-        select {
-            background-color: white;
-            cursor: pointer;
-        }
-        
         textarea {
-            height: 200px;
+            height: 150px;
             resize: none;
             background-color: #f9f9f9;
         }
@@ -86,7 +73,6 @@ $paciente_id = $_SESSION['user_id'];
             padding: 20px;
             background-color: white;
             box-shadow: 0 2px 5px rgba(0,0,0,0.1);
-            margin-bottom: 20px;
         }
         
         .medical-history h3 {
@@ -132,11 +118,18 @@ $paciente_id = $_SESSION['user_id'];
         }
         
         .appointment-card {
-            background-color: #0066cc;
             color: white;
             padding: 15px;
             border-radius: 6px;
             margin-bottom: 15px;
+        }
+        
+        .appointment-pendiente {
+            background-color: #ff5252; /* Rojo para citas pendientes */
+        }
+        
+        .appointment-cancelada {
+            background-color: #0066cc; /* Azul para citas canceladas */
         }
         
         .appointment-card p {
@@ -147,9 +140,10 @@ $paciente_id = $_SESSION['user_id'];
             font-weight: bold;
         }
         
-        .appointment-card p:last-child {
-            margin-top: 10px;
-            line-height: 1.4;
+        .appointment-status {
+            font-weight: bold;
+            text-transform: uppercase;
+            margin-bottom: 10px;
         }
         
         .no-appointments {
@@ -169,27 +163,10 @@ $paciente_id = $_SESSION['user_id'];
         <h1>RejuveMed</h1>
     </div>
     
-    <!-- Texto "Estado de la cita" -->
-    <div class="status-text">Estado de la cita</div>
-    
     <!-- Contenedor principal con dos secciones -->
     <div class="form-container">
-        <!-- Sección izquierda (combobox y textarea) -->
+        <!-- Sección izquierda (historial clínico) -->
         <div class="left-section">
-            <!-- Combobox -->
-            <select name="occupation" id="occupation" required>
-                <option value="" selected disabled>Select occupation</option>
-                <option value="Doctor">Doctor</option>
-                <option value="Enfermero">Enfermero</option>
-                <option value="Paciente">Paciente</option>
-            </select>
-            
-            <!-- Textarea no editable -->
-            <textarea name="status_info" id="status_info" readonly placeholder="Información del estado de la cita aparecerá aquí..."></textarea>
-        </div>
-        
-        <!-- Sección derecha (historial clínico y citas) -->
-        <div class="right-section">
             <div class="medical-history">
                 <h3>Historial clínico</h3>
                 
@@ -218,8 +195,10 @@ $paciente_id = $_SESSION['user_id'];
                     ?></textarea>
                 </div>
             </div>
-            
-            <!-- Sección de citas agendadas -->
+        </div>
+        
+        <!-- Sección derecha (citas agendadas) -->
+        <div class="right-section">
             <div class="appointments-container">
                 <h3 class="appointments-title">Citas Agendadas</h3>
                 
@@ -229,7 +208,8 @@ $paciente_id = $_SESSION['user_id'];
                             c.fecha, 
                             t.nombre as tratamiento, 
                             t.detalles as descripcion,
-                            t.precio
+                            t.precio,
+                            c.estado
                           FROM Citas c
                           JOIN Tratamientos t ON c.IDtratamiento = t.IDtratamiento
                           WHERE c.IDpaciente = '$paciente_id'
@@ -247,7 +227,12 @@ $paciente_id = $_SESSION['user_id'];
                         // Formatear precio
                         $precio_formateado = '$' . number_format($row['precio'], 2);
                         
-                        echo '<div class="appointment-card">';
+                        // Determinar clase CSS según el estado
+                        $clase_estado = strtolower($row['estado']) == 'pendiente' ? 
+                                         'appointment-pendiente' : 'appointment-cancelada';
+                        
+                        echo '<div class="appointment-card '.$clase_estado.'">';
+                        echo '<p class="appointment-status">Estado: '.htmlspecialchars($row['estado']).'</p>';
                         echo '<p><span class="appointment-field">Fecha:</span> '.htmlspecialchars($fecha_formateada).'</p>';
                         echo '<p><span class="appointment-field">Hora:</span> '.htmlspecialchars($hora_formateada).'</p>';
                         echo '<p><span class="appointment-field">Tratamiento:</span> '.htmlspecialchars($row['tratamiento']).'</p>';
