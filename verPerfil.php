@@ -62,10 +62,8 @@
             <p>Contraseña: <span id="password">********</span></p>
             <button class="btn-toggle-password" onclick="togglePassword()">Mostrar Contraseña</button>
             <p>Teléfono: <span id="telefono"><?php echo htmlspecialchars($user_data['telefono']); ?></span></p>
-            <?php if ($user_type === 'Personal'): ?>
-                <p>Edad: <span id="edad"><?php echo htmlspecialchars($user_data['edad']); ?></span></p>
-                <p>Detalles: <span id="detalles"><?php echo htmlspecialchars($user_data['detalles']); ?></span></p>
-            <?php endif; ?>
+            <p>Edad: <span id="edad"><?php echo htmlspecialchars($user_data['edad']); ?></span></p>
+            <p>Detalles: <span id="detalles"><?php echo htmlspecialchars($user_data['detalles']); ?></span></p>
             <p>Tipo de cuenta: <span id="tipo_cuenta"><?php echo $user_type === 'Paciente' ? 'Paciente' : 'Personal'; ?></span></p>
         </div>
         <button class="btn-salir" onclick="window.location.href='logout.php'">
