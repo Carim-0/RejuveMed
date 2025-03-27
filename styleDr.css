@@ -1,0 +1,354 @@
+.ventana-vista {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh; /* Hace que ocupe toda la pantalla */
+    background-color: #ffffff;
+  }
+  
+  .ventana-vista .overlap-wrapper {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+  }
+  
+  .ventana-vista .overlap {
+    position: relative;
+    width: 1440px;
+    height: 1015px;
+    border-radius: 8px;
+    border: 1px solid;
+    border-color: #e9e9e9;
+  }
+  
+  .ventana-vista .grupo-procedimientos {
+    position: absolute;
+    width: 988px;
+    height: 296px;
+    top: 663px;
+    left: 157px;
+  }
+  
+  .ventana-vista .group {
+    width: 104px;
+    height: 24px;
+    top: 271px;
+    left: 826px;
+    position: absolute;
+  }
+  
+  .ventana-vista .overlap-group {
+    position: relative;
+    width: 102px;
+    height: 24px;
+  }
+  
+  .ventana-vista .rectangle {
+    position: absolute;
+    width: 102px;
+    height: 22px;
+    top: 0;
+    left: 0;
+    background-color: #d9d9d9;
+  }
+  
+  .ventana-vista .text-wrapper {
+    position: absolute;
+    height: 24px;
+    top: 0;
+    left: 0;
+    font-family: "Actor", Helvetica;
+    font-weight: 400;
+    color: #000000;
+    font-size: 14px;
+    text-align: center;
+    letter-spacing: 0.03px;
+    line-height: 24px;
+    white-space: nowrap;
+  }
+  
+  .ventana-vista .overlap-group-wrapper {
+    width: 104px;
+    height: 24px;
+    top: 272px;
+    left: 53px;
+    position: absolute;
+  }
+  
+  .ventana-vista .div-wrapper {
+    width: 104px;
+    height: 24px;
+    top: 272px;
+    left: 555px;
+    position: absolute;
+  }
+  
+  .ventana-vista .div {
+    position: absolute;
+    width: 982px;
+    height: 265px;
+    top: 0;
+    left: 0;
+  }
+  
+  .ventana-vista .section-equipate {
+    display: inline-flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 12.9px;
+    position: absolute;
+    top: 0;
+    left: 0;
+  }
+  
+  .ventana-vista .cuidado-de-la-piel {
+    position: relative;
+    width: fit-content;
+    margin-top: -0.54px;
+    font-family: "Actor", Helvetica;
+    font-weight: 400;
+    color: var(--text-primary);
+    font-size: 12.9px;
+    letter-spacing: 0;
+    line-height: normal;
+  }
+  
+  .ventana-vista .photos {
+    display: inline-flex;
+    align-items: flex-start;
+    gap: 12.9px;
+    position: relative;
+    flex: 0 0 auto;
+  }
+  
+  .ventana-vista .img {
+    position: relative;
+    width: 235.88px;
+    height: 235.88px;
+    object-fit: cover;
+    cursor: pointer;
+  }
+  
+  .ventana-vista .text-wrapper-2 {
+    position: absolute;
+    top: 0;
+    left: 294px;
+    font-family: "Actor", Helvetica;
+    font-weight: 400;
+    color: var(--text-primary);
+    font-size: 12.9px;
+    letter-spacing: 0;
+    line-height: normal;
+  }
+  
+  .ventana-vista .text-wrapper-3 {
+    position: absolute;
+    top: 0;
+    left: 555px;
+    font-family: "Actor", Helvetica;
+    font-weight: 400;
+    color: var(--text-primary);
+    font-size: 12.9px;
+    letter-spacing: 0;
+    line-height: normal;
+  }
+  
+  .ventana-vista .text-wrapper-4 {
+    position: absolute;
+    top: 0;
+    left: 799px;
+    font-family: "Actor", Helvetica;
+    font-weight: 400;
+    color: var(--text-primary);
+    font-size: 12.9px;
+    letter-spacing: 0;
+    line-height: normal;
+  }
+  
+  .ventana-vista .group-2 {
+    width: 104px;
+    height: 24px;
+    top: 272px;
+    left: 311px;
+    position: absolute;
+  }
+  
+  .ventana-vista .menu {
+    display: flex;
+    flex-direction: column;
+    width: 1434px;
+    align-items: flex-start;
+    position: absolute;
+    top: -1px;
+    left: 5px;
+  }
+  
+  .ventana-vista .top-bar-menu {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 2.15px 20.42px;
+    position: relative;
+    align-self: stretch;
+    width: 100%;
+    flex: 0 0 auto;
+    background-color: var(--background-menu);
+  }
+  
+  .ventana-vista .brand {
+    position: relative;
+    flex: 0 0 auto;
+  }
+  
+  .ventana-vista .menu-2 {
+    display: inline-flex;
+    align-items: center;
+    gap: 4.3px;
+    position: relative;
+    flex: 0 0 auto;
+  }
+  
+  .ventana-vista .button {
+    all: unset;
+    box-sizing: border-box;
+    display: inline-flex;
+    align-items: flex-start;
+    gap: 5.37px;
+    padding: 4.3px 2.15px;
+    position: relative;
+    flex: 0 0 auto;
+    cursor: pointer;
+  }
+  
+  .ventana-vista .text-wrapper-5 {
+    position: relative;
+    width: fit-content;
+    margin-top: -0.54px;
+    font-family: "Actor", Helvetica;
+    font-weight: 400;
+    color: var(--text-primary);
+    font-size: 14px;
+    letter-spacing: 0;
+    line-height: normal;
+  }
+  
+  .ventana-vista .rectangle-2 {
+    position: relative;
+    width: 1px;
+    height: 8.6px;
+    background-color: var(--iconprimary);
+  }
+  
+  .ventana-vista .top-message {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 547.51px;
+    padding: 4.3px 20.42px;
+    position: relative;
+    align-self: stretch;
+    width: 100%;
+    flex: 0 0 auto;
+    background-color: var(--background-menu);
+  }
+  
+  .ventana-vista .text {
+    position: relative;
+    width: 442px;
+  }
+  
+  .ventana-vista .text-wrapper-6 {
+    position: absolute;
+    top: 167px;
+    left: 482px;
+    font-family: "Actor", Helvetica;
+    font-weight: 400;
+    color: var(--text-primary);
+    font-size: 32px;
+    letter-spacing: 0;
+    line-height: normal;
+    white-space: nowrap;
+  }
+  
+  .ventana-vista .calendar {
+    position: absolute;
+    width: 48px;
+    height: 48px;
+    top: 409px;
+    left: 476px;
+  }
+  
+  .ventana-vista .agendar {
+    position: absolute;
+    width: 48px;
+    height: 48px;
+    top: 470px;
+    left: 476px;
+  }
+  
+  .ventana-vista .group-3 {
+    width: 254px;
+    height: 46px;
+    top: 407px;
+    left: 528px;
+    position: absolute;
+    cursor: pointer;
+  }
+  .ventana-vista .group-4 {
+    width: 254px;
+    height: 46px;
+    top: 470px;
+    left: 528px;
+    position: absolute;
+    cursor: pointer;
+  }
+  
+  .ventana-vista .overlap-2 {
+    position: relative;
+    width: 252px;
+    height: 46px;
+    background-color: #f78080;
+  }
+  
+  .ventana-vista .text-wrapper-7 {
+    position: absolute;
+    height: 23px;
+    top: 11px;
+    left: 6px;
+    font-family: "Roboto", Helvetica;
+    font-weight: 400;
+    color: #000000;
+    font-size: 20px;
+    letter-spacing: 0;
+    line-height: normal;
+    white-space: nowrap;
+  }
+  
+  .ventana-vista .text-wrapper-8 {
+    position: absolute;
+    top: 300px;
+    left: 524px;
+    font-family: "Actor", Helvetica;
+    font-weight: 400;
+    color: #000000;
+    font-size: 32px;
+    letter-spacing: 0;
+    line-height: normal;
+    white-space: nowrap;
+  }
+  
+  .ventana-vista .p {
+    position: absolute;
+    top: 597px;
+    left: 371px;
+    font-family: "Actor", Helvetica;
+    font-weight: 400;
+    color: #000000;
+    font-size: 32px;
+    letter-spacing: 0;
+    line-height: normal;
+    white-space: nowrap;
+  }
+  
+  
