@@ -16,11 +16,12 @@
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="../bootstrap.min.css">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
     <title>Registros de Pacientes</title>
 
-    <style type="text/css">
+    <style >
          :root {
             --color-primario: #1a37b5; /*Azul para personal*/
             --color-secundario: #f8f9fa;
@@ -231,7 +232,7 @@
     </div>
 
     <div class="nav-buttons">
-        <button class="nav-button" onclick="window.location.href='verCitasPacientes_Perosnal.php'">
+        <button class="nav-button" onclick="window.location.href='verCitasPacientes_Personal.php'">
             <i class="fas fa-calendar-alt"></i> Citas
         </button>
     </div>
