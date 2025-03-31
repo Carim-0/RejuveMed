@@ -312,7 +312,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['actualizar_cita'])) {
                 
                 <div class="button-group">
                     <button type="submit" name="actualizar_cita" class="btn btn-primary">Guardar Cambios</button>
-                    <a href="../Personal/verCitasPacientes_Personal.php" class="btn btn-secondary">Cancelar</a>
+                    <a href="../Doctora/verCitasPacientes_Doctora.php" class="btn btn-secondary">Cancelar</a>
                 </div>
             </form>
         <?php endif; ?>
