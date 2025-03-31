@@ -242,38 +242,36 @@
         <div class="card">
             <div class="card-header">
                 <h2 class="h6 mb-0">Pacientes registrados</h2>
-                    </div>
+            </div>
 
-                    <div class="card-card-body p-0">
-                        <div class="table-responsive">
-                            <table class="table table-hover mb-0">
-                            <thead>
+            <div class="card-body p-0">
+                <div class="table-responsive">
+                    <table class="table table-hover mb-0">
+                        <thead>
                             <tr>
-                                <td>ID del paciente</td>
-                                <td>Nombre</td>
-                                <td>Edad</td>
-                                <td>Telefono</td>
-                                <td>Editar</td>
-                                <td>Eliminar</td>
+                                <th>ID del paciente</th>
+                                <th>Nombre</th>
+                                <th>Edad</th>
+                                <th>Teléfono</th>
+                                <th>Editar</th>
+                                <th>Eliminar</th>
                             </tr>
-                            </thead>
-                            <tbody>
+                        </thead>
+                        <tbody>
                             <?php
-                                while($row = mysqli_fetch_assoc($result))
-                                {
+                                while($row = mysqli_fetch_assoc($result)) {
                                     echo "<tr>";
-                                    echo "<td>".$row['IDpaciente']."</td>";
-                                    echo "<td>".$row['nombre']."</td>";
-                                    echo "<td>".$row['edad']."</td>";
-                                    echo "<td>".$row['telefono']."</td>";
-                                    echo "<a href='editarPaciente.php?id=".$row['IDpaciente']."'class='action-link' title='Editar'><i class='fas fa-edit'></i>Editar</a>";
-                                    echo "<a href='eliminarPaciente.php?id=".$row['IDpaciente']."' class='action-link delete' title='Eliminar' onclick='return confirm(\"¿Estás seguro de que deseas eliminar este paciente?\")'><i class='fas fa-trash-alt'></i>Eliminar</a>";
+                                    echo "<td>".htmlspecialchars($row['IDpaciente'])."</td>";
+                                    echo "<td>".htmlspecialchars($row['nombre'])."</td>";
+                                    echo "<td>".htmlspecialchars($row['edad'])."</td>";
+                                    echo "<td>".htmlspecialchars($row['telefono'])."</td>";
+                                    echo "<td><a href='editarPaciente.php?id=".htmlspecialchars($row['IDpaciente'])."' class='action-link' title='Editar'><i class='fas fa-edit'></i> Editar</a></td>";
+                                    echo "<td><a href='eliminarPaciente.php?id=".htmlspecialchars($row['IDpaciente'])."' class='action-link delete' title='Eliminar' onclick='return confirm(\"¿Estás seguro de que deseas eliminar este paciente?\")'><i class='fas fa-trash-alt'></i> Eliminar</a></td>";
                                     echo "</tr>";
                                 }
                             ?>
-                            </tbody>
-                        </table>
-                    </div>
+                        </tbody>
+                    </table>
                 </div>
             </div>
         </div>
