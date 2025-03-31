@@ -44,6 +44,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Agendar Cita</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -58,10 +59,11 @@
 
         .form-container {
             background-color: #fff;
-            padding: 20px;
-            border-radius: 8px;
+            padding: 30px;
+            border-radius: 10px;
             box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
             width: 400px;
+            box-shadow: var(0 4px 6px rgba(0, 0, 0, 0.1);)
         }
 
         .form-container h2 {
@@ -79,7 +81,7 @@
         .form-container button {
             width: 100%;
             padding: 10px;
-            margin-bottom: 15px;
+            margin-bottom: 20px;
             border: 1px solid #ccc;
             border-radius: 4px;
         }
@@ -93,6 +95,73 @@
 
         .form-container button:hover {
             background-color: #0056b3;
+        }
+        
+        .textarea-control {
+            width: 100%;
+            padding: 12px 15px;
+            border: 1px solid var(--color-borde);
+            border-radius: 6px;
+            font-size: 16px;
+            min-height: 100px;
+            resize: vertical;
+            transition: border-color 0.3s;
+        }
+
+        .btn {
+            display: inline-block;
+            padding: 12px 20px;
+            border-radius: 6px;
+            font-size: 16px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s;
+            text-align: center;
+            border: none;
+        }
+
+        .btn-primary {
+            background-color: var(--color-primario);
+            color: white;
+            width: 100%;
+        }
+
+        .btn-primary:hover {
+            background-color: #3a7ae8;
+        }
+        
+        .btn-link {
+            color: var(--color-primario);
+            text-decoration: none;
+            display: inline-block;
+            margin-top: 15px;
+            font-size: 14px;
+        }
+
+        .btn-link:hover {
+            text-decoration: underline;
+        }
+
+        .input-icon {
+            position: relative;
+        }
+
+        .input-icon i {
+            position: absolute;
+            top: 50%;
+            right: 15px;
+            transform: translateY(-50%);
+            color: var(--color-borde);
+        }
+
+        @media (max-width: 576px) {
+            .form-content {
+                padding: 20px;
+            }
+            
+            .header-registro {
+                padding: 15px;
+            }
         }
     </style>
 </head>
@@ -117,7 +186,8 @@
             </select>
 
             <button type="submit">Agendar Cita</button>
-            <button type="button" onclick="window.location.href='catalogoTratamientos.php'">Regresar</button>
+            <a href ="catalogoTratamientos.php" class ="btn-link">
+                <i class="fas fa-arrow-left"></i> Regresar
         </form>
     </div>
 </body>
