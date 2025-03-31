@@ -18,80 +18,234 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="../bootstrap.min.css">
     <title>Registros de Pacientes</title>
-</head>
-<body>
+
     <style type="text/css">
-        #text {
-            height: 25px;
-            border-radius: 5px;
-            padding: 4px;
-            border: solid thin #aaa;
-            width: 100%;
+         :root {
+            --color-primario: #1a37b5; /*Azul para personal*/
+            --color-secundario: #f8f9fa;
+            --color-terciario: #e9ecef;
+            --color-exito: #28a745;
+            --color-error: #dc3545;
+            --color-texto: #212529;
+            --color-borde: #e0e0e0;
         }
 
-        #button {
-            padding: 10px;
-            width: 100px;
+        
+        body {
+            background-color: var(--color-secundario);
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            padding-bottom: 20px;
+        }
+
+        
+        .header-container {
+            background-color: var(--color-primario);
             color: white;
-            background-color: lightblue;
-            border: none;
+            padding: 15px 0;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
         }
 
-        #box {
-            background-color: grey;
-            margin: auto;
-            width: 300px;
-            padding: 20px;
+        .header-container h1 {
+            color:rgb(255, 255, 255); 
         }
 
-        .switch-button {
-            margin: 20px;
-            text-align: center;
+
+        .nav-buttons {
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+            margin: 15px 0;
+            flex-wrap: wrap;
         }
 
-        .switch-button button {
-            padding: 10px 20px;
-            background-color: #007bff;
+        .nav-button {
+            background-color: var(--color-primario);
             color: white;
             border: none;
             border-radius: 5px;
-            cursor: pointer;
+            padding: 8px 15px;
+            font-size: 0.9rem;
+            transition: all 0.3s;
         }
 
-        .switch-button button:hover {
-            background-color: #0056b3;
+        .nav-button:hover {
+            background-color: #142a8a;
+            transform: translateY(-2px);
         }
 
         .profile-button {
-            position: absolute;
-            top: 20px;
-            right: 20px;
-            padding: 10px 20px;
-            background-color: #007bff;
-            color: white;
+            background-color: white;
+            color: var(--color-primario);
             border: none;
-            border-radius: 5px;
-            cursor: pointer;
+            border-radius: 50px;
+            padding: 6px 15px;
+            font-weight: 500;
+            font-size: 0.9rem;
+            transition: all 0.3s;
+            position: absolute;
+            top: 15px;
+            right: 15px;
         }
 
         .profile-button:hover {
-            background-color: #0056b3;
+            background-color: #f0f0f0;
+            transform: translateY(-2px);
+        }
+
+        .card {
+            border: none;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+            margin: 0 auto;
+            max-width: 95%;
+        }
+
+        .card-header {
+            background-color: var(--color-primario);
+            color: white;
+            padding: 12px 15px;
+            border-bottom: none;
+        }
+
+        .card-header h2 {
+            font-size: 1.1rem;
+            margin: 0;
+            text-align: center;
+            color:rgb(255, 255, 255);
+        }
+
+        .table {
+            font-size: 0.9rem;
+            margin-bottom: 0;
+        }
+
+        .table thead {
+            background-color: var(--color-primario);
+            color: white;
+        }
+
+        .table th {
+            padding: 8px 6px;
+            font-weight: 500;
+            font-size: 0.85rem;
+            text-align: center;
+        }
+
+        .table td {
+            padding: 8px 6px;
+            vertical-align: middle;
+            text-align: center;
+        }
+
+        .table tr:nth-child(even) {
+            background-color: rgba(0,0,0,0.02);
+        }
+
+        .table tr:hover {
+            background-color: rgba(26, 55, 181, 0.03);
+        }
+
+        .action-link {
+            font-size: 0.8rem;
+            padding: 3px 6px;
+            margin: 0 2px;
+            color: var(--color-primario);
+            text-decoration: none;
+        }
+
+        .action-link.delete {
+            color: var(--color-error);
+        }
+
+        .action-link:hover {
+            text-decoration: underline;
+        }
+
+        .action-link i {
+            margin-right: 3px;
+        }
+
+        .add-button {
+            text-align: center;
+            margin: 20px 0;
+        }
+
+        .add-button button {
+            background-color: var(--color-exito);
+            color: white;
+            border: none;
+            border-radius: 5px;
+            padding: 8px 15px;
+            font-size: 0.9rem;
+            transition: all 0.3s;
+        }
+
+        .add-button button:hover {
+            background-color: #218838;
+            transform: translateY(-2px);
+        }
+
+        @media (max-width: 768px) {
+            .table {
+                font-size: 0.8rem;
+            }
+            
+            .table th, .table td {
+                padding: 6px 4px;
+            }
+            
+            .nav-button, .add-button button {
+                padding: 6px 12px;
+                font-size: 0.8rem;
+            }
+        }
+
+        @media (max-width: 576px) {
+            .card {
+                max-width: 100%;
+                border-radius: 0;
+            }
+            
+            .profile-button {
+                position: relative;
+                top: auto;
+                right: auto;
+                display: block;
+                margin: 10px auto;
+                width: fit-content;
+            }
         }
     </style>
+</head>
+<body>
 
-    
-<button class="profile-button" onclick="window.location.href='../verPerfil.php'">Ver Perfil</button>
+<div class="header-container">
+        <div class="container">
+            <h1 class="text-center mb-0">Personal</h1>
+            <button class="profile-button" onclick="window.location.href='../verPerfil.php'">
+                <i class="fas fa-user-circle"></i> Mi Perfil
+            </button>
+        </div>
+    </div>
+
+    <div class="nav-buttons">
+        <button class="nav-button" onclick="window.location.href='verCitasPacientes_Perosnal.php'">
+            <i class="fas fa-calendar-alt"></i> Citas
+        </button>
+    </div>
 
     <div class="container">
-        <div class="row mt-5">
-            <div class="col">
-                <div class="card mt-5">
-                    <div class="card-header">
-                        <h2 class="display-6 text-center">Pacientes registrados</h2>
+        <div class="card">
+            <div class="card-header">
+                <h2 class="h6 mb-0">Pacientes registrados</h2>
                     </div>
-                    <div class="card-body">
-                        <table class="table table-bordered text-center">
-                            <tr class="bg-dark text-white">
+
+                    <div class="card-card-body p-0">
+                        <div class="table-responsive">
+                            <table class="table table-hover mb-0">
+                            <thead>
+                            <tr>
                                 <td>ID del paciente</td>
                                 <td>Nombre</td>
                                 <td>Edad</td>
@@ -99,7 +253,8 @@
                                 <td>Editar</td>
                                 <td>Eliminar</td>
                             </tr>
-                            <tr>
+                            </thead>
+                            <tbody>
                             <?php
                                 while($row = mysqli_fetch_assoc($result))
                                 {
@@ -113,12 +268,13 @@
                                     echo "</tr>";
                                 }
                             ?>
-                            </tr>
+                            </tbody>
                         </table>
                     </div>
                 </div>
             </div>
         </div>
     </div>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>
