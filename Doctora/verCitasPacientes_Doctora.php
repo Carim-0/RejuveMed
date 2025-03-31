@@ -51,17 +51,15 @@ if ($_SERVER['REQUEST_METHOD'] == "POST") {
   $fecha = $_POST['fecha'];
   $hora = $_POST['hora'];
   $IDtratamiento = $_POST['IDtratamiento'];
-  $paciente_id = $_POST['paciente_id']; // Cambiado de $_GET a $_POST
+  $paciente_id = $_POST['paciente_id']; 
 
   if (!empty($fecha) && !empty($hora) && !empty($IDtratamiento)) {
       $datetime = $fecha . ' ' . $hora;
 
       // Usar consultas preparadas para seguridad
-      $query = "INSERT INTO Citas (IDpaciente, IDtratamiento, fecha) VALUES (?, ?, ?)";
+      $query = "INSERT INTO Citas (IDpaciente, IDtratamiento, fecha) VALUES ('$IDpaciente', '$IDtratamiento', '$datetime')";
       $stmt = $con->prepare($query);
-      $stmt->bind_param("iis", $paciente_id, $IDtratamiento, $datetime);
-      $stmt->execute();
-
+      
       if ($stmt->affected_rows > 0) {
           echo "<script>alert('Cita agendada exitosamente.'); window.location.href='verCitas_Paciente.php';</script>";
       } else {
@@ -516,7 +514,6 @@ if ($_SERVER['REQUEST_METHOD'] == "POST") {
           <!-- Detalles de nueva cita -->
           <h3>Nueva Cita</h3>           
           <div class="form-container">
-
           <form method="POST">
             <div class="form-group">
               <label for="fecha">Fecha:</label>
