@@ -222,7 +222,7 @@
 
 <div class="header-container">
         <div class="container">
-            <h1 class="text-center mb-0">Personal</h1>
+            <h1 class="text-center mb-0"><i class="fa-solid fa-user"></i>Personal</h1>
             <button class="profile-button" onclick="window.location.href='../verPerfil.php'">
                 <i class="fas fa-user-circle"></i> Mi Perfil
             </button>
