@@ -16,7 +16,6 @@
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="../bootstrap.min.css">
     
@@ -266,8 +265,10 @@
                                     echo "<td>".$row['nombre']."</td>";
                                     echo "<td>".$row['edad']."</td>";
                                     echo "<td>".$row['telefono']."</td>";
+                                    echo "<td>";
                                     echo "<a href='editarPaciente.php?id=".$row['IDpaciente']."'class='action-link' title='Editar'><i class='fas fa-edit'></i>Editar</a>";
                                     echo "<a href='eliminarPaciente.php?id=".$row['IDpaciente']."' class='action-link delete' title='Eliminar' onclick='return confirm(\"¿Estás seguro de que deseas eliminar este paciente?\")'><i class='fas fa-trash-alt'></i>Eliminar</a>";
+                                    echo "</td>";
                                     echo "</tr>";
                                 }
                             ?>
