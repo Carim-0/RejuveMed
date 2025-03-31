@@ -565,8 +565,7 @@ if ($_SERVER['REQUEST_METHOD'] == "POST" && isset($_POST['agendar_cita'])) {
 
   <!-- Bottom buttons -->
   <div class="bottom-buttons">
-    <button onclick="window.location.href='tablaPersonal.php'">Ir a Personal</button>
-    <button onclick="window.location.href='tablaTratamientos.php'">Ir a Tratamientos</button>
+    <button onclick="window.location.href='tablaPacientes.php'">Regresar</button>
   </div>
 
   <script>
