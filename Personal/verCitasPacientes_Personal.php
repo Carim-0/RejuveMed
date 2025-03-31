@@ -35,10 +35,10 @@ if (isset($_GET['paciente_id'])) {
     $stmt->close();
     
     // Obtener citas del paciente
-    $query_citas = "SELECT c.fecha, t.nombre as tratamiento, c.estado 
-                   FROM Citas c
-                   JOIN Tratamientos t ON c.IDtratamiento = t.IDtratamiento
-                   WHERE c.IDpaciente = ?";
+    $query_citas = "SELECT c.fecha, t.nombre as tratamiento, c.estado, t.duracion 
+                    FROM Citas c
+                    JOIN Tratamientos t ON c.IDtratamiento = t.IDtratamiento
+                    WHERE c.IDpaciente = ?";
     $stmt = $con->prepare($query_citas);
     $stmt->bind_param("i", $paciente_id);
     $stmt->execute();
@@ -476,7 +476,8 @@ if (isset($_GET['paciente_id'])) {
                 <li>
                   <strong>Fecha:</strong> <?= htmlspecialchars($cita['fecha']) ?><br>
                   <strong>Tratamiento:</strong> <?= htmlspecialchars($cita['tratamiento']) ?><br>
-                  <strong>Estado:</strong> <?= htmlspecialchars($cita['estado']) ?>
+                  <strong>Estado:</strong> <?= htmlspecialchars($cita['estado']) ?><br>
+                  <strong>Duración:</strong> <?= htmlspecialchars($cita['duracion']) ?> <strong>hrs</strong>
                 </li>
               <?php endforeach; ?>
             <?php else: ?>
