@@ -45,6 +45,34 @@ if (isset($_GET['paciente_id'])) {
     $citas = $stmt->get_result()->fetch_all(MYSQLI_ASSOC);
     $stmt->close();
 }
+
+    // Agregar citas
+    $query = "SELECT IDtratamiento, nombre FROM Tratamientos";
+    $result = mysqli_query($con, $query);
+
+    if ($_SERVER['REQUEST_METHOD'] == "POST") {
+        $fecha = $_POST['fecha'];
+        $hora = $_POST['hora'];
+        $IDtratamiento = $_POST['IDtratamiento'];
+        $paciente_id = $_GET['paciente_id'];
+        if (!empty($fecha) && !empty($hora) && !empty($IDtratamiento)) {
+            // Combine date and time into a single datetime value
+            $datetime = $fecha . ' ' . $hora;
+
+            // Insert the new appointment into the Citas table
+            $query = "INSERT INTO Citas (IDpaciente, IDtratamiento, fecha) VALUES ('$paciente_id', '$IDtratamiento', '$datetime')";
+            $result = mysqli_query($con, $query);
+
+            if ($result) {
+                echo "<script>alert('Cita agendada exitosamente.'); window.location.href='verCitas_Paciente.php';</script>";
+            } else {
+                echo "<script>alert('Error al agendar la cita.');</script>";
+            }
+        } else {
+            echo "<script>alert('Por favor, complete todos los campos.');</script>";
+        }
+    }
+
 ?>
 
 <!DOCTYPE html>
@@ -514,8 +542,10 @@ if (isset($_GET['paciente_id'])) {
           </div>
 
           <div class="actions">
-            <button type="submit" class="btn btn-save">Agendar Cita</button>
-            <button type="button" class="btn btn-delete">Cancelar</button>
+            <form method="POST">
+              <button type="submit" class="btn btn-save">Agendar Cita</button>
+              <button type="button" class="btn btn-delete">Cancelar</button>
+            </form>
           </div>
         </form>
       </div>

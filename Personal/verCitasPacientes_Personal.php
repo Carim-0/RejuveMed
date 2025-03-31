@@ -45,6 +45,33 @@ if (isset($_GET['paciente_id'])) {
     $citas = $stmt->get_result()->fetch_all(MYSQLI_ASSOC);
     $stmt->close();
 }
+
+    // Agregar citas
+    $query = "SELECT IDtratamiento, nombre FROM Tratamientos";
+    $result = mysqli_query($con, $query);
+
+    if ($_SERVER['REQUEST_METHOD'] == "POST") {
+        $fecha = $_POST['fecha'];
+        $hora = $_POST['hora'];
+        $IDtratamiento = $_POST['IDtratamiento'];
+
+        if (!empty($fecha) && !empty($hora) && !empty($IDtratamiento)) {
+            // Combine date and time into a single datetime value
+            $datetime = $fecha . ' ' . $hora;
+
+            // Insert the new appointment into the Citas table
+            $query = "INSERT INTO Citas (IDpaciente, IDtratamiento, fecha) VALUES ('$IDpaciente', '$IDtratamiento', '$datetime')";
+            $result = mysqli_query($con, $query);
+
+            if ($result) {
+                echo "<script>alert('Cita agendada exitosamente.'); window.location.href='verCitas_Paciente.php';</script>";
+            } else {
+                echo "<script>alert('Error al agendar la cita.');</script>";
+            }
+        } else {
+            echo "<script>alert('Por favor, complete todos los campos.');</script>";
+        }
+    }
 ?>
 
 <!DOCTYPE html>
@@ -460,13 +487,6 @@ if (isset($_GET['paciente_id'])) {
                    value="<?= htmlspecialchars($paciente_actual['telefono'] ?? '') ?>">
           </div>
 
-          <!-- Detalles médicos -->
-          <h3>Detalles Médicos</h3>
-          <div class="form-group">
-            <textarea id="detalles" name="detalles" readonly rows="4"><?= 
-              htmlspecialchars($paciente_actual['detalles'] ?? '') 
-            ?></textarea>
-          </div>
 
           <!-- Citas -->
           <h3>Citas Agendadas</h3>
