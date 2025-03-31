@@ -536,6 +536,7 @@ if ($_SERVER['REQUEST_METHOD'] == "POST") {
           </ul>
           
 
+
           <!-- Detalles de nueva cita -->
           <h3>Nueva Cita</h3>           
           <div class="form-container">
