@@ -80,17 +80,18 @@ if ($_SERVER['REQUEST_METHOD'] == "POST" && isset($_POST['agendar_cita'])) {
         $stmt->bind_param("siis", $fecha_hora, $paciente_id, $IDtratamiento, $estado);
         
         if ($stmt->execute()) {
-            $success_message = "Cita agendada exitosamente";
+            $success_message = "La cita se agendó correctamente";
+            
             // Actualizar la lista de citas
             $query_citas = "SELECT c.IDcita, c.fecha, t.nombre as tratamiento, c.estado, t.duracion 
                             FROM Citas c
                             JOIN Tratamientos t ON c.IDtratamiento = t.IDtratamiento
                             WHERE c.IDpaciente = ?";
-            $stmt = $con->prepare($query_citas);
-            $stmt->bind_param("i", $paciente_id);
-            $stmt->execute();
-            $citas = $stmt->get_result()->fetch_all(MYSQLI_ASSOC);
-            $stmt->close();
+            $stmt_citas = $con->prepare($query_citas);
+            $stmt_citas->bind_param("i", $paciente_id);
+            $stmt_citas->execute();
+            $citas = $stmt_citas->get_result()->fetch_all(MYSQLI_ASSOC);
+            $stmt_citas->close();
         } else {
             $error_message = "Error al agendar la cita: " . $con->error;
         }
