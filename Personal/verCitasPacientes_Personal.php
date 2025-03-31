@@ -511,7 +511,6 @@ if ($_SERVER['REQUEST_METHOD'] == "POST" && isset($_POST['agendar_cita'])) {
                   <strong>Tratamiento:</strong> <?= htmlspecialchars($cita['tratamiento']) ?><br>
                   <strong>Estado:</strong> <?= htmlspecialchars($cita['estado']) ?><br>
                   <strong>Duración:</strong> <?= htmlspecialchars($cita['duracion']) ?> <strong>hrs</strong>
-                  <a href="../Personal/EditarCita.php?id=<?= $cita['IDcita'] ?>" title="Editar">✏️</a>
                 </li>
               <?php endforeach; ?>
             <?php else: ?>
