@@ -266,7 +266,7 @@
                                     echo "<td>".$row['edad']."</td>";
                                     echo "<td>".$row['telefono']."</td>";
                                     echo "<td><a href='editarPaciente.php?id=".$row['IDpaciente']."'class='action-link' title='Editar'><i class='fas fa-edit'></i>Editar</a></td>";
-                                    echo "<td><a href='eliminarPaciente.php?id=".$row['IDpaciente']."' onclick='return confirm(\"¿Estás seguro de que deseas eliminar este paciente?\")'><i class='fas fa-trash-alt'></i>Eliminar</a></td>";
+                                    echo "<td><a href='eliminarPaciente.php?id=".$row['IDpaciente']."' class='action-link delete' title='Eliminar' onclick='return confirm(\"¿Estás seguro de que deseas eliminar este paciente?\")'><i class='fas fa-trash-alt'></i>Eliminar</a></td>";
                                     echo "</tr>";
                                 }
                             ?>
