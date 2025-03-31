@@ -14,12 +14,16 @@
 
         // Validate form data
         if (!empty($nombre) && !empty($password) && !empty($confirm_password) && !empty($telefono) && !empty($edad) && $password === $confirm_password) {
-            // Insert into the Paciente table
+            // Insert into the Pacientes table
             $query = "INSERT INTO Pacientes (nombre, password, telefono, edad, detalles) VALUES ('$nombre', '$password', '$telefono', '$edad', '$detalles')";
             $result = mysqli_query($con, $query);
 
             if ($result) {
-                echo "<script>alert('Paciente registrado exitosamente.'); window.location.href='tablaPacientes.php';</script>";
+                // Get the ID of the newly inserted patient
+                $new_paciente_id = mysqli_insert_id($con);
+
+                // Redirect to the next screen with the IDpaciente as a query parameter
+                echo "<script>window.location.href='registrarHistorial.php?id=$new_paciente_id';</script>";
             } else {
                 echo "<script>alert('Error al registrar el paciente.');</script>";
             }
@@ -34,84 +38,222 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Registrar Nuevo Paciente</title>
+    <title>Registrar Nuevo Personal</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
-        body {
-            font-family: Arial, sans-serif;
-            background-color: #f4f4f9;
+        :root {
+            --color-primario: #1a6fb5;
+            --color-secundario: #f8f9fa;
+            --color-terciario: #e9ecef;
+            --color-exito: #28a745;
+            --color-error: #dc3545;
+            --color-texto: #212529;
+            --color-borde: #ced4da;
+            --color-fondo: #ffffff;
+            --sombra: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        * {
             margin: 0;
             padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background-color: var(--color-terciario);
             display: flex;
             justify-content: center;
             align-items: center;
-            height: 100vh;
-        }
-
-        .form-container {
-            background-color: #fff;
+            min-height: 100vh;
             padding: 20px;
-            border-radius: 8px;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-            width: 400px;
         }
 
-        .form-container h2 {
+        .contenedor-registro {
+            background-color: var(--color-fondo);
+            border-radius: 10px;
+            box-shadow: var(--sombra);
+            width: 100%;
+            max-width: 500px;
+            overflow: hidden; 
+        }
+
+        .header-registro {
+            background-color: var(--color-primario);
+            color: white;
+            padding: 20px;
             text-align: center;
+        }
+
+        .titulo-registro {
+            font-size: 24px;
+            font-weight: 600;
+            margin: 0;
+        }
+
+        .form-content {
+            padding: 30px;
+        }
+
+        .form-group {
             margin-bottom: 20px;
         }
 
-        .form-container label {
+        .form-group label {
             display: block;
-            margin: 10px 0 5px;
+            margin-bottom: 8px;
+            color: var(--color-texto);
+            font-weight: 500;
         }
 
-        .form-container input,
-        .form-container textarea,
-        .form-container button {
+        .form-control {
             width: 100%;
-            padding: 10px;
-            margin-bottom: 15px;
-            border: 1px solid #ccc;
-            border-radius: 4px;
+            padding: 12px 15px;
+            border: 1px solid var(--color-borde);
+            border-radius: 6px;
+            font-size: 16px;
+            transition: border-color 0.3s;
         }
 
-        .form-container button {
-            background-color: #007bff;
-            color: white;
-            border: none;
+        .form-control:focus {
+            border-color: var(--color-primario);
+            outline: none;
+            box-shadow: 0 0 0 3px rgba(26, 55, 181, 0.1);
+        }
+
+        .textarea-control {
+            width: 100%;
+            padding: 12px 15px;
+            border: 1px solid var(--color-borde);
+            border-radius: 6px;
+            font-size: 16px;
+            min-height: 100px;
+            resize: vertical;
+            transition: border-color 0.3s;
+        }
+
+        .btn {
+            display: inline-block;
+            padding: 12px 20px;
+            border-radius: 6px;
+            font-size: 16px;
+            font-weight: 500;
             cursor: pointer;
+            transition: all 0.3s;
+            text-align: center;
+            border: none;
         }
 
-        .form-container button:hover {
-            background-color: #0056b3;
+        .btn-primary {
+            background-color: var(--color-primario);
+            color: white;
+            width: 100%;
+        }
+
+        .btn-primary:hover {
+            background-color: #142a8a;
+        }
+
+        .btn-link {
+            color: var(--color-primario);
+            text-decoration: none;
+            display: inline-block;
+            margin-top: 15px;
+            font-size: 14px;
+        }
+
+        .btn-link:hover {
+            text-decoration: underline;
+        }
+
+        .input-icon {
+            position: relative;
+        }
+
+        .input-icon i {
+            position: absolute;
+            top: 50%;
+            right: 15px;
+            transform: translateY(-50%);
+            color: var(--color-borde);
+        }
+
+        .password-note {
+            font-size: 13px;
+            color: #6c757d;
+            margin-top: 5px;
+        }
+
+        @media (max-width: 576px) {
+            .form-content {
+                padding: 20px;
+            }
+            
+            .header-registro {
+                padding: 15px;
+            }
         }
     </style>
 </head>
 <body>
-    <div class="form-container">
-        <h2>Registrar Nuevo Paciente</h2>
-        <form method="POST">
-            <label for="nombre">Nombre:</label>
-            <input type="text" id="nombre" name="nombre" required>
-
-            <label for="password">Contraseña:</label>
-            <input type="password" id="password" name="password" required>
-
-            <label for="confirm_password">Confirmar Contraseña:</label>
-            <input type="password" id="confirm_password" name="confirm_password" required>
-
-            <label for="telefono">Teléfono:</label>
-            <input type="text" id="telefono" name="telefono" required>
-
-            <label for="edad">Edad:</label>
-            <input type="number" id="edad" name="edad" required>
-
-            <label for="detalles">Detalles (opcional):</label>
-            <textarea id="detalles" name="detalles" rows="3"></textarea>
-
-            <button type="submit" onclick="window.location.href='registrarHistorial.php'">Registrar</button>
+    <div class="contenedor-registro">
+        <div class="header-registro">
+            <h1 class="titulo-registro">
+                <i class="fas fa-user-plus"></i> Registrar Nuevo Paciente como Doctora
+            </h1>
         </div>
-        </form>
+        
+        <div class="form-content">
+            <form method="post">
+                <div class="form-group">
+                    <label for="nombre">Nombre Completo</label>
+                    <input type="text" class="form-control" id="nombre" name="nombre" required>
+                </div>
+                
+                <div class="form-group">
+                    <label for="password">Contraseña</label>
+                    <div class="input-icon">
+                        <input type="password" class="form-control" id="password" name="password" required>
+                        <i class="fas fa-lock"></i>
+                    </div>
+                    <p class="password-note">Mínimo 8 caracteres, incluir números y letras</p>
+                </div>
+                
+                <div class="form-group">
+                    <label for="confirm_password">Confirmar Contraseña</label>
+                    <div class="input-icon">
+                        <input type="password" class="form-control" id="confirm_password" name="confirm_password" required>
+                        <i class="fas fa-lock"></i>
+                    </div>
+                </div>
+                
+                <div class="form-group">
+                    <label for="telefono">Teléfono</label>
+                    <div class="input-icon">
+                        <input type="text" class="form-control" id="telefono" name="telefono" required>
+                        <i class="fas fa-phone"></i>
+                    </div>
+                </div>
+                
+                <div class="form-group">
+                    <label for="edad">Edad</label>
+                    <input type="number" class="form-control" id="edad" name="edad" min="18" required>
+                </div>
+                
+                <div class="form-group">
+                    <label for="detalles">Detalles (Opcional)</label>
+                    <textarea class="textarea-control" id="detalles" name="detalles" rows="3"></textarea>
+                </div>
+                
+                <button type="submit" class="btn btn-primary">
+                    <i class="fas fa-user-plus" onclick="window.location.href='registrarHistorial.php'"></i> Registrar Paciente
+                </button>
+                
+                <a href="tablaPacientes.php" class="btn-link">
+                    <i class="fas fa-arrow-left"></i> Volver a la lista de pacientes
+                </a>
+            </form>
+        </div>
     </div>
 </body>
 </html>
