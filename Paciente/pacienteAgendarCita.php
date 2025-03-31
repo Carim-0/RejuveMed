@@ -117,8 +117,7 @@
             </select>
 
             <button type="submit">Agendar Cita</button>
-            <a href="catalogoTratamientos.php" class="btn-link">
-                    <i class="fas fa-arrow-left"></i> Regresar
+            <button type="button" onclick="window.location.href='catalogoTratamientos.php'">Regresar</button>
         </form>
     </div>
 </body>
