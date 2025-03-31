@@ -48,7 +48,7 @@ if (isset($_GET['paciente_id'])) {
     $stmt->close();
 
     // Obtener citas del paciente
-    $query_citas = "SELECT c.fecha, t.nombre as tratamiento, c.estado, t.duracion 
+    $query_citas = "SELECT c.IDcita, c.fecha, t.nombre as tratamiento, c.estado, t.duracion 
                     FROM Citas c
                     JOIN Tratamientos t ON c.IDtratamiento = t.IDtratamiento
                     WHERE c.IDpaciente = ?";
@@ -527,12 +527,14 @@ if ($_SERVER['REQUEST_METHOD'] == "POST") {
                   <strong>Tratamiento:</strong> <?= htmlspecialchars($cita['tratamiento']) ?><br>
                   <strong>Estado:</strong> <?= htmlspecialchars($cita['estado']) ?><br>
                   <strong>Duración:</strong> <?= htmlspecialchars($cita['duracion']) ?> <strong>hrs</strong>
+                  <a href="../Personal/EditarCita.php?id=<?= $cita['IDcita'] ?>" title="Editar">✏️</a>
                 </li>
               <?php endforeach; ?>
             <?php else: ?>
               <li>No hay citas agendadas</li>
             <?php endif; ?>
           </ul>
+          
 
           <!-- Detalles de nueva cita -->
           <h3>Nueva Cita</h3>           

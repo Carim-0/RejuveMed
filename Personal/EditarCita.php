@@ -48,31 +48,29 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['actualizar_cita'])) {
     $hora = $_POST['hora'];
     $estado = $_POST['estado'];
     $tratamiento_id = $_POST['tratamiento'];
-    $observaciones = $_POST['observaciones'];
     
     // Validar datos
     if (empty($fecha) || empty($hora) || empty($tratamiento_id)) {
         $mensaje = "Por favor complete todos los campos requeridos";
     } else {
-        // Actualizar en base de datos
+        // Combinar fecha y hora en un solo campo datetime
+        $fecha_hora = $fecha . ' ' . $hora . ':00';
+        
+        // Actualizar en base de datos (sin el campo observaciones)
         $query = "UPDATE Citas SET 
                   fecha = ?,
-                  hora = ?,
                   estado = ?,
-                  IDtratamiento = ?,
-                  observaciones = ?
+                  IDtratamiento = ?
                   WHERE IDcita = ?";
         $stmt = $con->prepare($query);
-        $stmt->bind_param("sssssi", $fecha, $hora, $estado, $tratamiento_id, $observaciones, $cita_id);
+        $stmt->bind_param("sssi", $fecha_hora, $estado, $tratamiento_id, $cita_id);
         
         if ($stmt->execute()) {
             $mensaje = "Cita actualizada correctamente";
             // Actualizar datos mostrados
-            $cita['fecha'] = $fecha;
-            $cita['hora'] = $hora;
+            $cita['fecha'] = $fecha_hora;
             $cita['estado'] = $estado;
             $cita['IDtratamiento'] = $tratamiento_id;
-            $cita['observaciones'] = $observaciones;
         } else {
             $mensaje = "Error al actualizar la cita: " . $con->error;
         }
@@ -150,18 +148,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['actualizar_cita'])) {
         }
 
         .form-group input,
-        .form-group select,
-        .form-group textarea {
+        .form-group select {
             width: 100%;
             padding: 10px;
             border: 1px solid var(--color-terciario);
             border-radius: 4px;
             font-size: 16px;
-        }
-
-        .form-group textarea {
-            min-height: 100px;
-            resize: vertical;
         }
 
         .form-row {
@@ -199,15 +191,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['actualizar_cita'])) {
 
         .btn-secondary:hover {
             background-color: #b0b0b0;
-        }
-
-        .btn-danger {
-            background-color: #dc3545;
-            color: white;
-        }
-
-        .btn-danger:hover {
-            background-color: #c82333;
         }
 
         .button-group {
@@ -248,19 +231,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['actualizar_cita'])) {
             color: #856404;
         }
 
-        .status-confirmada {
-            background-color: #d4edda;
-            color: #155724;
-        }
-
         .status-cancelada {
             background-color: #f8d7da;
             color: #721c24;
-        }
-
-        .status-completada {
-            background-color: #d1ecf1;
-            color: #0c5460;
         }
 
         @media (max-width: 768px) {
@@ -305,13 +278,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['actualizar_cita'])) {
                     <div class="form-group">
                         <label for="fecha">Fecha*</label>
                         <input type="date" id="fecha" name="fecha" required 
-                               value="<?= htmlspecialchars(explode(' ', $cita['fecha'])[0] ?? '') ?>">
+                               value="<?= htmlspecialchars(date('Y-m-d', strtotime($cita['fecha']))) ?>">
                     </div>
                     
                     <div class="form-group">
                         <label for="hora">Hora*</label>
                         <input type="time" id="hora" name="hora" required 
-                               value="<?= htmlspecialchars(explode(' ', $cita['hora'])[1] ?? '') ?>">
+                               value="<?= htmlspecialchars(date('H:i', strtotime($cita['fecha']))) ?>">
                     </div>
                 </div>
                 
@@ -332,39 +305,20 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['actualizar_cita'])) {
                         <label for="estado">Estado*</label>
                         <select id="estado" name="estado" required>
                             <option value="Pendiente" <?= $cita['estado'] == 'Pendiente' ? 'selected' : '' ?>>Pendiente</option>
-                            <option value="Confirmada" <?= $cita['estado'] == 'Confirmada' ? 'selected' : '' ?>>Confirmada</option>
                             <option value="Cancelada" <?= $cita['estado'] == 'Cancelada' ? 'selected' : '' ?>>Cancelada</option>
-                            <option value="Completada" <?= $cita['estado'] == 'Completada' ? 'selected' : '' ?>>Completada</option>
                         </select>
                     </div>
                 </div>
                 
-                <div class="form-group">
-                    <label for="observaciones">Observaciones</label>
-                    <textarea id="observaciones" name="observaciones"><?= 
-                        htmlspecialchars($cita['observaciones'] ?? '') 
-                    ?></textarea>
-                </div>
-                
                 <div class="button-group">
                     <button type="submit" name="actualizar_cita" class="btn btn-primary">Guardar Cambios</button>
-                    <a href="citas.php" class="btn btn-secondary">Cancelar</a>
-                    <?php if ($cita['estado'] != 'Cancelada'): ?>
-                        <button type="button" class="btn btn-danger" onclick="cancelarCita()">Cancelar Cita</button>
-                    <?php endif; ?>
+                    <a href="/Rejuvemed/Doctora/verCitasPacientes_Doctora.php" class="btn btn-secondary">Cancelar</a>
                 </div>
             </form>
         <?php endif; ?>
     </div>
 
     <script>
-        function cancelarCita() {
-            if (confirm('¿Está seguro que desea cancelar esta cita?')) {
-                document.getElementById('estado').value = 'Cancelada';
-                document.querySelector('form').submit();
-            }
-        }
-        
         // Validación de fecha/hora futura
         document.querySelector('form').addEventListener('submit', function(e) {
             const fecha = document.getElementById('fecha').value;
