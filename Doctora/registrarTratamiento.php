@@ -38,76 +38,201 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Registrar Nuevo Tratamiento</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
-        body {
-            font-family: Arial, sans-serif;
-            background-color: #f4f4f9;
+        :root {
+            --color-primario: #4a8cff; /*Azul para tratamientos*/
+            --color-secundario: #f8f9fa;
+            --color-terciario: #e9ecef;
+            --color-exito: #28a745;
+            --color-error: #dc3545;
+            --color-texto: #212529;
+            --color-borde: #ced4da;
+            --color-fondo: #ffffff;
+            --sombra: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        * {
             margin: 0;
             padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background-color: var(--color-terciario);
             display: flex;
             justify-content: center;
             align-items: center;
-            height: 100vh;
-        }
-
-        .form-container {
-            background-color: #fff;
+            min-height: 100vh;
             padding: 20px;
-            border-radius: 8px;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-            width: 400px;
         }
 
-        .form-container h2 {
+        .contenedor-registro {
+            background-color: var(--color-fondo);
+            border-radius: 10px;
+            box-shadow: var(--sombra);
+            width: 100%;
+            max-width: 500px;
+            overflow: hidden;
+        }
+
+        .header-registro {
+            background-color: var(--color-primario);
+            color: white;
+            padding: 20px;
             text-align: center;
+        }
+
+        .titulo-registro {
+            font-size: 24px;
+            font-weight: 600;
+            margin: 0;
+        }
+
+        .form-content {
+            padding: 30px;
+        }
+
+        .form-group {
             margin-bottom: 20px;
         }
 
-        .form-container label {
+        .form-group label {
             display: block;
-            margin: 10px 0 5px;
+            margin-bottom: 8px;
+            color: var(--color-texto);
+            font-weight: 500;
         }
 
-        .form-container input,
-        .form-container textarea,
-        .form-container button {
+        .form-control {
             width: 100%;
-            padding: 10px;
-            margin-bottom: 15px;
-            border: 1px solid #ccc;
-            border-radius: 4px;
+            padding: 12px 15px;
+            border: 1px solid var(--color-borde);
+            border-radius: 6px;
+            font-size: 16px;
+            transition: border-color 0.3s;
         }
 
-        .form-container button {
-            background-color: #007bff;
-            color: white;
-            border: none;
+        .form-control:focus {
+            border-color: var(--color-primario);
+            outline: none;
+            box-shadow: 0 0 0 3px rgba(74, 140, 255, 0.1);
+        }
+
+        .textarea-control {
+            width: 100%;
+            padding: 12px 15px;
+            border: 1px solid var(--color-borde);
+            border-radius: 6px;
+            font-size: 16px;
+            min-height: 100px;
+            resize: vertical;
+            transition: border-color 0.3s;
+        }
+
+        .btn {
+            display: inline-block;
+            padding: 12px 20px;
+            border-radius: 6px;
+            font-size: 16px;
+            font-weight: 500;
             cursor: pointer;
+            transition: all 0.3s;
+            text-align: center;
+            border: none;
         }
 
-        .form-container button:hover {
-            background-color: #0056b3;
+        .btn-primary {
+            background-color: var(--color-primario);
+            color: white;
+            width: 100%;
+        }
+
+        .btn-primary:hover {
+            background-color: #3a7ae8;
+        }
+
+        .btn-link {
+            color: var(--color-primario);
+            text-decoration: none;
+            display: inline-block;
+            margin-top: 15px;
+            font-size: 14px;
+        }
+
+        .btn-link:hover {
+            text-decoration: underline;
+        }
+
+        .input-icon {
+            position: relative;
+        }
+
+        .input-icon i {
+            position: absolute;
+            top: 50%;
+            right: 15px;
+            transform: translateY(-50%);
+            color: var(--color-borde);
+        }
+
+        @media (max-width: 576px) {
+            .form-content {
+                padding: 20px;
+            }
+            
+            .header-registro {
+                padding: 15px;
+            }
         }
     </style>
 </head>
 <body>
-    <div class="form-container">
-        <h2>Registrar Nuevo Tratamiento</h2>
-        <form method="POST">
-            <label for="nombre">Nombre:</label>
-            <input type="text" id="nombre" name="nombre" required>
+    <div class="contenedor-registro">
+        <div class="header-registro">
+            <h1 class="titulo-registro">
+                <i class="fas fa-prescription-bottle-alt"></i> Registrar Tratamiento
+            </h1>
+        </div>
+        
+        <div class="form-content">
+            <form method="POST">
+                <div class="form-group">
+                    <label for="nombre">Nombre del Tratamiento</label>
+                    <input type="text" class="form-control" id="nombre" name="nombre" required>
+                </div>
+                
+                <div class="form-group">
+                    <label for="detalles">Detalles</label>
+                    <textarea class="textarea-control" id="detalles" name="detalles" rows="3" required></textarea>
+                </div>
+                
+                <div class="form-group">
+                    <label for="precio">Precio ($)</label>
+                    <div class="input-icon">
+                        <input type="number" class="form-control" id="precio" name="precio" step="0.01" required>
+                        <i class="fas fa-dollar-sign"></i>
+                    </div>
+                </div>
+                
+                <div class="form-group">
+                    <label for="imagenURL">URL de la Imagen</label>
+                    <div class="input-icon">
+                        <input type="url" class="form-control" id="imagenURL" name="imagenURL" required>
+                        <i class="fas fa-image"></i>
+                    </div>
+                </div>
+                
+                <button type="submit" class="btn btn-primary">
+                    <i class="fas fa-save"></i> Registrar Tratamiento
+                </button>
 
-            <label for="detalles">Detalles:</label>
-            <textarea id="detalles" name="detalles" rows="3" required></textarea>
-
-            <label for="precio">Precio:</label>
-            <input type="number" id="precio" name="precio" step="0.01" required>
-
-            <label for="imagenURL">URL de la Imagen:</label>
-            <input type="url" id="imagenURL" name="imagenURL" required>
-
-            <button type="submit">Registrar</button>
-        </form>
+                <a href="tablaTratamientos.php" class="btn-link">
+                    <i class="fas fa-arrow-left"></i> Volver a la lista de tratamientos
+                </a>
+            </form>
+        </div>
     </div>
 </body>
 </html>

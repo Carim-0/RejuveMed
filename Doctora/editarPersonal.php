@@ -53,50 +53,215 @@
 ?>
 
 <!DOCTYPE html>
-<html>
+<html lang="es">
 <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Editar Personal</title>
-</head>
-<body>
-    <style type="text/css">
-        #text {
-            height: 25px;
-            border-radius: 5px;
-            padding: 4px;
-            border: solid thin #aaa;
-            width: 100%;
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --color-primario: #1a37b5;
+            --color-secundario: #f8f9fa;
+            --color-terciario: #e9ecef;
+            --color-exito: #28a745;
+            --color-error: #dc3545;
+            --color-texto: #212529;
+            --color-borde: #ced4da;
+            --color-fondo: #ffffff;
+            --sombra: 0 4px 6px rgba(0, 0, 0, 0.1);
         }
 
-        #button {
-            padding: 10px;
-            width: 100px;
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background-color: var(--color-terciario);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .contenedor-edicion {
+            background-color: var(--color-fondo);
+            border-radius: 10px;
+            box-shadow: var(--sombra);
+            width: 100%;
+            max-width: 500px;
+            overflow: hidden;
+        }
+
+        .header-edicion {
+            background-color: var(--color-primario);
             color: white;
-            background-color: lightblue;
+            padding: 20px;
+            text-align: center;
+        }
+
+        .titulo-edicion {
+            font-size: 24px;
+            font-weight: 600;
+            margin: 0;
+        }
+
+        .form-content {
+            padding: 30px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            color: var(--color-texto);
+            font-weight: 500;
+        }
+
+        .form-control {
+            width: 100%;
+            padding: 12px 15px;
+            border: 1px solid var(--color-borde);
+            border-radius: 6px;
+            font-size: 16px;
+            transition: border-color 0.3s;
+        }
+
+        .form-control:focus {
+            border-color: var(--color-primario);
+            outline: none;
+            box-shadow: 0 0 0 3px rgba(26, 55, 181, 0.1);
+        }
+
+        .btn {
+            display: inline-block;
+            padding: 12px 20px;
+            border-radius: 6px;
+            font-size: 16px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s;
+            text-align: center;
             border: none;
         }
 
-        #box {
-            background-color: grey;
-            margin: auto;
-            width: 300px;
-            padding: 20px;
+        .btn-primary {
+            background-color: var(--color-primario);
+            color: white;
+            width: 100%;
+        }
+
+        .btn-primary:hover {
+            background-color: #142a8a;
+        }
+
+        .btn-link {
+            color: var(--color-primario);
+            text-decoration: none;
+            display: inline-block;
+            margin-top: 15px;
+            font-size: 14px;
+        }
+
+        .btn-link:hover {
+            text-decoration: underline;
+        }
+
+        .password-note {
+            font-size: 13px;
+            color: #6c757d;
+            margin-top: 5px;
+        }
+
+        .input-icon {
+            position: relative;
+        }
+
+        .input-icon i {
+            position: absolute;
+            top: 50%;
+            right: 15px;
+            transform: translateY(-50%);
+            color: var(--color-borde);
+        }
+
+        @media (max-width: 576px) {
+            .form-content {
+                padding: 20px;
+            }
+            
+            .header-edicion {
+                padding: 15px;
+            }
         }
     </style>
-
-    <div id="box">
-        <form method="post">
-            <div style="font-size: 20px; margin: 10px; color: white;">Editar Personal</div>
-
-            <input id="text" type="text" name="nombre" value="<?php echo $personal['nombre']; ?>" placeholder="Nombre"><br><br>
-            <input id="text" type="number" name="edad" value="<?php echo $personal['edad']; ?>" placeholder="Edad"><br><br>
-            <input id="text" type="text" name="telefono" value="<?php echo $personal['telefono']; ?>" placeholder="Teléfono"><br><br>
-
-            <input id="text" type="password" name="new_password" placeholder="Nueva Contraseña (opcional)"><br><br>
-            <input id="text" type="password" name="confirm_password" placeholder="Confirmar Nueva Contraseña"><br><br>
-
-            <input id="button" type="submit" value="Actualizar"><br><br>
-            <a href="tablaPersonal.php">Volver</a><br><br>
-        </form>
+</head>
+<body>
+    <div class="contenedor-edicion">
+        <div class="header-edicion">
+            <h1 class="titulo-edicion">
+                <i class="fas fa-user-shield"></i> Editar Personal
+            </h1>
+        </div>
+        
+        <div class="form-content">
+            <form method="post">
+                <div class="form-group">
+                    <label for="nombre">Nombre completo</label>
+                    <input type="text" class="form-control" id="nombre" name="nombre" 
+                           value="<?php echo htmlspecialchars($personal['nombre']); ?>" required>
+                </div>
+                
+                <div class="form-group">
+                    <label for="edad">Edad</label>
+                    <input type="number" class="form-control" id="edad" name="edad" 
+                           value="<?php echo htmlspecialchars($personal['edad']); ?>" min="1" required>
+                </div>
+                
+                <div class="form-group">
+                    <label for="telefono">Teléfono</label>
+                    <div class="input-icon">
+                        <input type="text" class="form-control" id="telefono" name="telefono" 
+                               value="<?php echo htmlspecialchars($personal['telefono']); ?>" required>
+                        <i class="fas fa-phone"></i>
+                    </div>
+                </div>
+                
+                <div class="form-group">
+                    <label for="new_password">Nueva contraseña (opcional)</label>
+                    <div class="input-icon">
+                        <input type="password" class="form-control" id="new_password" name="new_password" 
+                               placeholder="Actualizar Contraseña">
+                        <i class="fas fa-lock"></i>
+                    </div>
+                    <p class="password-note">Mínimo 8 caracteres, incluir números y letras</p>
+                </div>
+                
+                <div class="form-group">
+                    <label for="confirm_password">Confirmar nueva contraseña</label>
+                    <div class="input-icon">
+                        <input type="password" class="form-control" id="confirm_password" name="confirm_password" 
+                               placeholder="Repite la nueva contraseña">
+                        <i class="fas fa-lock"></i>
+                    </div>
+                </div>
+                
+                <button type="submit" class="btn btn-primary">
+                    <i class="fas fa-save"></i> Actualizar Personal
+                </button>
+                
+                <a href="tablaPersonal.php" class="btn-link">
+                    <i class="fas fa-arrow-left"></i> Volver a la lista de personal
+                </a>
+            </form>
+        </div>
     </div>
 </body>
 </html>
