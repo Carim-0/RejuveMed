@@ -549,7 +549,8 @@ if ($_SERVER['REQUEST_METHOD'] == "POST" && isset($_POST['agendar_cita'])) {
             <?php endif; ?>
           </ul>
         </div>
-
+        
+          <!-- Detalles de nueva cita -->
         <h3>Nueva Cita</h3>
         <form method="POST" id="citaForm">
           <input type="hidden" name="paciente_id" value="<?= $paciente_actual['IDpaciente'] ?>">

@@ -46,32 +46,45 @@ if (isset($_GET['paciente_id'])) {
     $stmt->close();
 }
 
-    // Agregar citas
-    $query = "SELECT IDtratamiento, nombre FROM Tratamientos";
-    $result = mysqli_query($con, $query);
 
-    if ($_SERVER['REQUEST_METHOD'] == "POST") {
-        $fecha = $_POST['fecha'];
-        $hora = $_POST['hora'];
-        $IDtratamiento = $_POST['IDtratamiento'];
+// Procesar agendamiento de nueva cita
+if ($_SERVER['REQUEST_METHOD'] == "POST" && isset($_POST['agendar_cita'])) {
+  $fecha = $_POST['fecha'];
+  $hora = $_POST['hora'];
+  $IDtratamiento = $_POST['IDtratamiento'];
+  $paciente_id = $_POST['paciente_id'];
+  $estado = 'Pendiente';
 
-        if (!empty($fecha) && !empty($hora) && !empty($IDtratamiento)) {
-            // Combine date and time into a single datetime value
-            $datetime = $fecha . ' ' . $hora;
+  if (!empty($fecha) && !empty($hora) && !empty($IDtratamiento) && !empty($paciente_id)) {
+      // Combinar fecha y hora en formato datetime
+      $fecha_hora = $fecha . ' ' . $hora . ':00';
 
-            // Insert the new appointment into the Citas table
-            $query = "INSERT INTO Citas (IDpaciente, IDtratamiento, fecha) VALUES ('$IDpaciente', '$IDtratamiento', '$datetime')";
-            $result = mysqli_query($con, $query);
-
-            if ($result) {
-                echo "<script>alert('Cita agendada exitosamente.'); window.location.href='verCitas_Paciente.php';</script>";
-            } else {
-                echo "<script>alert('Error al agendar la cita.');</script>";
-            }
-        } else {
-            echo "<script>alert('Por favor, complete todos los campos.');</script>";
-        }
-    }
+      // Consulta preparada para insertar la cita
+      $query = "INSERT INTO Citas (fecha, IDpaciente, IDtratamiento, estado) VALUES (?, ?, ?, ?)";
+      $stmt = $con->prepare($query);
+      $stmt->bind_param("siis", $fecha_hora, $paciente_id, $IDtratamiento, $estado);
+      
+      if ($stmt->execute()) {
+          $success_message = "La cita se agendó correctamente";
+          
+          // Actualizar la lista de citas
+          $query_citas = "SELECT c.IDcita, c.fecha, t.nombre as tratamiento, c.estado, t.duracion 
+                          FROM Citas c
+                          JOIN Tratamientos t ON c.IDtratamiento = t.IDtratamiento
+                          WHERE c.IDpaciente = ?";
+          $stmt_citas = $con->prepare($query_citas);
+          $stmt_citas->bind_param("i", $paciente_id);
+          $stmt_citas->execute();
+          $citas = $stmt_citas->get_result()->fetch_all(MYSQLI_ASSOC);
+          $stmt_citas->close();
+      } else {
+          $error_message = "Error al agendar la cita: " . $con->error;
+      }
+      $stmt->close();
+  } else {
+      $error_message = "Por favor complete todos los campos requeridos";
+  }
+}
 ?>
 
 <!DOCTYPE html>
@@ -506,21 +519,24 @@ if (isset($_GET['paciente_id'])) {
           </ul>
 
           <!-- Detalles de nueva cita -->
-          <h3>Nueva Cita</h3>
+        <h3>Nueva Cita</h3>
+        <form method="POST" id="citaForm">
+          <input type="hidden" name="paciente_id" value="<?= $paciente_actual['IDpaciente'] ?>">
+          
           <div class="form-container">
             <div class="form-group">
               <label for="fecha">Fecha:</label>
-              <input type="date" id="fecha" name="fecha">
+              <input type="date" id="fecha" name="fecha" required>
             </div>
             <div class="form-group">
               <label for="hora">Hora:</label>
-              <input type="time" id="hora" name="hora">
+              <input type="time" id="hora" name="hora" required>
             </div>
           </div>
-
+         
           <div class="form-group">
             <label for="tratamiento">Tratamiento:</label>
-            <select id="tratamiento" name="tratamiento">
+            <select id="IDtratamiento" name="IDtratamiento" required>
               <?php
               $query = "SELECT IDtratamiento, nombre FROM Tratamientos";
               $result = $con->query($query);
@@ -534,8 +550,7 @@ if (isset($_GET['paciente_id'])) {
           </div>
 
           <div class="actions">
-            <button type="submit" class="btn btn-save">Agendar Cita</button>
-            <button type="button" class="btn btn-delete">Cancelar</button>
+              <button type="submit" name="agendar_cita" class="btn btn-save">Agendar Cita</button>
           </div>
         </form>
       </div>
@@ -558,11 +573,26 @@ if (isset($_GET['paciente_id'])) {
     document.querySelector('.search-bar input').focus();
     
     // Validación del formulario de nueva cita
-    document.querySelector('form')?.addEventListener('submit', function(e) {
-      if (!this.checkValidity()) {
+    document.getElementById('citaForm')?.addEventListener('submit', function(e) {
+      const fecha = document.getElementById('fecha').value;
+      const hora = document.getElementById('hora').value;
+      
+      if (!fecha || !hora) {
         e.preventDefault();
         alert('Por favor complete todos los campos requeridos');
+        return;
       }
+    
+      // Validar fecha/hora no sea en el pasado
+      const ahora = new Date();
+      const fechaCita = new Date(fecha + 'T' + hora);
+      
+      if (fechaCita < ahora) {
+        if (!confirm('La fecha y hora de la cita son en el pasado. ¿Desea continuar?')) {
+          e.preventDefault();
+        }
+      }
+
     });
   </script>
 </body>
