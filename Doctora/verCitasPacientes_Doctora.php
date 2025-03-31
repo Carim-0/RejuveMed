@@ -537,27 +537,24 @@ if ($_SERVER['REQUEST_METHOD'] == "POST") {
           
 
 
-          <!-- Detalles de nueva cita -->
-          <h3>Nueva Cita</h3>           
+ 
+          <h3>Nueva Cita</h3>
           <div class="form-container">
-
-          <form method="POST">
-            <input type="hidden" name="paciente_id" value="<?= $paciente_actual['IDpaciente'] ?>">
           
-            <div class="form-container">
+          <form method="POST">
             <div class="form-group">
               <label for="fecha">Fecha:</label>
-              <input type="date" id="fecha" name="fecha" requierd>
+              <input type="date" id="fecha" name="fecha">
             </div>
             <div class="form-group">
               <label for="hora">Hora:</label>
-              <input type="time" id="hora" name="hora" required>
+              <input type="time" id="hora" name="hora">
             </div>
           </div>
 
           <div class="form-group">
             <label for="tratamiento">Tratamiento:</label>
-            <select id="IDtratamiento" name="IDtratamiento" required>
+            <select id="tratamiento" name="tratamiento">
               <?php
               $query = "SELECT IDtratamiento, nombre FROM Tratamientos";
               $result = $con->query($query);
@@ -573,9 +570,8 @@ if ($_SERVER['REQUEST_METHOD'] == "POST") {
           <div class="actions">
               <button type="submit" class="btn btn-save">Agendar Cita</button>
               <button type="button" class="btn btn-delete">Cancelar</button>
-            
+            </form>
           </div>
-          </form>
         </form>
       </div>
     <?php else: ?>
