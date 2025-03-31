@@ -514,9 +514,9 @@ if ($_SERVER['REQUEST_METHOD'] == "POST") {
           </ul>
 
           <!-- Detalles de nueva cita -->
-           
+          <h3>Nueva Cita</h3>           
           <div class="form-container">
-          <h3>Nueva Cita</h3>
+
           <form method="POST">
             <div class="form-group">
               <label for="fecha">Fecha:</label>
