@@ -117,9 +117,7 @@
             </select>
 
             <button type="submit">Agendar Cita</button>
-            <button class="nav-button" onclick="window.location.href='catalogoTratamientos.php'">
-            <i class="fas fa-pills"></i> Tratamientos
-        </button>
+            <button type="button" onclick="window.location.href='catalogoTratamientos.php'">Regresar</button>
         </form>
     </div>
 </body>
