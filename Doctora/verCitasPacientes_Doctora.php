@@ -24,8 +24,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'GET' && isset($_GET['search'])) {
 
 // Obtener datos de un paciente específico
 $paciente_actual = null;
+$historial_medico = null;
+
 if (isset($_GET['paciente_id'])) {
     $paciente_id = $_GET['paciente_id'];
+
+    // Query to fetch patient details
     $query = "SELECT * FROM Pacientes WHERE IDpaciente = ?";
     $stmt = $con->prepare($query);
     $stmt->bind_param("i", $paciente_id);
@@ -33,7 +37,16 @@ if (isset($_GET['paciente_id'])) {
     $result = $stmt->get_result();
     $paciente_actual = $result->fetch_assoc();
     $stmt->close();
-    
+
+    // Query to fetch historial medico
+    $query_historial = "SELECT detalles FROM `Historial Medico` WHERE IDpaciente = ?";
+    $stmt = $con->prepare($query_historial);
+    $stmt->bind_param("i", $paciente_id);
+    $stmt->execute();
+    $result_historial = $stmt->get_result();
+    $historial_medico = $result_historial->fetch_assoc();
+    $stmt->close();
+
     // Obtener citas del paciente
     $query_citas = "SELECT c.fecha, t.nombre as tratamiento, c.estado, t.duracion 
                     FROM Citas c
@@ -51,14 +64,16 @@ if ($_SERVER['REQUEST_METHOD'] == "POST") {
   $fecha = $_POST['fecha'];
   $hora = $_POST['hora'];
   $IDtratamiento = $_POST['IDtratamiento'];
-  $paciente_id = $_POST['paciente_id']; 
+  $paciente_id = $_POST['paciente_id']; // Cambiado de $_GET a $_POST
 
   if (!empty($fecha) && !empty($hora) && !empty($IDtratamiento)) {
       $datetime = $fecha . ' ' . $hora;
 
       // Usar consultas preparadas para seguridad
-      $query = "INSERT INTO Citas (IDpaciente, IDtratamiento, fecha) VALUES ('$IDpaciente', '$IDtratamiento', '$datetime')";
+      $query = "INSERT INTO Citas (IDpaciente, IDtratamiento, fecha) VALUES (?, ?, ?)";
       $stmt = $con->prepare($query);
+      $stmt->bind_param("iis", $paciente_id, $IDtratamiento, $datetime);
+      $stmt->execute();
 
       if ($stmt->affected_rows > 0) {
           echo "<script>alert('Cita agendada exitosamente.'); window.location.href='verCitas_Paciente.php';</script>";
@@ -486,11 +501,19 @@ if ($_SERVER['REQUEST_METHOD'] == "POST") {
                    value="<?= htmlspecialchars($paciente_actual['telefono'] ?? '') ?>">
           </div>
 
-          <!-- Detalles médicos -->
-          <h3>Detalles Médicos</h3>
+          <!-- Detalles-->
+          <h3>Detalles</h3>
           <div class="form-group">
             <textarea id="detalles" name="detalles" readonly rows="4"><?= 
               htmlspecialchars($paciente_actual['detalles'] ?? '') 
+            ?></textarea>
+          </div>
+
+          <!-- Historial Medico -->
+          <h3>Historial Medico</h3>
+          <div class="form-group">
+            <textarea id="historial" name="historial" readonly rows="4"><?= 
+              htmlspecialchars($historial_medico['detalles'] ?? '') 
             ?></textarea>
           </div>
 
@@ -513,6 +536,8 @@ if ($_SERVER['REQUEST_METHOD'] == "POST") {
 
           <!-- Detalles de nueva cita -->
           <h3>Nueva Cita</h3>           
+          <div class="form-container">
+
           <form method="POST">
             <input type="hidden" name="paciente_id" value="<?= $paciente_actual['IDpaciente'] ?>">
           

@@ -239,6 +239,9 @@
         <button class="nav-button" onclick="window.location.href='verCitasPacientes_Doctora.php'">
             <i class="fas fa-calendar-alt"></i> Citas
         </button>
+        <button class="nav-button" onclick="window.location.href='calendario.php'">
+            <i class="fas fa-calendar-alt"></i> Calendario
+        </button>
     </div>
 
     <div class="container">
