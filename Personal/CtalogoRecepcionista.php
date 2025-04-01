@@ -1,17 +1,18 @@
 <?php
-session_start();
-include("../connection.php");
-include("../functions.php");    
-$user_data = check_login($con);
+    session_start();
+    
+    include("../connection.php");
+    include("../functions.php");    
 
-// Fetch data from the "Tratamientos" table
-$query = "SELECT IDtratamiento, nombre, imagenURL FROM Tratamientos";
-$result = mysqli_query($con, $query);
+    $user_data = check_login($con);
 
-if (!$result) {
-    die("Error al obtener los tratamientos: " . mysqli_error($con));
-}
+    // Fetch data from the "Tratamientos" table
+    $query = "SELECT IDtratamiento, nombre, imagenURL FROM Tratamientos";
+    $result = mysqli_query($con, $query);
 
+    if (!$result) {
+        die("Error al obtener los tratamientos: " . mysqli_error($con));
+    }
 ?>
 
 <!DOCTYPE html>
@@ -30,26 +31,22 @@ if (!$result) {
             <button class="btn">Agendar nueva cita</button>
             <button class="btn">Ver citas agendadas</button>
         </div>
-
+            <!-- Tratamientos con imágenes -->
         <div class="treatments">
             <?php
-            if ($result->num_rows > 0) {
-                while ($row = $result->fetch_assoc()) {
+                // Loop through the fetched data and display each treatment
+                while ($row = mysqli_fetch_assoc($result)) {
                     echo "<div class='treatment'>";
                     echo "<h3>" . htmlspecialchars($row['nombre']) . "</h3>";
-                    echo "<img src='images/" . htmlspecialchars($row['imagen']) . "' alt='" . htmlspecialchars($row['nombre']) . "'>";
-                    echo "<button class='btn'>Ver tratamiento</button>";
+                    echo "<img src='" . htmlspecialchars($row['imagenURL']) . "' alt='" . htmlspecialchars($row['nombre']) . "'>";
+                    echo "<form action='detalleTratamiento.php' method='GET'>";
+                    echo "<input type='hidden' name='IDtratamiento' value='" . htmlspecialchars($row['IDtratamiento']) . "'>";
+                    echo "<button type='submit'>Ver tratamiento</button>";
+                    echo "</form>";
                     echo "</div>";
                 }
-            } else {
-                echo "<p>No hay tratamientos disponibles.</p>";
-            }
             ?>
         </div>
     </div>
 </body>
 </html>
-
-<?php
-$con->close();
-?>
