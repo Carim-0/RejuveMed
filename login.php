@@ -40,7 +40,7 @@
                     if ($user_data['nombre'] === "Doctora") {
                         echo "<script>alert('Login exitoso como Doctora'); window.location.href='Doctora/tablaPersonal.php';</script>";
                     } else {
-                        echo "<script>alert('Login exitoso como Personal'); window.location.href='Personal/tablaPacientes.php';</script>";
+                        echo "<script>alert('Login exitoso como Personal'); window.location.href='Personal/CtalogoRecepcionista.php';</script>";
                     }
                     die;
                 }
