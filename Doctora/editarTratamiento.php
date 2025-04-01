@@ -1,46 +1,50 @@
 <?php
-    session_start();
+session_start();
 
-    include("../connection.php");
+include("../connection.php");
 
-    // Check if the ID is provided in the URL
-    if (isset($_GET['id']) && is_numeric($_GET['id'])) {
-        $id = $_GET['id'];
+// Check if the ID is provided in the URL
+if (isset($_GET['id']) && is_numeric($_GET['id'])) {
+    $id = $_GET['id'];
 
-        // Fetch the treatment's current data
-        $query = "SELECT * FROM Tratamientos WHERE IDtratamiento = $id LIMIT 1";
-        $result = mysqli_query($con, $query);
+    // Fetch the treatment's current data
+    $query = "SELECT * FROM Tratamientos WHERE IDtratamiento = $id LIMIT 1";
+    $result = mysqli_query($con, $query);
 
-        if ($result && mysqli_num_rows($result) > 0) {
-            $tratamiento = mysqli_fetch_assoc($result);
-        } else {
-            die("Tratamiento no encontrado.");
-        }
+    if ($result && mysqli_num_rows($result) > 0) {
+        $tratamiento = mysqli_fetch_assoc($result);
     } else {
-        die("ID de tratamiento no válido.");
+        die("Tratamiento no encontrado.");
     }
+} else {
+    die("ID de tratamiento no válido.");
+}
 
-    // Handle form submission to update the treatment's data
-    if ($_SERVER['REQUEST_METHOD'] == "POST") {
-        $nombre = $_POST['nombre'];
-        $detalles = $_POST['detalles'];
-        $precio = $_POST['precio'];
-        $imagenURL = $_POST['imagenURL'];
+// Handle form submission to update the treatment's data
+if ($_SERVER['REQUEST_METHOD'] == "POST") {
+    $nombre = $_POST['nombre'];
+    $detalles = $_POST['detalles'];
+    $precio = $_POST['precio'];
+    $imagenURL = $_POST['imagenURL'];
+    $duracion = $_POST['duracion']; // Retrieve the new 'duracion' value
 
-        if (!empty($nombre) && !empty($detalles) && is_numeric($precio) && $precio > 0 && !empty($imagenURL)) {
-            // Update the treatment's data in the database
-            $query = "UPDATE Tratamientos SET nombre = '$nombre', detalles = '$detalles', precio = $precio, imagenURL = '$imagenURL' WHERE IDtratamiento = $id";
-            $result = mysqli_query($con, $query);
+    if (!empty($nombre) && !empty($detalles) && is_numeric($precio) && $precio > 0 && !empty($imagenURL) && is_numeric($duracion) && $duracion > 0) {
+        // Update the treatment's data in the database
+        $query = "UPDATE Tratamientos SET nombre = ?, detalles = ?, precio = ?, imagenURL = ?, duracion = ? WHERE IDtratamiento = ?";
+        $stmt = $con->prepare($query);
+        $stmt->bind_param("ssdssi", $nombre, $detalles, $precio, $imagenURL, $duracion, $id);
+        $result = $stmt->execute();
 
-            if ($result) {
-                echo "<script>alert('Tratamiento actualizado exitosamente.'); window.location.href='tablaTratamientos.php';</script>";
-            } else {
-                echo "<script>alert('Error al actualizar el tratamiento.');</script>";
-            }
+        if ($result) {
+            echo "<script>alert('Tratamiento actualizado exitosamente.'); window.location.href='tablaTratamientos.php';</script>";
         } else {
-            echo "<script>alert('Por favor, complete todos los campos correctamente.');</script>";
+            echo "<script>alert('Error al actualizar el tratamiento.');</script>";
         }
+        $stmt->close();
+    } else {
+        echo "<script>alert('Por favor, complete todos los campos correctamente.');</script>";
     }
+}
 ?>
 
 <!DOCTYPE html>
@@ -235,6 +239,15 @@
                         <input type="text" class="form-control" id="imagenURL" name="imagenURL" 
                                value="<?php echo htmlspecialchars($tratamiento['imagenURL']); ?>" required>
                         <i class="fas fa-image"></i>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="duracion">Duración (horas)</label>
+                    <div class="input-icon">
+                        <input type="number" class="form-control" id="duracion" name="duracion" 
+                               value="<?php echo htmlspecialchars($tratamiento['duracion']); ?>" min="1" required>
+                        <i class="fas fa-clock"></i>
                     </div>
                 </div>
                 

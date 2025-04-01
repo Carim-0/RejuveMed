@@ -258,6 +258,7 @@
                                 <th>Nombre</th>
                                 <th>Detalles</th>
                                 <th>Precio</th>
+                                <th>Duración</th>
                                 <th>Opciones</th>
                             </tr>
                         </thead>
@@ -269,6 +270,7 @@
                                     echo "<td>".$row['nombre']."</td>";
                                     echo "<td class='details-cell' title='".htmlspecialchars($row['detalles'])."'>".$row['detalles']."</td>";
                                     echo "<td>$".number_format($row['precio'], 2)."</td>";
+                                    echo "<td>".$row['duracion']." ".($row['duracion'] == 1 ? "hora" : "horas")."</td>"; // Conditional for singular/plural
                                     echo "<td>";
                                     echo "<a href='editarTratamiento.php?id=".$row['IDtratamiento']."' class='action-link' title='Editar'><i class='fas fa-edit'></i> Editar</a>";
                                     echo "<a href='eliminarTratamiento.php?id=".$row['IDtratamiento']."' class='action-link delete' title='Eliminar' onclick='return confirm(\"¿Eliminar este tratamiento?\")'><i class='fas fa-trash-alt'></i> Eliminar</a>";

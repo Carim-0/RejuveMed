@@ -9,20 +9,24 @@
         $detalles = $_POST['detalles'];
         $precio = $_POST['precio'];
         $imagenURL = $_POST['imagenURL'];
+        $duracion = $_POST['duracion']; // New field
 
         // Validate form data
-        if (!empty($nombre) && !empty($detalles) && !empty($precio) && !empty($imagenURL)) {
+        if (!empty($nombre) && !empty($detalles) && !empty($precio) && !empty($imagenURL) && !empty($duracion)) {
             // Validate that imagenURL is a valid image URL
             if (filter_var($imagenURL, FILTER_VALIDATE_URL) && preg_match('/\.(jpeg|jpg|png|gif)$/i', $imagenURL)) {
                 // Insert into the Tratamientos table
-                $query = "INSERT INTO Tratamientos (nombre, detalles, precio, imagenURL) VALUES ('$nombre', '$detalles', '$precio', '$imagenURL')";
-                $result = mysqli_query($con, $query);
+                $query = "INSERT INTO Tratamientos (nombre, detalles, precio, imagenURL, duracion) VALUES (?, ?, ?, ?, ?)";
+                $stmt = $con->prepare($query);
+                $stmt->bind_param("ssdsi", $nombre, $detalles, $precio, $imagenURL, $duracion);
+                $result = $stmt->execute();
 
                 if ($result) {
                     echo "<script>alert('Tratamiento registrado exitosamente.'); window.location.href='tablaTratamientos.php';</script>";
                 } else {
                     echo "<script>alert('Error al registrar el tratamiento.');</script>";
                 }
+                $stmt->close();
             } else {
                 echo "<script>alert('Por favor, ingrese una URL válida de imagen (jpeg, jpg, png, gif).');</script>";
             }
@@ -222,6 +226,11 @@
                         <input type="url" class="form-control" id="imagenURL" name="imagenURL" required>
                         <i class="fas fa-image"></i>
                     </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="duracion">Duración (horas)</label>
+                    <input type="number" class="form-control" id="duracion" name="duracion" required>
                 </div>
                 
                 <button type="submit" class="btn btn-primary">
