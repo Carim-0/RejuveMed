@@ -33,7 +33,7 @@ h1 {
 .btn {
     margin: 10px;
     padding: 10px 20px;
-    background-color: #28a745;
+    background-color: rgb(45, 153, 165);
     border: none;
     color: #fff;
     cursor: pointer;
@@ -42,7 +42,7 @@ h1 {
 }
 
 .btn:hover {
-    background-color: #218838;
+    background-color: rgb(45, 153, 165);
 }
 
 .calendar-section {
@@ -79,7 +79,7 @@ h1 {
 }
 
 .treatment h3 {
-    color: #28a745;
+    color: rgb(45, 153, 165);
     margin-bottom: 10px;
 }
 
