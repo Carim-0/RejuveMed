@@ -90,7 +90,7 @@
 
         <!-- Opciones Agendar cita o ver citas -->
         <div class="options">
-        <button class="btn" onclick="window.location.href='pacienteAgendarCita.php'">Agendar una cita</button>
+        <button class="btn" onclick="window.location.href='pacienteAgendarCita_Personal.php'">Agendar una cita</button>
             
         </div>
 
