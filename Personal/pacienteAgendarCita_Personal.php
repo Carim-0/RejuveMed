@@ -15,13 +15,13 @@
     $result = mysqli_query($con, $query);
 
     // Fetch patients for autocomplete
-    $pacientes_query = "SELECT IDpaciente, nombre, apellido FROM Pacientes";
+    $pacientes_query = "SELECT IDpaciente, nombre FROM Pacientes";
     $pacientes_result = mysqli_query($con, $pacientes_query);
     $pacientes = [];
     while ($row = mysqli_fetch_assoc($pacientes_result)) {
         $pacientes[] = [
             'id' => $row['IDpaciente'],
-            'nombre_completo' => $row['nombre'] . ' ' . $row['apellido']
+            'nombre_completo' => $row['nombre']
         ];
     }
 
