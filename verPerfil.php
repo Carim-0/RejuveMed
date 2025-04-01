@@ -51,9 +51,21 @@
         .btn-toggle-password:hover {
             background-color: #0056b3;
         }
+
+        .back-button {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            font-size: 24px;
+            text-decoration: none;
+            color: #333;
+        }
     </style>
 </head>
 <body>
+
+    <a href="javascript:history.back()" class="back-button">←</a>
+
     <div class="contenedor-login">
         <h2 class="form-title">Perfil del Usuario</h2>
         <div class="data">
