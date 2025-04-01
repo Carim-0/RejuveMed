@@ -20,26 +20,43 @@ if (isset($_GET['id']) && is_numeric($_GET['id'])) {
         die("Historial médico no encontrado para este paciente.");
     }
     $stmt->close();
-
-    // Fetch the patient's name from the Pacientes table
-    $query_paciente = "SELECT nombre FROM Pacientes WHERE IDpaciente = ? LIMIT 1";
-    $stmt = $con->prepare($query_paciente);
-    $stmt->bind_param("i", $id_paciente);
-    $stmt->execute();
-    $result_paciente = $stmt->get_result();
-
-    if ($result_paciente && $result_paciente->num_rows > 0) {
-        $paciente = $result_paciente->fetch_assoc();
-    } else {
-        die("Paciente no encontrado.");
-    }
-    $stmt->close();
 } else {
     die("ID de paciente no válido.");
 }
 
+// Fetch the patient's name from the Pacientes table
+$query_paciente = "SELECT nombre FROM Pacientes WHERE IDpaciente = ? LIMIT 1";
+$stmt = $con->prepare($query_paciente);
+$stmt->bind_param("i", $id_paciente);
+$stmt->execute();
+$result_paciente = $stmt->get_result();
+
+if ($result_paciente && $result_paciente->num_rows > 0) {
+    $paciente = $result_paciente->fetch_assoc();
+} else {
+    die("Paciente no encontrado.");
+}
+$stmt->close();
+
+// Handle form submission to delete the historial medico
+if ($_SERVER['REQUEST_METHOD'] == "POST" && isset($_POST['delete'])) {
+    // Delete the record from the Historial Medico table
+    $query = "DELETE FROM `Historial Medico` WHERE IDpaciente = ?";
+    $stmt = $con->prepare($query);
+    $stmt->bind_param("i", $id_paciente);
+    $stmt->execute();
+
+    if ($stmt->affected_rows > 0) {
+        echo "<script>alert('Historial médico eliminado exitosamente.'); window.location.href='tablaPacientes.php';</script>";
+    } else {
+        echo "<script>alert('Error al eliminar el historial médico.');</script>";
+    }
+    $stmt->close();
+    exit; // Stop further execution after deletion
+}
+
 // Handle form submission to update the historial medico
-if ($_SERVER['REQUEST_METHOD'] == "POST") {
+if ($_SERVER['REQUEST_METHOD'] == "POST" && !isset($_POST['delete'])) {
     $detalles = $_POST['detalles'];
 
     if (!empty($detalles)) {
@@ -58,21 +75,6 @@ if ($_SERVER['REQUEST_METHOD'] == "POST") {
     } else {
         echo "<script>alert('El campo de detalles no puede estar vacío.');</script>";
     }
-}
-
-if ($_SERVER['REQUEST_METHOD'] == "POST" && isset($_POST['delete'])) {
-    // Delete the record from the Historial Medico table
-    $query = "DELETE FROM `Historial Medico` WHERE IDpaciente = ?";
-    $stmt = $con->prepare($query);
-    $stmt->bind_param("i", $id_paciente);
-    $stmt->execute();
-
-    if ($stmt->affected_rows > 0) {
-        echo "<script>alert('Historial médico eliminado exitosamente.'); window.location.href='tablaPacientes.php';</script>";
-    } else {
-        echo "<script>alert('Error al eliminar el historial médico.');</script>";
-    }
-    $stmt->close();
 }
 ?>
 
@@ -220,7 +222,7 @@ if ($_SERVER['REQUEST_METHOD'] == "POST" && isset($_POST['delete'])) {
                 <div class="form-group">
                     <label for="nombre">Nombre del Paciente</label>
                     <input type="text" class="form-control" id="nombre" name="nombre" 
-                           value="<?php echo htmlspecialchars($paciente['nombre']); ?>" readonly>
+                        value="<?php echo htmlspecialchars($paciente['nombre']); ?>" readonly>
                 </div>
                 
                 <div class="form-group">

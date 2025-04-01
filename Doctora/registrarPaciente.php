@@ -12,8 +12,19 @@
         $edad = $_POST['edad'];
         $detalles = isset($_POST['detalles']) ? $_POST['detalles'] : '';
 
-        // Validate form data
-        if (!empty($nombre) && !empty($password) && !empty($confirm_password) && !empty($telefono) && !empty($edad) && $password === $confirm_password) {
+        // Validate telefono
+        if (!preg_match('/^\d{10}$/', $telefono)) {
+            echo "<script>alert('El número de teléfono debe tener exactamente 10 dígitos.');</script>";
+        }
+        // Validate password
+        elseif (!preg_match('/^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{8,}$/', $password)) {
+            echo "<script>alert('La contraseña debe tener al menos 8 caracteres, incluyendo al menos 1 letra y 1 número.');</script>";
+        }
+        // Validate confirm password
+        elseif ($password !== $confirm_password) {
+            echo "<script>alert('Las contraseñas no coinciden.');</script>";
+        }
+        elseif (!empty($nombre) && !empty($password) && !empty($confirm_password) && !empty($telefono) && !empty($edad)) {
             // Insert into the Pacientes table
             $query = "INSERT INTO Pacientes (nombre, password, telefono, edad, detalles) VALUES ('$nombre', '$password', '$telefono', '$edad', '$detalles')";
             $result = mysqli_query($con, $query);
@@ -28,7 +39,7 @@
                 echo "<script>alert('Error al registrar el paciente.');</script>";
             }
         } else {
-            echo "<script>alert('Por favor, complete todos los campos correctamente y asegúrese de que las contraseñas coincidan.');</script>";
+            echo "<script>alert('Por favor, complete todos los campos correctamente.');</script>";
         }
     }
 ?>
