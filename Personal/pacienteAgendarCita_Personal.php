@@ -4,22 +4,34 @@
     include("../connection.php");
 
     // Ensure the user is logged in
-    if (!isset($_SESSION['user_id']) || $_SESSION['user_type'] !== 'Paciente') {
-        die("Acceso denegado. Por favor, inicie sesión como paciente.");
+    if (!isset($_SESSION['user_id']) || $_SESSION['user_type'] !== 'Personal') {
+        die("Acceso denegado. Por favor, inicie sesión como personal.");
     }
 
-    $IDpaciente = $_SESSION['user_id']; // Get the current user's ID
+    $IDpersonal = $_SESSION['user_id']; // Get the current user's ID
 
     // Fetch available treatments
     $query = "SELECT IDtratamiento, nombre FROM Tratamientos";
     $result = mysqli_query($con, $query);
 
+    // Fetch patients for autocomplete
+    $pacientes_query = "SELECT IDpaciente, nombre, apellido FROM Pacientes";
+    $pacientes_result = mysqli_query($con, $pacientes_query);
+    $pacientes = [];
+    while ($row = mysqli_fetch_assoc($pacientes_result)) {
+        $pacientes[] = [
+            'id' => $row['IDpaciente'],
+            'nombre_completo' => $row['nombre'] . ' ' . $row['apellido']
+        ];
+    }
+
     if ($_SERVER['REQUEST_METHOD'] == "POST") {
         $fecha = $_POST['fecha'];
         $hora = $_POST['hora'];
         $IDtratamiento = $_POST['IDtratamiento'];
+        $IDpaciente = $_POST['IDpaciente'];
 
-        if (!empty($fecha) && !empty($hora) && !empty($IDtratamiento)) {
+        if (!empty($fecha) && !empty($hora) && !empty($IDtratamiento) && !empty($IDpaciente)) {
             // Combine date and time into a single datetime value
             $datetime = $fecha . ' ' . $hora;
 
@@ -28,7 +40,7 @@
             $result = mysqli_query($con, $query);
 
             if ($result) {
-                echo "<script>alert('Cita agendada exitosamente.'); window.location.href='verCitas_Paciente.php';</script>";
+                echo "<script>alert('Cita agendada exitosamente.'); window.location.href='verCitasPacientes_Personal.php';</script>";
             } else {
                 echo "<script>alert('Error al agendar la cita.');</script>";
             }
@@ -45,6 +57,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Agendar Cita</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="https://code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -154,6 +167,31 @@
             color: var(--color-borde);
         }
 
+        /* Autocomplete styles */
+        .ui-autocomplete {
+            max-height: 200px;
+            overflow-y: auto;
+            overflow-x: hidden;
+            background-color: #fff;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+        }
+        
+        .ui-menu-item {
+            padding: 8px 12px;
+            cursor: pointer;
+        }
+        
+        .ui-menu-item:hover {
+            background-color: #007bff;
+            color: white;
+        }
+        
+        .ui-helper-hidden-accessible {
+            display: none;
+        }
+
         @media (max-width: 576px) {
             .form-content {
                 padding: 20px;
@@ -169,6 +207,10 @@
     <div class="form-container">
         <h2>Agendar Cita</h2>
         <form method="POST">
+            <label for="paciente">Paciente:</label>
+            <input type="text" id="paciente" name="paciente" placeholder="Buscar paciente..." autocomplete="off">
+            <input type="hidden" id="IDpaciente" name="IDpaciente">
+
             <label for="fecha">Fecha:</label>
             <input type="date" id="fecha" name="fecha" required>
 
@@ -179,6 +221,7 @@
             <select id="IDtratamiento" name="IDtratamiento" required>
                 <option value="">Seleccione un tratamiento</option>
                 <?php
+                    mysqli_data_seek($result, 0); // Reset pointer to beginning
                     while ($row = mysqli_fetch_assoc($result)) {
                         echo "<option value='" . htmlspecialchars($row['IDtratamiento']) . "'>" . htmlspecialchars($row['nombre']) . "</option>";
                     }
@@ -186,9 +229,46 @@
             </select>
 
             <button type="submit">Agendar Cita</button>
-            <a href ="catalogoTratamientos.php" class ="btn-link">
+            <a href="catalogoTratamientos.php" class="btn-link">
                 <i class="fas fa-arrow-left"></i> Regresar
+            </a>
         </form>
     </div>
+
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.min.js"></script>
+    <script>
+        $(function() {
+            var pacientes = <?php echo json_encode($pacientes); ?>;
+            
+            // Prepare data for autocomplete
+            var pacienteData = pacientes.map(function(paciente) {
+                return {
+                    label: paciente.nombre_completo,
+                    value: paciente.nombre_completo,
+                    id: paciente.id
+                };
+            });
+            
+            // Initialize autocomplete
+            $("#paciente").autocomplete({
+                source: pacienteData,
+                minLength: 2,
+                select: function(event, ui) {
+                    $("#IDpaciente").val(ui.item.id);
+                    $("#paciente").val(ui.item.label);
+                    return false;
+                },
+                focus: function(event, ui) {
+                    $("#paciente").val(ui.item.label);
+                    return false;
+                }
+            }).autocomplete("instance")._renderItem = function(ul, item) {
+                return $("<li>")
+                    .append("<div>" + item.label + "</div>")
+                    .appendTo(ul);
+            };
+        });
+    </script>
 </body>
 </html>
