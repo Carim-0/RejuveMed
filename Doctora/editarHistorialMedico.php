@@ -20,6 +20,20 @@ if (isset($_GET['id']) && is_numeric($_GET['id'])) {
         die("Historial médico no encontrado para este paciente.");
     }
     $stmt->close();
+
+    // Fetch the patient's name from the Pacientes table
+    $query_paciente = "SELECT nombre FROM Pacientes WHERE IDpaciente = ? LIMIT 1";
+    $stmt = $con->prepare($query_paciente);
+    $stmt->bind_param("i", $id_paciente);
+    $stmt->execute();
+    $result_paciente = $stmt->get_result();
+
+    if ($result_paciente && $result_paciente->num_rows > 0) {
+        $paciente = $result_paciente->fetch_assoc();
+    } else {
+        die("Paciente no encontrado.");
+    }
+    $stmt->close();
 } else {
     die("ID de paciente no válido.");
 }
@@ -75,7 +89,7 @@ if ($_SERVER['REQUEST_METHOD'] == "POST" && isset($_POST['delete'])) {
             --color-secundario: #f8f9fa;
             --color-terciario: #e9ecef;
             --color-exito: #28a745;
-            --color-error: #dc3545;
+            --color-error:rgb(136, 56, 64);
             --color-texto: #212529;
             --color-borde: #ced4da;
             --color-fondo: #ffffff;
@@ -186,6 +200,8 @@ if ($_SERVER['REQUEST_METHOD'] == "POST" && isset($_POST['delete'])) {
     </style>
 </head>
 <body>
+    
+
     <div class="contenedor-edicion">
         <div class="header-edicion">
             <h1 class="titulo-edicion">
@@ -200,6 +216,12 @@ if ($_SERVER['REQUEST_METHOD'] == "POST" && isset($_POST['delete'])) {
                     <input type="text" class="form-control" id="id_paciente" name="id_paciente" 
                            value="<?php echo htmlspecialchars($id_paciente); ?>" readonly>
                 </div>
+
+                <div class="form-group">
+                    <label for="nombre">Nombre del Paciente</label>
+                    <input type="text" class="form-control" id="nombre" name="nombre" 
+                           value="<?php echo htmlspecialchars($paciente['nombre']); ?>" readonly>
+                </div>
                 
                 <div class="form-group">
                     <label for="detalles">Detalles del Historial Médico</label>
@@ -212,7 +234,8 @@ if ($_SERVER['REQUEST_METHOD'] == "POST" && isset($_POST['delete'])) {
                     <i class="fas fa-save"></i> Guardar Cambios
                 </button>
 
-                <button type="submit" name="delete" class="btn btn-primary" style="background-color: var(--color-error);">
+                <button type="submit" name="delete" class="btn btn-primary" style="background-color: var(--color-error);"
+                        onclick="return confirm('¿Estás seguro de que deseas eliminar este historial médico?');">
                     <i class="fas fa-trash"></i> Eliminar Historial
                 </button>
                 
