@@ -86,7 +86,7 @@
     <div class="container">
         <!-- Mensaje de bienvenida -->
         <h1><br>
-        Hola, <?php echo $user_data['nombre']; ?></h1>
+        Hola,Recepcionista  <?php echo $user_data['nombre']; ?></h1>
 
         <!-- Opciones Agendar cita o ver citas -->
         <div class="options">
