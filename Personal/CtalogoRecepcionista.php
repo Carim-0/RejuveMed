@@ -99,7 +99,7 @@
             <div class="calendar-icon">
                 <img src="../IMG/calendar-icon.png" alt="Calendario" width="30" height="30">
             </div>
-            <button class="btn" onclick="window.location.href='verCitas_Paciente.php'">Ver citas agendadas</button>
+            <button class="btn" onclick="window.location.href='verCitasPacientes_Personal.php'">Ver citas agendadas</button>
         </div>
 
         <!-- Ver catálogo de tratamientos -->
