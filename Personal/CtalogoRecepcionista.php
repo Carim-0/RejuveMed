@@ -86,7 +86,7 @@
     <div class="container">
         <!-- Mensaje de bienvenida -->
         <h1><br>
-        Hola,Recepcionista  <?php echo $user_data['nombre']; ?></h1>
+        Hola, recepcionista  <?php echo $user_data['nombre']; ?></h1>
 
         <!-- Opciones Agendar cita o ver citas -->
         <div class="options">
@@ -97,7 +97,7 @@
         <!-- Calendario e Icono -->
         <div class="calendar-section">
             <div class="calendar-icon">
-                <img src="IMG/calendar-icon.png" alt="Calendario" width="30" height="30">
+                <img src="../IMG/calendar-icon.png" alt="Calendario" width="30" height="30">
             </div>
             <button class="btn" onclick="window.location.href='verCitas_Paciente.php'">Ver citas agendadas</button>
         </div>
