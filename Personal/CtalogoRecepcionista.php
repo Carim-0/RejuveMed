@@ -20,18 +20,92 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Pantalla Recepcionista</title>
-    <link rel="stylesheet" href="style.css">
+    <title>Bienvenido Recepcionista</title>
+    <link rel="stylesheet" href="tratamientos_style.css">
+    <style>
+        .treatments {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 20px;
+        }
+
+        .treatment {
+            text-align: center;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            padding: 10px;
+            width: 200px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        }
+
+        .treatment img {
+            width: 100%;
+            height: auto;
+            border-radius: 8px;
+        }
+
+        .treatment h3 {
+            font-size: 18px;
+            margin: 10px 0;
+        }
+
+        .treatment button {
+            background-color: #28a745;
+            color: white;
+            border: none;
+            padding: 10px;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        .treatment button:hover {
+            background-color: #218838;
+        }
+
+        .profile-button {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            padding: 10px 20px;
+            background-color: #007bff;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        .profile-button:hover {
+            background-color: #0056b3;
+        }
+    </style>
 </head>
 <body>
+    <button class="profile-button" onclick="window.location.href='../verPerfil.php'">Ver Perfil</button>
+
     <div class="container">
-        <h1>Bienvenido, Recepcionista</h1>
-        
+        <!-- Mensaje de bienvenida -->
+        <h1><br>
+        Hola, <?php echo $user_data['nombre']; ?></h1>
+
+        <!-- Opciones Agendar cita o ver citas -->
         <div class="options">
-            <button class="btn">Agendar nueva cita</button>
-            <button class="btn">Ver citas agendadas</button>
+        <button class="btn" onclick="window.location.href='pacienteAgendarCita.php'">Agendar una cita</button>
+            
         </div>
-            <!-- Tratamientos con imágenes -->
+
+        <!-- Calendario e Icono -->
+        <div class="calendar-section">
+            <div class="calendar-icon">
+                <img src="IMG/calendar-icon.png" alt="Calendario" width="30" height="30">
+            </div>
+            <button class="btn" onclick="window.location.href='verCitas_Paciente.php'">Ver citas agendadas</button>
+        </div>
+
+        <!-- Ver catálogo de tratamientos -->
+        
+
+        <!-- Tratamientos con imágenes -->
         <div class="treatments">
             <?php
                 // Loop through the fetched data and display each treatment
