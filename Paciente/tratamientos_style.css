@@ -34,7 +34,7 @@ h1 {
 .options .btn {
     margin: 10px;
     padding: 10px 20px;
-    background-color: #28a745;
+    background-color: rgb(45, 153, 165);
     border: none;
     color: #fff;
     cursor: pointer;
@@ -42,7 +42,7 @@ h1 {
 }
 
 .options .btn:hover {
-    background-color: #218838;
+    background-color: rgb(45, 153, 165);
 }
 
 .calendar-section {
@@ -92,14 +92,14 @@ h1 {
 }
 
 .treatment h3 {
-    color: #28a745;
+    color: rgb(45, 153, 165);
     margin-bottom: 10px;
 }
 
 .treatment .btn {
     margin-top: 10px;
     padding: 5px 10px;
-    background-color: #28a745;
+    background-color: rgb(45, 153, 165);
     border: none;
     color: #fff;
     cursor: pointer;
@@ -107,5 +107,5 @@ h1 {
 }
 
 .treatment .btn:hover {
-    background-color: #218838;
+    background-color: rgb(45, 153, 165);
 }
