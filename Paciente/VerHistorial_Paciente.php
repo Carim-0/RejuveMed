@@ -14,10 +14,11 @@ $id_paciente = $user_data['IDpaciente']; // Obtener ID del paciente logueado
 $fecha_actual = date('Y-m-d H:i:s'); // Fecha actual para comparación
 
 // Consulta para obtener los tratamientos realizados (fechas pasadas)
-$query = "SELECT c.id_cita, c.fecha, t.nombre as tratamiento, t.descripcion 
+// Consulta para obtener tratamientos con fecha pasada
+$query = "SELECT c.IDcita, c.fecha, t.nombre as tratamiento, t.descripcion
           FROM Citas c
           JOIN Tratamientos t ON c.idtratamiento = t.IDtratamiento
-          WHERE c.idpaciente = ? AND c.fecha < ? AND c.estado = 'Completado'
+          WHERE c.idpaciente = ? AND c.fecha < ?
           ORDER BY c.fecha DESC";
 $stmt = $con->prepare($query);
 $stmt->bind_param("is", $id_paciente, $fecha_actual);
