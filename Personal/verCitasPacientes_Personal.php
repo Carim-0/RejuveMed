@@ -4,8 +4,8 @@ require_once('../connection.php');
 require_once ('../functions.php');
 
 // Verificar login (debes adaptar esta función para el doctor)
-$doctor_data = check_login($con);
-$doctor_id = $_SESSION['user_id'];
+$personal_data = check_login($con);
+$personal_id = $_SESSION['user_id'];
 
 // Procesar búsqueda de pacientes
 $pacientes = [];
