@@ -63,25 +63,35 @@
             background-color:rgb(45, 153, 165);
         }
 
-        .profile-button {
+        .header-buttons {
             position: absolute;
             top: 20px;
             right: 20px;
+            display: flex;
+            gap: 10px;
+        }
+
+        .header-btn {
             padding: 10px 20px;
             background-color: #007bff;
             color: white;
             border: none;
             border-radius: 5px;
             cursor: pointer;
+            text-decoration: none;
+            font-size: 14px;
         }
 
-        .profile-button:hover {
+        .header-btn:hover {
             background-color: #0056b3;
         }
     </style>
 </head>
 <body>
-    <button class="profile-button" onclick="window.location.href='../verPerfil.php'">Ver Perfil</button>
+    <div class="header-buttons">
+        <button class="header-btn" onclick="window.location.href='tablaPacientes.php'">Ver Pacientes</button>
+        <button class="header-btn" onclick="window.location.href='../verPerfil.php'">Ver Perfil</button>
+    </div>
 
     <div class="container">
         <!-- Mensaje de bienvenida -->
