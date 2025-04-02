@@ -14,7 +14,6 @@ $id_paciente = $user_data['IDpaciente']; // Obtener ID del paciente logueado
 $fecha_actual = date('Y-m-d H:i:s'); // Fecha actual para comparación
 
 // Consulta para obtener los tratamientos realizados (fechas pasadas)
-// Consulta para obtener tratamientos con fecha pasada
 $query = "SELECT c.IDcita, c.fecha, t.nombre as tratamiento
           FROM Citas c
           JOIN Tratamientos t ON c.idtratamiento = t.IDtratamiento
@@ -120,11 +119,6 @@ $result = $stmt->get_result();
             font-size: 0.9rem;
         }
 
-        .tratamiento-desc {
-            color: var(--color-texto);
-            line-height: 1.5;
-        }
-
         .no-historial {
             text-align: center;
             padding: 40px 0;
@@ -165,9 +159,6 @@ $result = $stmt->get_result();
                                 <i class="far fa-calendar-alt"></i> 
                                 <?php echo date('d/m/Y H:i', strtotime($row['fecha'])); ?>
                             </span>
-                        </div>
-                        <div class="tratamiento-desc">
-                            <?php echo htmlspecialchars($row['descripcion']); ?>
                         </div>
                     </div>
                 <?php endwhile; ?>
