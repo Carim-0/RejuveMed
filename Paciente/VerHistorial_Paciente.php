@@ -13,7 +13,38 @@ if ($_SESSION['user_type'] !== 'Paciente') {
 $id_paciente = $user_data['IDpaciente'];
 $fecha_actual = date('Y-m-d H:i:s');
 
-// Consulta optimizada
+// Obtener historial médico del paciente
+$historial_query = "SELECT * FROM HistorialMedico WHERE idpaciente = ?";
+$historial_stmt = $con->prepare($historial_query);
+$historial_stmt->bind_param("i", $id_paciente);
+$historial_stmt->execute();
+$historial_result = $historial_stmt->get_result();
+$historial_data = $historial_result->fetch_assoc();
+
+// Procesar actualización del historial
+if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['actualizar_historial'])) {
+    $nuevos_detalles = $_POST['detalles'];
+    
+    if ($historial_data) {
+        // Actualizar historial existente
+        $update_query = "UPDATE HistorialMedico SET detalles = ? WHERE idpaciente = ?";
+        $update_stmt = $con->prepare($update_query);
+        $update_stmt->bind_param("si", $nuevos_detalles, $id_paciente);
+        $update_stmt->execute();
+    } else {
+        // Crear nuevo registro de historial
+        $insert_query = "INSERT INTO HistorialMedico (idpaciente, detalles) VALUES (?, ?)";
+        $insert_stmt = $con->prepare($insert_query);
+        $insert_stmt->bind_param("is", $id_paciente, $nuevos_detalles);
+        $insert_stmt->execute();
+    }
+    
+    // Recargar los datos actualizados
+    header("Location: ".$_SERVER['PHP_SELF']);
+    exit();
+}
+
+// Consulta de procedimientos realizados
 $query = "SELECT c.IDcita, c.fecha, t.nombre as tratamiento
           FROM Citas c
           JOIN Tratamientos t ON c.idtratamiento = t.IDtratamiento
@@ -42,6 +73,7 @@ $result = $stmt->get_result();
             --color-texto: #2d3748;
             --color-texto-claro: #718096;
             --color-borde: #e2e8f0;
+            --color-exito: #10b981;
             --sombra: 0 4px 6px rgba(0, 0, 0, 0.05);
             --sombra-elevada: 0 10px 15px rgba(0, 0, 0, 0.1);
         }
@@ -134,6 +166,95 @@ $result = $stmt->get_result();
         .historial-container {
             padding: 2rem;
             margin-bottom: 3rem;
+        }
+
+        .historial-section {
+            margin-bottom: 2.5rem;
+        }
+
+        .section-title {
+            font-size: 1.5rem;
+            font-weight: 600;
+            color: var(--color-primario);
+            margin-bottom: 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .section-title i {
+            font-size: 1.25rem;
+        }
+
+        .historial-form {
+            margin-bottom: 2rem;
+        }
+
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 500;
+            color: var(--color-texto);
+        }
+
+        .form-control {
+            width: 100%;
+            padding: 0.75rem 1rem;
+            border: 1px solid var(--color-borde);
+            border-radius: 8px;
+            font-family: inherit;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+            background-color: rgba(255, 255, 255, 0.7);
+        }
+
+        .form-control:focus {
+            outline: none;
+            border-color: var(--color-primario);
+            box-shadow: 0 0 0 3px rgba(26, 55, 181, 0.1);
+        }
+
+        textarea.form-control {
+            min-height: 150px;
+            resize: vertical;
+        }
+
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.75rem 1.5rem;
+            border-radius: 8px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border: none;
+        }
+
+        .btn-primary {
+            background-color: var(--color-primario);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background-color: var(--color-primario-hover);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .btn-success {
+            background-color: var(--color-exito);
+            color: white;
+        }
+
+        .btn-success:hover {
+            background-color: #0d9f6e;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
         }
 
         .historial-item {
@@ -242,7 +363,7 @@ $result = $stmt->get_result();
     <div class="header">
         <div class="container">
             <h1><i class="fas fa-file-medical"></i> Historial Médico</h1>
-            <p>Registro completo de tus procedimientos realizados</p>
+            <p>Registro completo de tus procedimientos y detalles médicos</p>
         </div>
     </div>
 
@@ -252,25 +373,52 @@ $result = $stmt->get_result();
         </button>
 
         <div class="historial-container glass-card">
-            <?php if ($result->num_rows > 0): ?>
-                <?php while ($row = $result->fetch_assoc()): ?>
-                    <div class="historial-item glass-card">
-                        <div class="historial-header">
-                            <span class="tratamiento-nombre"><?php echo htmlspecialchars($row['tratamiento']); ?></span>
-                            <span class="tratamiento-fecha">
-                                <i class="far fa-calendar-alt"></i> 
-                                <?php echo date('d/m/Y H:i', strtotime($row['fecha'])); ?>
-                            </span>
-                        </div>
+            <!-- Sección de Edición del Historial Médico -->
+            <div class="historial-section">
+                <h2 class="section-title">
+                    <i class="fas fa-edit"></i> Mis Datos Médicos
+                </h2>
+                
+                <form method="POST" class="historial-form">
+                    <div class="form-group">
+                        <label for="detalles">Detalles de mi historial médico:</label>
+                        <textarea id="detalles" name="detalles" class="form-control glass-card" 
+                                  placeholder="Describe cualquier condición médica, alergias, medicamentos, etc."><?php 
+                                  echo htmlspecialchars($historial_data['detalles'] ?? ''); ?></textarea>
                     </div>
-                <?php endwhile; ?>
-            <?php else: ?>
-                <div class="no-historial glass-card">
-                    <i class="fas fa-file-import"></i>
-                    <h3>Historial Vacío</h3>
-                    <p>No se encontraron procedimientos realizados en tu historial</p>
-                </div>
-            <?php endif; ?>
+                    
+                    <button type="submit" name="actualizar_historial" class="btn btn-success">
+                        <i class="fas fa-save"></i> Guardar Cambios
+                    </button>
+                </form>
+            </div>
+
+            <!-- Sección de Procedimientos Realizados -->
+            <div class="historial-section">
+                <h2 class="section-title">
+                    <i class="fas fa-procedures"></i> Procedimientos Realizados
+                </h2>
+                
+                <?php if ($result->num_rows > 0): ?>
+                    <?php while ($row = $result->fetch_assoc()): ?>
+                        <div class="historial-item glass-card">
+                            <div class="historial-header">
+                                <span class="tratamiento-nombre"><?php echo htmlspecialchars($row['tratamiento']); ?></span>
+                                <span class="tratamiento-fecha">
+                                    <i class="far fa-calendar-alt"></i> 
+                                    <?php echo date('d/m/Y H:i', strtotime($row['fecha'])); ?>
+                                </span>
+                            </div>
+                        </div>
+                    <?php endwhile; ?>
+                <?php else: ?>
+                    <div class="no-historial glass-card">
+                        <i class="fas fa-file-import"></i>
+                        <h3>No hay procedimientos realizados</h3>
+                        <p>No se encontraron tratamientos completados en tu historial</p>
+                    </div>
+                <?php endif; ?>
+            </div>
         </div>
     </div>
 
@@ -284,6 +432,20 @@ $result = $stmt->get_result();
                     item.style.transform = 'translateY(0)';
                 }, index * 100);
             });
+            
+            // Efecto para el textarea
+            const textarea = document.getElementById('detalles');
+            if (textarea) {
+                textarea.addEventListener('focus', function() {
+                    this.style.boxShadow = '0 0 0 3px rgba(26, 55, 181, 0.2)';
+                    this.style.backgroundColor = 'rgba(255, 255, 255, 0.95)';
+                });
+                
+                textarea.addEventListener('blur', function() {
+                    this.style.boxShadow = 'none';
+                    this.style.backgroundColor = 'rgba(255, 255, 255, 0.7)';
+                });
+            }
         });
     </script>
 </body>
