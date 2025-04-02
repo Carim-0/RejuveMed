@@ -285,8 +285,7 @@
                                 <th>Nombre</th>
                                 <th>Edad</th>
                                 <th>Teléfono</th>
-                                <th>Editar</th>
-                                <th>Eliminar</th>
+
                             </tr>
                         </thead>
                         <tbody>
@@ -297,9 +296,7 @@
                                     echo "<td>".htmlspecialchars($row['nombre'])."</td>";
                                     echo "<td>".htmlspecialchars($row['edad'])."</td>";
                                     echo "<td>".htmlspecialchars($row['telefono'])."</td>";
-                                    echo "<td><a href='editarPaciente.php?id=".htmlspecialchars($row['IDpaciente'])."' class='action-link' title='Editar'><i class='fas fa-edit'></i> Editar</a></td>";
-                                    echo "<td><a href='eliminarPaciente.php?id=".htmlspecialchars($row['IDpaciente'])."' class='action-link delete' title='Eliminar' onclick='return confirm(\"¿Estás seguro de que deseas eliminar este paciente?\")'><i class='fas fa-trash-alt'></i> Eliminar</a></td>";
-                                    echo "</tr>";
+                                   echo "</tr>";
                                 }
                             ?>
                         </tbody>
