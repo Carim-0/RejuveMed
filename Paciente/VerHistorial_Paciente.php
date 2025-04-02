@@ -13,8 +13,8 @@ if ($_SESSION['user_type'] !== 'Paciente') {
 $id_paciente = $user_data['IDpaciente'];
 $fecha_actual = date('Y-m-d H:i:s');
 
-// Obtener datos del paciente (nombre, apellido y edad)
-$paciente_query = "SELECT nombre, apellido, edad FROM Pacientes WHERE IDpaciente = ?";
+// Obtener datos del paciente (nombre y edad)
+$paciente_query = "SELECT nombre, edad FROM Pacientes WHERE IDpaciente = ?";
 $paciente_stmt = $con->prepare($paciente_query);
 $paciente_stmt->bind_param("i", $id_paciente);
 $paciente_stmt->execute();
