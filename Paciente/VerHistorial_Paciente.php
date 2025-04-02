@@ -15,7 +15,7 @@ $fecha_actual = date('Y-m-d H:i:s'); // Fecha actual para comparación
 
 // Consulta para obtener los tratamientos realizados (fechas pasadas)
 // Consulta para obtener tratamientos con fecha pasada
-$query = "SELECT c.IDcita, c.fecha, t.nombre as tratamiento, t.descripcion
+$query = "SELECT c.IDcita, c.fecha, t.nombre as tratamiento
           FROM Citas c
           JOIN Tratamientos t ON c.idtratamiento = t.IDtratamiento
           WHERE c.idpaciente = ? AND c.fecha < ?
