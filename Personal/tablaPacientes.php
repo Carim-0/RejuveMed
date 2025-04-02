@@ -38,6 +38,8 @@
             background-color: var(--color-secundario);
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             padding-bottom: 20px;
+            position: relative;
+            min-height: 100vh;
         }
 
         
@@ -189,6 +191,27 @@
             transform: translateY(-2px);
         }
 
+        .back-button {
+            position: fixed;
+            bottom: 20px;
+            left: 20px;
+            background-color: #2762f3;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            padding: 10px 20px;
+            font-size: 0.9rem;
+            transition: all 0.3s;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+            z-index: 1000;
+        }
+
+        .back-button:hover {
+            background-color: #1e50d1;
+            transform: translateY(-2px);
+            color: white;
+        }
+
         @media (max-width: 768px) {
             .table {
                 font-size: 0.8rem;
@@ -216,6 +239,15 @@
                 right: auto;
                 display: block;
                 margin: 10px auto;
+                width: fit-content;
+            }
+            
+            .back-button {
+                position: relative;
+                bottom: auto;
+                left: auto;
+                display: block;
+                margin: 20px auto 0;
                 width: fit-content;
             }
         }
@@ -276,10 +308,11 @@
             </div>
         </div>
     </div>
-    <!-- Bottom buttons -->
-  <div class="bottom-buttons">
-    <button onclick="window.location.href='CtalogoRecepcionista.php'">Regresar</button>
-  </div>
+    
+    <button class="back-button" onclick="window.location.href='CtalogoRecepcionista.php'">
+        <i class="fas fa-arrow-left"></i> Regresar
+    </button>
+    
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>
