@@ -63,25 +63,47 @@
             background-color: #218838;
         }
 
-        .profile-button {
+        .header-buttons {
             position: absolute;
             top: 20px;
             right: 20px;
+            display: flex;
+            gap: 10px;
+        }
+
+        .header-button {
             padding: 10px 20px;
             background-color: #007bff;
             color: white;
             border: none;
             border-radius: 5px;
             cursor: pointer;
+            text-decoration: none;
+            font-size: 14px;
         }
 
-        .profile-button:hover {
+        .header-button:hover {
             background-color: #0056b3;
+        }
+
+        .header-button.historial {
+            background-color: #6c757d;
+        }
+
+        .header-button.historial:hover {
+            background-color: #5a6268;
         }
     </style>
 </head>
 <body>
-    <button class="profile-button" onclick="window.location.href='../verPerfil.php'">Ver Perfil</button>
+    <div class="header-buttons">
+        <button class="header-button historial" onclick="window.location.href='VerHistorial_Paciente.php'">
+            <i class="fas fa-history"></i> Ver Historial
+        </button>
+        <button class="header-button" onclick="window.location.href='../verPerfil.php'">
+            <i class="fas fa-user"></i> Ver Perfil
+        </button>
+    </div>
 
     <div class="container">
         <!-- Mensaje de bienvenida -->
