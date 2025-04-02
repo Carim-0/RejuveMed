@@ -257,6 +257,17 @@ $result = $stmt->get_result();
             box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
         }
 
+        .btn-warning {
+            background-color: #f59e0b;
+            color: white;
+        }
+
+        .btn-warning:hover {
+            background-color: #d97706;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+
         .historial-item {
             padding: 1.5rem;
             margin-bottom: 1rem;
@@ -338,6 +349,22 @@ $result = $stmt->get_result();
             color: var(--color-texto);
         }
 
+        .edit-mode {
+            display: none;
+        }
+
+        .view-mode {
+            display: block;
+        }
+
+        .editable-text {
+            padding: 1rem;
+            background-color: rgba(255, 255, 255, 0.7);
+            border-radius: 8px;
+            margin-bottom: 1rem;
+            white-space: pre-wrap;
+        }
+
         @media (max-width: 768px) {
             .header h1 {
                 font-size: 1.5rem;
@@ -379,7 +406,16 @@ $result = $stmt->get_result();
                     <i class="fas fa-edit"></i> Mis Datos Médicos
                 </h2>
                 
-                <form method="POST" class="historial-form">
+                <div id="viewMode" class="view-mode">
+                    <div class="editable-text glass-card">
+                        <?php echo !empty($historial_data['detalles']) ? nl2br(htmlspecialchars($historial_data['detalles'])) : 'No hay información médica registrada.'; ?>
+                    </div>
+                    <button id="editButton" class="btn btn-warning">
+                        <i class="fas fa-edit"></i> Editar Historial
+                    </button>
+                </div>
+                
+                <form id="editMode" method="POST" class="historial-form edit-mode">
                     <div class="form-group">
                         <label for="detalles">Detalles de mi historial médico:</label>
                         <textarea id="detalles" name="detalles" class="form-control glass-card" 
@@ -389,6 +425,9 @@ $result = $stmt->get_result();
                     
                     <button type="submit" name="actualizar_historial" class="btn btn-success">
                         <i class="fas fa-save"></i> Guardar Cambios
+                    </button>
+                    <button type="button" id="cancelEdit" class="btn btn-primary">
+                        <i class="fas fa-times"></i> Cancelar
                     </button>
                 </form>
             </div>
@@ -444,6 +483,28 @@ $result = $stmt->get_result();
                 textarea.addEventListener('blur', function() {
                     this.style.boxShadow = 'none';
                     this.style.backgroundColor = 'rgba(255, 255, 255, 0.7)';
+                });
+            }
+            
+            // Control de edición del historial
+            const editButton = document.getElementById('editButton');
+            const cancelEdit = document.getElementById('cancelEdit');
+            const viewMode = document.getElementById('viewMode');
+            const editMode = document.getElementById('editMode');
+            
+            if (editButton && cancelEdit && viewMode && editMode) {
+                editButton.addEventListener('click', function() {
+                    viewMode.classList.remove('view-mode');
+                    viewMode.classList.add('edit-mode');
+                    editMode.classList.remove('edit-mode');
+                    editMode.classList.add('view-mode');
+                });
+                
+                cancelEdit.addEventListener('click', function() {
+                    editMode.classList.remove('view-mode');
+                    editMode.classList.add('edit-mode');
+                    viewMode.classList.remove('edit-mode');
+                    viewMode.classList.add('view-mode');
                 });
             }
         });
