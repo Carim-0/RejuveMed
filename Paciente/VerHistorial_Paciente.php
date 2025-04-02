@@ -241,13 +241,13 @@ $result = $stmt->get_result();
 <body>
     <div class="header">
         <div class="container">
-            <h1><i class="fas fa-file-medical"></i> Historial Médico Digital</h1>
+            <h1><i class="fas fa-file-medical"></i> Historial Médico</h1>
             <p>Registro completo de tus procedimientos realizados</p>
         </div>
     </div>
 
     <div class="container">
-        <button onclick="window.location.href='perfilPaciente.php'" class="back-button glass-card">
+        <button onclick="window.location.href='catalogoTratamientos.php'" class="back-button glass-card">
             <i class="fas fa-arrow-left"></i> Volver al Panel
         </button>
 
