@@ -14,7 +14,7 @@ $id_paciente = $user_data['IDpaciente'];
 $fecha_actual = date('Y-m-d H:i:s');
 
 // Obtener historial médico del paciente
-$historial_query = "SELECT * FROM 'Historial Medico' WHERE idpaciente = ?";
+$historial_query = "SELECT * FROM `Historial Medico` WHERE idpaciente = ?";
 $historial_stmt = $con->prepare($historial_query);
 $historial_stmt->bind_param("i", $id_paciente);
 $historial_stmt->execute();
@@ -27,13 +27,13 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['actualizar_historial']
     
     if ($historial_data) {
         // Actualizar historial existente
-        $update_query = "UPDATE 'Historial Medico' SET detalles = ? WHERE idpaciente = ?";
+        $update_query = "UPDATE `Historial Medico` SET detalles = ? WHERE idpaciente = ?";
         $update_stmt = $con->prepare($update_query);
         $update_stmt->bind_param("si", $nuevos_detalles, $id_paciente);
         $update_stmt->execute();
     } else {
         // Crear nuevo registro de historial
-        $insert_query = "INSERT INTO 'Historial Medico' (idpaciente, detalles) VALUES (?, ?)";
+        $insert_query = "INSERT INTO `Historial Medico` (idpaciente, detalles) VALUES (?, ?)";
         $insert_stmt = $con->prepare($insert_query);
         $insert_stmt->bind_param("is", $id_paciente, $nuevos_detalles);
         $insert_stmt->execute();
