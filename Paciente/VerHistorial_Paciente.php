@@ -13,18 +13,13 @@ if ($_SESSION['user_type'] !== 'Paciente') {
 $id_paciente = $user_data['IDpaciente'];
 $fecha_actual = date('Y-m-d H:i:s');
 
-// Obtener datos del paciente
-$paciente_query = "SELECT nombre, apellido, fecha_nacimiento FROM Pacientes WHERE IDpaciente = ?";
+// Obtener datos del paciente (nombre, apellido y edad)
+$paciente_query = "SELECT nombre, apellido, edad FROM Pacientes WHERE IDpaciente = ?";
 $paciente_stmt = $con->prepare($paciente_query);
 $paciente_stmt->bind_param("i", $id_paciente);
 $paciente_stmt->execute();
 $paciente_result = $paciente_stmt->get_result();
 $paciente_data = $paciente_result->fetch_assoc();
-
-// Calcular edad
-$fecha_nacimiento = new DateTime($paciente_data['fecha_nacimiento']);
-$hoy = new DateTime();
-$edad = $hoy->diff($fecha_nacimiento)->y;
 
 // Obtener historial médico del paciente
 $historial_query = "SELECT * FROM `Historial Medico` WHERE idpaciente = ?";
@@ -434,8 +429,7 @@ $result = $stmt->get_result();
                 </h2>
                 <div class="info-paciente glass-card">
                     <p><strong>Nombre completo:</strong> <?php echo htmlspecialchars($paciente_data['nombre'] . ' ' . htmlspecialchars($paciente_data['apellido'])); ?></p>
-                    <p><strong>Edad:</strong> <?php echo $edad; ?> años</p>
-                    <p><strong>Fecha de nacimiento:</strong> <?php echo date('d/m/Y', strtotime($paciente_data['fecha_nacimiento'])); ?></p>
+                    <p><strong>Edad:</strong> <?php echo htmlspecialchars($paciente_data['edad']); ?> años</p>
                 </div>
             </div>
 
