@@ -51,7 +51,7 @@
         }
 
         .treatment button {
-            background-color: #28a745;
+            background-color: rgb(45, 153, 165);
             color: white;
             border: none;
             padding: 10px;
@@ -60,7 +60,7 @@
         }
 
         .treatment button:hover {
-            background-color: #218838;
+            background-color: rgb(45, 153, 165);
         }
 
         .header-buttons {
