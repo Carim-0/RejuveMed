@@ -428,7 +428,7 @@ $result = $stmt->get_result();
                     <i class="fas fa-user"></i> Información del Paciente
                 </h2>
                 <div class="info-paciente glass-card">
-                    <p><strong>Nombre completo:</strong> <?php echo htmlspecialchars($paciente_data['nombre'] . ' ' . htmlspecialchars($paciente_data['apellido'])); ?></p>
+                    <p><strong>Nombre:</strong> <?php echo htmlspecialchars($paciente_data['nombre']); ?></p>
                     <p><strong>Edad:</strong> <?php echo htmlspecialchars($paciente_data['edad']); ?> años</p>
                 </div>
             </div>
