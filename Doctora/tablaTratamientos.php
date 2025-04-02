@@ -3,12 +3,7 @@ session_start();
 include("../connection.php");
 include("../functions.php");
 
-// Verificación de usuario
-$user_data = check_login($con);
-if ($_SESSION['user_type'] !== 'Paciente') {
-    header("Location: ../login.php");
-    die();
-}
+
 
 $id_paciente = $user_data['IDpaciente'];
 $fecha_actual = date('Y-m-d H:i:s');
