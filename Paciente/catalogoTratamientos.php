@@ -20,7 +20,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Bienvenido Recepcionista</title>
+    <title>Bienvenido </title>
     <link rel="stylesheet" href="tratamientos_style.css">
     <style>
         .treatments {
