@@ -87,11 +87,11 @@
         }
 
         .header-button.historial {
-            background-color:rgb(45, 153, 165);;
+            background-color: #007bff;
         }
 
         .header-button.historial:hover {
-            background-color: rgb(45, 153, 165);;
+            background-color: #007bff;
         }
     </style>
 </head>
