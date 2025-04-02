@@ -13,6 +13,19 @@ if ($_SESSION['user_type'] !== 'Paciente') {
 $id_paciente = $user_data['IDpaciente'];
 $fecha_actual = date('Y-m-d H:i:s');
 
+// Obtener datos del paciente
+$paciente_query = "SELECT nombre, apellido, fecha_nacimiento FROM Pacientes WHERE IDpaciente = ?";
+$paciente_stmt = $con->prepare($paciente_query);
+$paciente_stmt->bind_param("i", $id_paciente);
+$paciente_stmt->execute();
+$paciente_result = $paciente_stmt->get_result();
+$paciente_data = $paciente_result->fetch_assoc();
+
+// Calcular edad
+$fecha_nacimiento = new DateTime($paciente_data['fecha_nacimiento']);
+$hoy = new DateTime();
+$edad = $hoy->diff($fecha_nacimiento)->y;
+
 // Obtener historial médico del paciente
 $historial_query = "SELECT * FROM `Historial Medico` WHERE idpaciente = ?";
 $historial_stmt = $con->prepare($historial_query);
@@ -365,6 +378,20 @@ $result = $stmt->get_result();
             white-space: pre-wrap;
         }
 
+        .info-paciente {
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .info-paciente p {
+            margin-bottom: 0.5rem;
+            font-size: 1.1rem;
+        }
+
+        .info-paciente strong {
+            color: var(--color-primario);
+        }
+
         @media (max-width: 768px) {
             .header h1 {
                 font-size: 1.5rem;
@@ -400,6 +427,18 @@ $result = $stmt->get_result();
         </button>
 
         <div class="historial-container glass-card">
+            <!-- Sección de Información del Paciente -->
+            <div class="historial-section">
+                <h2 class="section-title">
+                    <i class="fas fa-user"></i> Información del Paciente
+                </h2>
+                <div class="info-paciente glass-card">
+                    <p><strong>Nombre completo:</strong> <?php echo htmlspecialchars($paciente_data['nombre'] . ' ' . htmlspecialchars($paciente_data['apellido'])); ?></p>
+                    <p><strong>Edad:</strong> <?php echo $edad; ?> años</p>
+                    <p><strong>Fecha de nacimiento:</strong> <?php echo date('d/m/Y', strtotime($paciente_data['fecha_nacimiento'])); ?></p>
+                </div>
+            </div>
+
             <!-- Sección de Edición del Historial Médico -->
             <div class="historial-section">
                 <h2 class="section-title">
