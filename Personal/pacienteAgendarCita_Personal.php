@@ -228,7 +228,7 @@
             </select>
 
             <button type="submit">Agendar Cita</button>
-            <a href="catalogoTratamientos.php" class="btn-link">
+            <a href="CtalogoRecepcionista.php" class="btn-link">
                 <i class="fas fa-arrow-left"></i> Regresar
             </a>
         </form>
