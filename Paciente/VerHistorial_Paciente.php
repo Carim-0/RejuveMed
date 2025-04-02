@@ -52,11 +52,11 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['actualizar_historial']
     exit();
 }
 
-// Consulta de procedimientos realizados
+// Consulta de procedimientos realizados (modificada)
 $query = "SELECT c.IDcita, c.fecha, t.nombre as tratamiento
           FROM Citas c
           JOIN Tratamientos t ON c.idtratamiento = t.IDtratamiento
-          WHERE c.idpaciente = ? AND c.fecha < ?
+          WHERE c.idpaciente = ? AND c.fecha < ? AND c.estado = 'completada'
           ORDER BY c.fecha DESC";
 $stmt = $con->prepare($query);
 $stmt->bind_param("is", $id_paciente, $fecha_actual);
