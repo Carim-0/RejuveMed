@@ -36,82 +36,142 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['cancelar_cita'])) {
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>RejuveMed - Historial Clínico</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
-        body {
-            font-family: Arial, sans-serif;
-            margin: 0;
-            padding: 20px;
-            background-color: #f5f5f5;
+        :root {
+            --primary-color: #4a6fa5;
+            --secondary-color: #6b8cae;
+            --accent-color: #4a6fa5;
+            --light-color: #f8f9fa;
+            --dark-color: #343a40;
+            --success-color: #28a745;
+            --warning-color: #ffc107;
+            --danger-color: #dc3545;
+            --border-radius: 8px;
+            --box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
         }
         
-        .header {
-            text-align: center;
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background-color: #f0f2f5;
+            padding: 20px;
+        }
+        
+        .header-container {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
             margin-bottom: 30px;
         }
         
-        .header h1 {
-            color: #333;
-            font-size: 2.5em;
-        }
-        
-        .back-button {
-            position: absolute;
-            top: 20px;
-            left: 20px;
-            font-size: 24px;
-            text-decoration: none;
-            color: #333;
-        }
-        
-        .form-container {
+        .page-title {
+            color: var(--primary-color);
+            font-size: 28px;
+            font-weight: 600;
             display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .action-buttons {
+            display: flex;
+            gap: 15px;
+        }
+        
+        .btn {
+            padding: 10px 20px;
+            border-radius: var(--border-radius);
+            font-size: 14px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            text-decoration: none;
+        }
+        
+        .btn-primary {
+            background-color: var(--primary-color);
+            color: white;
+            border: none;
+        }
+        
+        .btn-primary:hover {
+            background-color: #3a5a8a;
+            transform: translateY(-2px);
+        }
+        
+        .btn-outline {
+            background-color: transparent;
+            color: var(--primary-color);
+            border: 1px solid var(--primary-color);
+        }
+        
+        .btn-outline:hover {
+            background-color: rgba(74, 111, 165, 0.1);
+        }
+        
+        .content-container {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
             gap: 30px;
-            margin-left: 20px;
-            margin-top: 20px;
         }
         
-        .left-section, .right-section {
-            flex: 1;
-        }
-        
-        textarea, input {
-            width: 100%;
-            padding: 10px;
-            margin-bottom: 15px;
-            border: 1px solid #ddd;
-            border-radius: 4px;
-            box-sizing: border-box;
-        }
-        
-        textarea {
-            height: 150px;
-            resize: none;
-            background-color: #f9f9f9;
-        }
-        
-        .medical-history {
-            border: 1px solid #ccc;
-            border-radius: 8px;
-            padding: 20px;
+        .card {
             background-color: white;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
-            margin-bottom: 20px;
+            border-radius: var(--border-radius);
+            box-shadow: var(--box-shadow);
+            padding: 25px;
+            height: fit-content;
         }
         
-        .medical-history h3 {
-            margin-top: 0;
-            color: #0066cc;
+        .card-title {
+            color: var(--primary-color);
+            margin-bottom: 20px;
+            font-size: 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
         }
         
         .form-group {
-            margin-bottom: 15px;
+            margin-bottom: 20px;
         }
         
         .form-group label {
             display: block;
-            margin-bottom: 5px;
-            font-weight: bold;
-            color: #555;
+            margin-bottom: 8px;
+            font-weight: 500;
+            color: var(--secondary-color);
+            font-size: 14px;
+        }
+        
+        .form-group input,
+        .form-group textarea {
+            width: 100%;
+            padding: 12px 15px;
+            border: 1px solid #ddd;
+            border-radius: var(--border-radius);
+            font-size: 15px;
+        }
+        
+        .form-group input[readonly],
+        .form-group textarea[readonly] {
+            background-color: var(--light-color);
+            color: #777;
+            border-color: #eee;
+        }
+        
+        .form-group textarea {
+            min-height: 120px;
+            resize: vertical;
         }
         
         .inline-fields {
@@ -119,287 +179,296 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['cancelar_cita'])) {
             gap: 15px;
         }
         
-        .inline-fields .form-group {
-            flex: 1;
-        }
-        
-        input[type="text"] {
-            background-color: #f9f9f9;
-        }
-        
-        .appointments-title {
-            color: #0066cc;
-            margin-bottom: 15px;
-        }
-        
-        .appointments-container {
-            border: 1px solid #ccc;
-            border-radius: 8px;
-            padding: 20px;
-            background-color: white;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
-        }
-        
         .appointment-item {
-            display: flex;
-            align-items: center;
-            gap: 15px;
-            margin-bottom: 15px;
+            margin-bottom: 20px;
+            border-bottom: 1px solid #eee;
+            padding-bottom: 20px;
+        }
+        
+        .appointment-item:last-child {
+            border-bottom: none;
+            margin-bottom: 0;
+            padding-bottom: 0;
         }
         
         .appointment-card {
-            flex: 1;
-            color: white;
             padding: 15px;
-            border-radius: 6px;
+            border-radius: var(--border-radius);
+            margin-bottom: 15px;
         }
         
         .appointment-pendiente {
-            background-color: #0066cc;
+            background-color: rgba(var(--primary-color), 0.1);
+            border-left: 4px solid var(--primary-color);
         }
         
         .appointment-cancelada {
-            background-color: #ff5252;
+            background-color: rgba(var(--danger-color), 0.1);
+            border-left: 4px solid var(--danger-color);
         }
         
-        .appointment-card p {
-            margin: 5px 0;
+        .appointment-completada {
+            background-color: rgba(var(--success-color), 0.1);
+            border-left: 4px solid var(--success-color);
         }
         
         .appointment-field {
-            font-weight: bold;
+            font-weight: 500;
+            color: var(--secondary-color);
+            font-size: 14px;
+            margin-bottom: 5px;
         }
         
-        .appointment-status {
-            font-weight: bold;
-            text-transform: uppercase;
+        .appointment-value {
+            color: var(--dark-color);
             margin-bottom: 10px;
         }
         
-        .btn-cancelar {
-            background-color: #d32f2f;
+        .appointment-status {
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+            padding: 5px 10px;
+            border-radius: 20px;
+            font-size: 14px;
+            font-weight: 500;
+            margin-bottom: 15px;
+        }
+        
+        .status-pendiente {
+            background-color: rgba(var(--warning-color), 0.2);
+            color: blue;
+        }
+        
+        .status-cancelada {
+            background-color: rgba(var(--danger-color), 0.2);
+            color: var(--danger-color);
+        }
+        
+        .status-completada {
+            background-color: rgba(var(--success-color), 0.2);
+            color: var(--success-color);
+        }
+        
+        .appointment-actions {
+            display: flex;
+            gap: 10px;
+            margin-top: 15px;
+        }
+        
+        .btn-sm {
+            padding: 8px 15px;
+            font-size: 13px;
+        }
+        
+        .btn-danger {
+            background-color: var(--danger-color);
             color: white;
             border: none;
-            padding: 10px 15px;
-            border-radius: 6px;
-            cursor: pointer;
-            font-weight: bold;
-            transition: background-color 0.3s;
-            white-space: nowrap;
         }
         
-        .btn-cancelar:hover {
-            background-color: #b71c1c;
+        .btn-danger:hover {
+            background-color: #c82333;
         }
         
-        .btn-editar {
-            display: inline-block;
-            background-color: #4CAF50;
+        .btn-success {
+            background-color: var(--success-color);
             color: white;
-            text-decoration: none;
-            padding: 10px 15px;
-            border-radius: 6px;
-            font-weight: bold;
-            transition: background-color 0.3s;
-            margin-top: 10px;
-        }
-
-        .btn-editar:hover {
-            background-color: #45a049;
+            border: none;
         }
         
-        .mensaje {
-            padding: 10px;
-            margin: 10px 0;
-            border-radius: 4px;
-            text-align: center;
-        }
-        
-        .mensaje-exito {
-            background-color: #dff0d8;
-            color: #3c763d;
-        }
-        
-        .mensaje-error {
-            background-color: #f2dede;
-            color: #a94442;
+        .btn-success:hover {
+            background-color: #218838;
         }
         
         .no-appointments {
             text-align: center;
-            color: #666;
+            color: #777;
             font-style: italic;
-            padding: 20px;
+            padding: 30px 0;
         }
-
-        .header-buttons {
-            position: absolute;
-            top: 20px;
-            right: 20px;
+        
+        .alert {
+            padding: 15px;
+            margin-bottom: 25px;
+            border-radius: var(--border-radius);
             display: flex;
+            align-items: center;
             gap: 10px;
         }
-
-        .header-button {
-            padding: 10px 20px;
-            background-color: #007bff;
-            color: white;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-            text-decoration: none;
-            font-size: 14px;
+        
+        .alert-success {
+            background-color: rgba(var(--success-color), 0.2);
+            color: var(--success-color);
+            border-left: 4px solid var(--success-color);
         }
-
-        .header-button:hover {
-            background-color: #0056b3;
+        
+        .alert-danger {
+            background-color: rgba(var(--danger-color), 0.2);
+            color: var(--danger-color);
+            border-left: 4px solid var(--danger-color);
         }
-
-        .header-button.historial {
-            background-color: #007bff;
-        }
-
-        .header-button.historial:hover {
-            background-color: #007bff;
-        }
-
-        .appointment-completada {
-            background-color: #4CAF50; /* Verde para citas completadas */
+        
+        @media (max-width: 1024px) {
+            .content-container {
+                grid-template-columns: 1fr;
+            }
+            
+            .action-buttons {
+                flex-direction: column;
+                width: 100%;
+            }
+            
+            .btn {
+                width: 100%;
+                justify-content: center;
+            }
         }
     </style>
 </head>
 <body>
-    <div class="header-buttons">
-        <button class="header-button historial" onclick="window.location.href='VerHistorial_Paciente.php'">
-            <i class="fas fa-history"></i> Ver Historial
-        </button>
-        <button class="header-button" onclick="window.location.href='../verPerfil.php'">
-            <i class="fas fa-user"></i> Ver Perfil
-        </button>
-        <button class="header-button" onclick="window.location.href='catalogoTratamientos.php'">
-            <i class="fas fa-user"></i> Catalogo
-        </button>
-    </div>
-    
-    <!-- Título centrado -->
-    <div class="header">
-        <h1>RejuveMed</h1>
+    <div class="header-container">
+        <h1 class="page-title"><i class="fas fa-file-medical"></i> Historial Clínico</h1>
+        
+        <div class="action-buttons">
+            <a href="VerHistorial_Paciente.php" class="btn btn-primary">
+                <i class="fas fa-history"></i> Ver Historial
+            </a>
+            <a href="../verPerfil.php" class="btn btn-outline">
+                <i class="fas fa-user"></i> Ver Perfil
+            </a>
+            <a href="catalogoTratamientos.php" class="btn btn-outline">
+                <i class="fas fa-spa"></i> Catálogo
+            </a>
+        </div>
     </div>
 
     <!-- Mostrar mensajes -->
     <?php if (!empty($mensaje)): ?>
-        <div class="mensaje <?php echo strpos($mensaje, 'Error') !== false ? 'mensaje-error' : 'mensaje-exito'; ?>">
+        <div class="alert alert-<?php echo strpos($mensaje, 'Error') !== false ? 'danger' : 'success'; ?>">
+            <i class="fas <?php echo strpos($mensaje, 'Error') !== false ? 'fa-exclamation-circle' : 'fa-check-circle'; ?>"></i>
             <?php echo htmlspecialchars($mensaje); ?>
         </div>
     <?php endif; ?>
 
     <!-- Contenedor principal -->
-    <div class="form-container">
-        <!-- Sección izquierda (historial clínico) -->
-        <div class="left-section">
-            <div class="medical-history">
-                <h3>Datos de usuario</h3>
-                
-                <div class="form-group">
-                    <label for="nombre">Nombre</label>
-                    <input type="text" id="nombre" name="nombre" readonly 
-                           value="<?php echo htmlspecialchars($user_data['nombre'] ?? ''); ?>">
-                </div>
-                
-                <div class="form-group">
+    <div class="content-container">
+        <!-- Sección izquierda (datos del usuario) -->
+        <div class="card">
+            <h2 class="card-title"><i class="fas fa-user-circle"></i> Datos del Paciente</h2>
+            
+            <div class="form-group">
+                <label for="nombre">Nombre completo</label>
+                <input type="text" id="nombre" name="nombre" readonly 
+                       value="<?php echo htmlspecialchars($user_data['nombre'] ?? ''); ?>">
+            </div>
+            
+            <div class="inline-fields">
+                <div class="form-group" style="flex: 1;">
                     <label for="edad">Edad</label>
-                    <input type="text" id="edad" name="edad" readonly style="width: 80px;" 
+                    <input type="text" id="edad" name="edad" readonly 
                            value="<?php echo htmlspecialchars($user_data['edad'] ?? ''); ?>">
                 </div>
-                    
-                <div class="form-group">
+                
+                <div class="form-group" style="flex: 2;">
                     <label for="telefono">Teléfono</label>
                     <input type="text" id="telefono" name="telefono" readonly
                            value="<?php echo htmlspecialchars($user_data['telefono'] ?? ''); ?>">
                 </div>
-                
-                <div class="form-group">
-                    <label for="detalles">Detalles</label>
-                    <textarea id="detalles" name="detalles" readonly rows="4"><?php 
-                        echo htmlspecialchars($user_data['detalles'] ?? ''); 
-                    ?></textarea>
-                </div>
+            </div>
+            
+            <div class="form-group">
+                <label for="detalles">Detalles médicos</label>
+                <textarea id="detalles" name="detalles" readonly><?php 
+                    echo htmlspecialchars($user_data['detalles'] ?? ''); 
+                ?></textarea>
             </div>
         </div>
         
         <!-- Sección derecha (citas agendadas) -->
-        <div class="right-section">
-            <div class="appointments-container">
-                <h3 class="appointments-title">Citas Agendadas</h3>
-                
-                <?php
-    // Consulta para obtener las citas con información completa
-    $query = "SELECT 
-                c.IDcita,
-                c.fecha, 
-                t.nombre as tratamiento, 
-                t.detalles as descripcion,
-                t.precio,
-                c.estado
-              FROM Citas c
-              JOIN Tratamientos t ON c.IDtratamiento = t.IDtratamiento
-              WHERE c.IDpaciente = '$paciente_id'
-              ORDER BY c.fecha";
-    
-    $result = $con->query($query);
-    
-    if ($result->num_rows > 0) {
-        while ($row = $result->fetch_assoc()) {
-            // Formatear fecha y hora
-            $fecha_obj = new DateTime($row['fecha']);
-            $fecha_formateada = $fecha_obj->format('d/m/Y');
-            $hora_formateada = $fecha_obj->format('H:i');
-
-            // Formatear precio
-            $precio_formateado = '$' . number_format($row['precio'], 2);
-
-            // Determinar clase CSS según el estado
-            $estado = strtolower($row['estado']);
-            $clase_estado = 'appointment-pendiente'; // Por defecto
+        <div class="card">
+            <h2 class="card-title"><i class="fas fa-calendar-check"></i> Citas Agendadas</h2>
             
-            if ($estado == 'cancelada') {
-                $clase_estado = 'appointment-cancelada';
-            } elseif ($estado == 'completada') {
-                $clase_estado = 'appointment-completada';
+            <?php
+            // Consulta para obtener las citas con información completa
+            $query = "SELECT 
+                        c.IDcita,
+                        c.fecha, 
+                        t.nombre as tratamiento, 
+                        t.detalles as descripcion,
+                        t.precio,
+                        c.estado
+                      FROM Citas c
+                      JOIN Tratamientos t ON c.IDtratamiento = t.IDtratamiento
+                      WHERE c.IDpaciente = '$paciente_id'
+                      ORDER BY c.fecha";
+            
+            $result = $con->query($query);
+            
+            if ($result->num_rows > 0) {
+                while ($row = $result->fetch_assoc()) {
+                    // Formatear fecha y hora
+                    $fecha_obj = new DateTime($row['fecha']);
+                    $fecha_formateada = $fecha_obj->format('d/m/Y');
+                    $hora_formateada = $fecha_obj->format('H:i a');
+
+                    // Formatear precio
+                    $precio_formateado = '$' . number_format($row['precio'], 2);
+
+                    // Determinar clases CSS según el estado
+                    $clase_estado = 'appointment-' . strtolower($row['estado']);
+                    $clase_status = 'status-' . strtolower($row['estado']);
+
+                    echo '<div class="appointment-item">';
+                    echo '<div class="appointment-card '.$clase_estado.'">';
+                    echo '<span class="appointment-status '.$clase_status.'">';
+                    $icono = (strtolower($row['estado']) == 'pendiente') ? 'fa-clock' : 
+                            ((strtolower($row['estado']) == 'cancelada') ? 'fa-times-circle' : 'fa-check-circle');
+                    echo '<i class="fas '.$icono.'"></i> ' . htmlspecialchars($row['estado']);
+                    echo '</span>';
+                    
+                    echo '<div class="appointment-field">Fecha y hora</div>';
+                    echo '<div class="appointment-value">'.htmlspecialchars($fecha_formateada).' a las '.htmlspecialchars($hora_formateada).'</div>';
+                    
+                    echo '<div class="appointment-field">Tratamiento</div>';
+                    echo '<div class="appointment-value">'.htmlspecialchars($row['tratamiento']).'</div>';
+                    
+                    echo '<div class="appointment-field">Precio</div>';
+                    echo '<div class="appointment-value">'.htmlspecialchars($precio_formateado).'</div>';
+                    
+                    echo '<div class="appointment-field">Descripción</div>';
+                    echo '<div class="appointment-value">'.nl2br(htmlspecialchars($row['descripcion'])).'</div>';
+                    echo '</div>';
+
+                    echo '<div class="appointment-actions">';
+                    
+                    // Botón de editar
+                    echo '<a href="editarCita_Paciente.php?id='.$row['IDcita'].'" class="btn btn-outline btn-sm">';
+                    echo '<i class="fas fa-edit"></i> Editar';
+                    echo '</a>';
+
+                    // Botón de cancelar (solo para citas pendientes)
+                    if (strtolower($row['estado']) == 'pendiente') {
+                        echo '<form method="POST" style="display: inline;">';
+                        echo '<input type="hidden" name="cita_id" value="'.$row['IDcita'].'">';
+                        echo '<button type="submit" name="cancelar_cita" class="btn btn-danger btn-sm">';
+                        echo '<i class="fas fa-times"></i> Cancelar';
+                        echo '</button>';
+                        echo '</form>';
+                    }
+                    
+                    echo '</div>';
+                    echo '</div>';
+                }
+            } else {
+                echo '<div class="no-appointments">';
+                echo '<i class="far fa-calendar-times" style="font-size: 24px; margin-bottom: 10px;"></i>';
+                echo '<p>No tienes citas agendadas actualmente</p>';
+                echo '</div>';
             }
-
-            echo '<div class="appointment-item">';
-            echo '<div class="appointment-card '.$clase_estado.'">';
-            echo '<p class="appointment-status">Estado: '.htmlspecialchars($row['estado']).'</p>';
-            echo '<p><span class="appointment-field">Fecha:</span> '.htmlspecialchars($fecha_formateada).'</p>';
-            echo '<p><span class="appointment-field">Hora:</span> '.htmlspecialchars($hora_formateada).'</p>';
-            echo '<p><span class="appointment-field">Tratamiento:</span> '.htmlspecialchars($row['tratamiento']).'</p>';
-            echo '<p><span class="appointment-field">Precio:</span> '.htmlspecialchars($precio_formateado).'</p>';
-            echo '<p><span class="appointment-field">Descripción:</span> '.nl2br(htmlspecialchars($row['descripcion'])).'</p>';
-            echo '</div>';
-
-            // Botón de editar (solo para citas pendientes)
-            if ($estado == 'pendiente') {
-                echo '<a href="editarCita_Paciente.php?id='.$row['IDcita'].'" class="btn-editar">Editar Cita</a>';
-            }
-
-            // Botón de cancelar (solo para citas pendientes)
-            if ($estado == 'pendiente') {
-                echo '<form method="POST">';
-                echo '<input type="hidden" name="cita_id" value="'.$row['IDcita'].'">';
-                echo '<button type="submit" name="cancelar_cita" class="btn-cancelar">Cancelar Cita</button>';
-                echo '</form>';
-            }
-
-            echo '</div>';
-        }
-    } else {
-        echo '<p class="no-appointments">No tienes citas agendadas actualmente</p>';
-    }
-    
-    $con->close();
-    ?>
-            </div>
+            
+            $con->close();
+            ?>
         </div>
     </div>
 </body>

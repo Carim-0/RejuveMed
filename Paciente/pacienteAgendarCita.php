@@ -77,127 +77,225 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Agendar Cita</title>
+    <title>Agendar Cita - RejuveMed</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
-        body {
-            font-family: Arial, sans-serif;
-            background-color: #f4f4f9;
+        :root {
+            --primary-color: #4a6fa5;
+            --secondary-color: #6b8cae;
+            --accent-color: #4a6fa5;
+            --light-color: #f8f9fa;
+            --dark-color: #343a40;
+            --success-color: #28a745;
+            --border-radius: 8px;
+            --box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        }
+        
+        * {
             margin: 0;
             padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background-color: #f0f2f5;
             display: flex;
             justify-content: center;
             align-items: center;
-            height: 100vh;
-        }
-
-        .form-container {
-            background-color: #fff;
-            padding: 30px;
-            border-radius: 10px;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-            width: 400px;
-            box-shadow: var(0 4px 6px rgba(0, 0, 0, 0.1);)
-        }
-
-        .form-container h2 {
-            text-align: center;
-            margin-bottom: 20px;
-        }
-
-        .form-container label {
-            display: block;
-            margin: 10px 0 5px;
-        }
-
-        .form-container input,
-        .form-container select,
-        .form-container button {
-            width: 100%;
-            padding: 10px;
-            margin-bottom: 20px;
-            border: 1px solid #ccc;
-            border-radius: 4px;
-        }
-
-        .form-container button {
-            background-color: #007bff;
-            color: white;
-            border: none;
-            cursor: pointer;
-        }
-
-        .form-container button:hover {
-            background-color: #0056b3;
+            min-height: 100vh;
+            padding: 20px;
         }
         
-        .textarea-control {
+        .appointment-container {
+            background-color: white;
+            border-radius: var(--border-radius);
+            box-shadow: var(--box-shadow);
+            width: 100%;
+            max-width: 600px;
+            padding: 30px;
+        }
+        
+        .appointment-header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        
+        .appointment-header h2 {
+            color: var(--primary-color);
+            font-size: 24px;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+        
+        .appointment-form {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 20px;
+        }
+        
+        .form-group {
+            margin-bottom: 15px;
+        }
+        
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 500;
+            color: var(--secondary-color);
+            font-size: 14px;
+        }
+        
+        .form-group input,
+        .form-group select {
             width: 100%;
             padding: 12px 15px;
-            border: 1px solid var(--color-borde);
-            border-radius: 6px;
-            font-size: 16px;
-            min-height: 100px;
-            resize: vertical;
-            transition: border-color 0.3s;
+            border: 1px solid #ddd;
+            border-radius: var(--border-radius);
+            font-size: 15px;
+            transition: all 0.3s;
         }
-
+        
+        .form-group input:focus,
+        .form-group select:focus {
+            border-color: var(--primary-color);
+            outline: none;
+            box-shadow: 0 0 0 3px rgba(74, 111, 165, 0.2);
+        }
+        
+        .form-group input[readonly] {
+            background-color: #f5f5f5;
+            color: #777;
+        }
+        
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+        }
+        
+        .button-group {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 20px;
+        }
+        
         .btn {
-            display: inline-block;
-            padding: 12px 20px;
-            border-radius: 6px;
+            padding: 12px 25px;
+            border: none;
+            border-radius: var(--border-radius);
             font-size: 16px;
             font-weight: 500;
             cursor: pointer;
             transition: all 0.3s;
-            text-align: center;
-            border: none;
-        }
-
-        .btn-primary {
-            background-color: var(--color-primario);
-            color: white;
-            width: 100%;
-        }
-
-        .btn-primary:hover {
-            background-color: #3a7ae8;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
         }
         
-        .btn-link {
-            color: var(--color-primario);
-            text-decoration: none;
-            display: inline-block;
-            margin-top: 15px;
-            font-size: 14px;
+        .btn-primary {
+            background-color: var(--primary-color);
+            color: white;
         }
-
-        .btn-link:hover {
-            text-decoration: underline;
+        
+        .btn-primary:hover {
+            background-color: #3a5a8a;
+            transform: translateY(-2px);
         }
-
-        .input-icon {
-            position: relative;
+        
+        .btn-secondary {
+            background-color: transparent;
+            color: var(--primary-color);
+            border: 1px solid var(--primary-color);
         }
-
-        .input-icon i {
-            position: absolute;
-            top: 50%;
-            right: 15px;
-            transform: translateY(-50%);
-            color: var(--color-borde);
+        
+        .btn-secondary:hover {
+            background-color: rgba(74, 111, 165, 0.1);
         }
-
-        @media (max-width: 576px) {
-            .form-content {
+        
+        @media (max-width: 768px) {
+            .form-row {
+                grid-template-columns: 1fr;
+                gap: 0;
+            }
+            
+            .appointment-container {
                 padding: 20px;
             }
             
-            .header-registro {
-                padding: 15px;
+            .button-group {
+                flex-direction: column-reverse;
+                gap: 10px;
+            }
+            
+            .btn {
+                width: 100%;
             }
         }
     </style>
+</head>
+<body>
+    <div class="appointment-container">
+        <div class="appointment-header">
+            <h2><i class="fas fa-calendar-plus"></i> Agendar Nueva Cita</h2>
+        </div>
+        
+        <form method="POST" class="appointment-form">
+            <div class="form-row">
+                <div class="form-group">
+                    <label for="fecha"><i class="far fa-calendar-alt"></i> Fecha*</label>
+                    <input type="date" id="fecha" name="fecha" required>
+                </div>
+                
+                <div class="form-group">
+                    <label for="hora"><i class="far fa-clock"></i> Hora*</label>
+                    <input type="time" id="hora" name="hora" required min="10:00" max="18:00">
+                </div>
+            </div>
+            
+            <div class="form-group">
+                <label for="IDtratamiento"><i class="fas fa-pills"></i> Tratamiento*</label>
+                <select id="IDtratamiento" name="IDtratamiento" required onchange="updateDuration()">
+                    <option value="">Seleccione un tratamiento</option>
+                    <?php
+                        mysqli_data_seek($result, 0); // Reset pointer to beginning
+                        while ($row = mysqli_fetch_assoc($result)) {
+                            echo "<option value='" . htmlspecialchars($row['IDtratamiento']) . "' 
+                                  data-duracion='" . htmlspecialchars($row['duracion']) . "'>" . 
+                                  htmlspecialchars($row['nombre']) . "</option>";
+                        }
+                    ?>
+                </select>
+            </div>
+            
+            <div class="form-row">
+                <div class="form-group">
+                    <label for="duracion"><i class="fas fa-hourglass-half"></i> Duración</label>
+                    <input type="text" id="duracion" name="duracion" readonly>
+                </div>
+                
+                <div class="form-group">
+                    <label for="fechaFin"><i class="fas fa-stopwatch"></i> Hora de Fin</label>
+                    <input type="text" id="fechaFin" name="fechaFin" readonly>
+                </div>
+            </div>
+            
+            <div class="button-group">
+                <a href="catalogoTratamientos.php" class="btn btn-secondary">
+                    <i class="fas fa-arrow-left"></i> Regresar
+                </a>
+                <button type="submit" class="btn btn-primary">
+                    <i class="fas fa-calendar-check"></i> Agendar Cita
+                </button>
+            </div>
+        </form>
+    </div>
+
     <script>
         document.addEventListener("DOMContentLoaded", function () {
             initializeEventListeners();
@@ -208,13 +306,8 @@
             const horaInput = document.getElementById("hora");
             const fechaInput = document.getElementById("fecha");
 
-            // Attach the onchange event listener to the dropdown
             tratamientoSelect.addEventListener("change", updateDuration);
-
-            // Attach the input event listener to the hora field to recalculate fechaFin
             horaInput.addEventListener("input", updateDuration);
-
-            // Attach the onchange event listener to the fecha field
             fechaInput.addEventListener("change", updateDuration);
         }
 
@@ -223,60 +316,24 @@
             const duracionInput = document.getElementById("duracion");
             const fechaFinInput = document.getElementById("fechaFin");
 
-            // Get the selected option
             const selectedOption = tratamientoSelect.options[tratamientoSelect.selectedIndex];
-
-            // Get the "data-duracion" attribute from the selected option
             const duracion = selectedOption.getAttribute("data-duracion");
 
-            // Update the "duracion" input field
             duracionInput.value = duracion ? `${duracion} horas` : "";
 
-            // Calculate and update the "fechaFin" input field
             const horaInicio = document.getElementById("hora").value;
-            if (duracion && horaInicio) {
+            const fechaInicio = document.getElementById("fecha").value;
+
+            if (duracion && horaInicio && fechaInicio) {
                 const [hours, minutes] = horaInicio.split(":").map(Number);
                 const duracionHoras = parseInt(duracion, 10);
-                const fechaFin = new Date();
-                fechaFin.setHours(hours + duracionHoras, minutes);
+                const fechaFin = new Date(`${fechaInicio}T${horaInicio}`);
+                fechaFin.setHours(fechaFin.getHours() + duracionHoras);
                 fechaFinInput.value = `${fechaFin.getHours().toString().padStart(2, '0')}:${fechaFin.getMinutes().toString().padStart(2, '0')}`;
             } else {
                 fechaFinInput.value = "";
             }
         }
     </script>
-</head>
-<body>
-    <div class="form-container">
-        <h2>Agendar Cita</h2>
-        <form method="POST">
-            <label for="fecha">Fecha:</label>
-            <input type="date" id="fecha" name="fecha" required>
-
-            <label for="hora">Hora:</label>
-            <input type="time" id="hora" name="hora" required>
-
-            <label for="IDtratamiento">Tratamiento:</label>
-            <select id="IDtratamiento" name="IDtratamiento" required onchange="updateDuration()">
-                <option value="">Seleccione un tratamiento</option>
-                <?php
-                    while ($row = mysqli_fetch_assoc($result)) {
-                        echo "<option value='" . htmlspecialchars($row['IDtratamiento']) . "' data-duracion='" . htmlspecialchars($row['duracion']) . "'>" . htmlspecialchars($row['nombre']) . "</option>";
-                    }
-                ?>
-            </select>
-
-            <label for="duracion">Duración (horas):</label>
-            <input type="text" id="duracion" name="duracion" readonly>
-
-            <label for="fechaFin">Hora de Fin:</label>
-            <input type="text" id="fechaFin" name="fechaFin" readonly>
-
-            <button type="submit">Agendar Cita</button>
-            <a href="catalogoTratamientos.php" class="btn-link">
-                <i class="fas fa-arrow-left"></i> Regresar
-            </a>
-        </form>
-    </div>
 </body>
 </html>

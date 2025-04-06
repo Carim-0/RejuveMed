@@ -70,9 +70,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['actualizar_cita'])) {
 
             // Check for overlapping appointments
             $query = "SELECT * FROM Citas WHERE 
-                      (fecha <= ? AND fechaFin >= ?) AND IDcita != ?";
+                      (fecha <= ? AND fechaFin >= ?) AND IDpaciente != ?";
             $stmt = $con->prepare($query);
-            $stmt->bind_param("ssi", $fechaFin, $datetime, $cita_id);
+            $stmt->bind_param("ssi", $fechaFin, $datetime, $IDpaciente);
             $stmt->execute();
             $overlapping = $stmt->get_result();
             $stmt->close();
@@ -111,161 +111,251 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['actualizar_cita'])) {
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Editar Cita - RejuveMed</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         :root {
-            --color-primario: #1a37b5;
-            --color-secundario: #FFF9EB;
-            --color-terciario: #C4C4C4;
-            --color-button: #fe652b;
-            --color-button-hover: #501801;
-            --color-text: #444444;
-            --color-fondo: #e2dfdf;
-            --color-white: #FFFFFF;
+            --primary-color: #4a6fa5;
+            --secondary-color: #6b8cae;
+            --accent-color: #4a6fa5;
+            --light-color: #f8f9fa;
+            --dark-color: #343a40;
+            --success-color: #28a745;
+            --warning-color: #ffc107;
+            --danger-color: #dc3545;
+            --border-radius: 8px;
+            --box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
         }
-
+        
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
         }
-
+        
         body {
-            font-family: Arial, sans-serif;
-            background-color: var(--color-fondo);
+            background-color: #f0f2f5;
             padding: 20px;
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+            min-height: 100vh;
         }
-
+        
         .container {
-            max-width: 1000px;
-            margin: 0 auto;
             background-color: white;
+            border-radius: var(--border-radius);
+            box-shadow: var(--box-shadow);
+            width: 100%;
+            max-width: 900px;
             padding: 30px;
-            border-radius: 10px;
-            box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
+            margin: 20px 0;
         }
-
+        
         h1 {
-            color: var(--color-primario);
-            margin-bottom: 20px;
+            color: var(--primary-color);
+            margin-bottom: 25px;
             text-align: center;
+            font-size: 28px;
+            font-weight: 600;
         }
-
-        .patient-info {
-            background-color: var(--color-secundario);
-            padding: 15px;
-            border-radius: 8px;
-            margin-bottom: 20px;
+        
+        .patient-card {
+            background-color: var(--light-color);
+            padding: 20px;
+            border-radius: var(--border-radius);
+            margin-bottom: 25px;
+            box-shadow: var(--box-shadow);
         }
-
-        .patient-info h2 {
-            color: var(--color-primario);
+        
+        .patient-card h2 {
+            color: var(--primary-color);
             margin-bottom: 10px;
+            font-size: 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
         }
-
-        .form-group {
+        
+        .patient-card h2 i {
+            color: var(--secondary-color);
+        }
+        
+        .patient-info {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            gap: 15px;
+            margin-top: 15px;
+        }
+        
+        .info-item {
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .info-label {
+            font-size: 14px;
+            color: var(--secondary-color);
+            margin-bottom: 5px;
+            font-weight: 500;
+        }
+        
+        .info-value {
+            font-size: 16px;
+            color: var(--dark-color);
+        }
+        
+        .status-badge {
+            display: inline-flex;
+            align-items: center;
+            padding: 5px 12px;
+            border-radius: 20px;
+            font-size: 14px;
+            font-weight: 500;
+            gap: 5px;
+        }
+        
+        .status-pendiente {
+            background-color: rgba(var(--warning-color), 0.2);
+            color: blue;
+        }
+        
+        .status-cancelada {
+            background-color: rgba(var(--danger-color), 0.2);
+            color: var(--danger-color);
+        }
+        
+        .status-completada {
+            background-color: rgba(var(--success-color), 0.2);
+            color: var(--success-color);
+        }
+        
+        .form-container {
+            margin-top: 25px;
+        }
+        
+        .form-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            gap: 20px;
             margin-bottom: 20px;
         }
-
+        
+        .form-group {
+            margin-bottom: 15px;
+        }
+        
         .form-group label {
             display: block;
             margin-bottom: 8px;
-            font-weight: bold;
-            color: var(--color-text);
+            font-weight: 500;
+            color: var(--secondary-color);
+            font-size: 14px;
         }
-
+        
         .form-group input,
         .form-group select {
             width: 100%;
-            padding: 10px;
-            border: 1px solid var(--color-terciario);
-            border-radius: 4px;
-            font-size: 16px;
-        }
-
-        .form-row {
-            display: flex;
-            gap: 20px;
-        }
-
-        .form-row .form-group {
-            flex: 1;
-        }
-
-        .btn {
-            padding: 12px 20px;
-            border: none;
-            border-radius: 4px;
-            cursor: pointer;
-            font-weight: bold;
-            font-size: 16px;
+            padding: 12px 15px;
+            border: 1px solid #ddd;
+            border-radius: var(--border-radius);
+            font-size: 15px;
             transition: all 0.3s;
         }
-
-        .btn-primary {
-            background-color: var(--color-primario);
-            color: white;
+        
+        .form-group input:focus,
+        .form-group select:focus {
+            border-color: var(--primary-color);
+            outline: none;
+            box-shadow: 0 0 0 3px rgba(74, 111, 165, 0.2);
         }
-
-        .btn-primary:hover {
-            background-color: #0d2b9a;
+        
+        .form-group input[readonly] {
+            background-color: #f5f5f5;
+            color: #777;
         }
-
-        .btn-secondary {
-            background-color: var(--color-terciario);
-            color: var(--color-text);
-        }
-
-        .btn-secondary:hover {
-            background-color: #b0b0b0;
-        }
-
+        
         .button-group {
             display: flex;
+            justify-content: flex-end;
             gap: 15px;
             margin-top: 30px;
-            justify-content: flex-end;
         }
-
+        
+        .btn {
+            padding: 12px 25px;
+            border: none;
+            border-radius: var(--border-radius);
+            font-size: 16px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+        
+        .btn-primary {
+            background-color: var(--primary-color);
+            color: white;
+        }
+        
+        .btn-primary:hover {
+            background-color: #3a5a8a;
+            transform: translateY(-2px);
+        }
+        
+        .btn-secondary {
+            background-color: #e9ecef;
+            color: var(--dark-color);
+        }
+        
+        .btn-secondary:hover {
+            background-color: #d6d8db;
+            transform: translateY(-2px);
+        }
+        
         .alert {
             padding: 15px;
-            margin-bottom: 20px;
-            border-radius: 4px;
+            margin-bottom: 25px;
+            border-radius: var(--border-radius);
+            display: flex;
+            align-items: center;
+            gap: 10px;
         }
-
+        
         .alert-success {
-            background-color: #d4edda;
-            color: #155724;
-            border: 1px solid #c3e6cb;
+            background-color: rgba(var(--success-color), 0.2);
+            color: var(--success-color);
+            border-left: 4px solid var(--success-color);
         }
-
+        
         .alert-danger {
-            background-color: #f8d7da;
-            color: #721c24;
-            border: 1px solid #f5c6cb;
+            background-color: rgba(var(--danger-color), 0.2);
+            color: var(--danger-color);
+            border-left: 4px solid var(--danger-color);
         }
-
-        .status-badge {
-            display: inline-block;
-            padding: 5px 10px;
-            border-radius: 20px;
-            font-size: 14px;
-            font-weight: bold;
+        
+        .alert i {
+            font-size: 20px;
         }
-
-        .status-pendiente {
-            background-color: #fff3cd;
-            color: #856404;
-        }
-
-        .status-cancelada {
-            background-color: #f8d7da;
-            color: #721c24;
-        }
-
+        
         @media (max-width: 768px) {
-            .form-row {
+            .form-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .patient-info {
+                grid-template-columns: 1fr;
+            }
+            
+            .button-group {
                 flex-direction: column;
-                gap: 0;
+            }
+            
+            .btn {
+                width: 100%;
             }
             
             .container {
@@ -276,86 +366,108 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['actualizar_cita'])) {
 </head>
 <body>
     <div class="container">
-        <h1>Editar Cita</h1>
+        <h1><i class="fas fa-calendar-edit"></i> Editar Cita</h1>
         
         <?php if (!empty($mensaje)): ?>
             <div class="alert alert-<?= strpos($mensaje, 'Error') !== false ? 'danger' : 'success' ?>">
+                <i class="fas <?= strpos($mensaje, 'Error') !== false ? 'fa-exclamation-circle' : 'fa-check-circle' ?>"></i>
                 <?= htmlspecialchars($mensaje) ?>
             </div>
         <?php endif; ?>
         
         <?php if (empty($cita)): ?>
-            <p>Cita no encontrada</p>
+            <div class="alert alert-danger">
+                <i class="fas fa-exclamation-circle"></i>
+                Cita no encontrada
+            </div>
         <?php else: ?>
-            <div class="patient-info">
-                <h2>Paciente: <?= htmlspecialchars($cita['paciente_nombre']) ?></h2>
-                <p>Tratamiento actual: <?= htmlspecialchars($cita['tratamiento_nombre']) ?></p>
-                <p>Estado: 
-                    <span class="status-badge status-<?= strtolower($cita['estado']) ?>">
-                        <?= htmlspecialchars($cita['estado']) ?>
-                    </span>
-                </p>
+            <div class="patient-card">
+                <h2><i class="fas fa-user-injured"></i> Información del Paciente</h2>
+                <div class="patient-info">
+                    <div class="info-item">
+                        <span class="info-label">Nombre completo</span>
+                        <span class="info-value"><?= htmlspecialchars($cita['paciente_nombre']) ?></span>
+                    </div>
+                    
+                    <div class="info-item">
+                        <span class="info-label">Tratamiento actual</span>
+                        <span class="info-value"><?= htmlspecialchars($cita['tratamiento_nombre']) ?></span>
+                    </div>
+                    
+                    <div class="info-item">
+                        <span class="info-label">Estado de la cita</span>
+                        <span class="status-badge status-<?= strtolower($cita['estado']) ?>">
+                            <i class="fas <?= 
+                                $cita['estado'] == 'Pendiente' ? 'fa-clock' : 
+                                ($cita['estado'] == 'Cancelada' ? 'fa-times-circle' : 'fa-check-circle') 
+                            ?>"></i>
+                            <?= htmlspecialchars($cita['estado']) ?>
+                        </span>
+                    </div>
+                </div>
             </div>
             
-            <form method="POST">
-                <input type="hidden" name="cita_id" value="<?= $cita['IDcita'] ?>">
-                
-                <div class="form-row">
-                    <div class="form-group">
-                        <label for="fecha">Fecha*</label>
-                        <input type="date" id="fecha" name="fecha" required 
-                               value="<?= htmlspecialchars(date('Y-m-d', strtotime($cita['fecha']))) ?>">
+            <div class="form-container">
+                <form method="POST">
+                    <input type="hidden" name="cita_id" value="<?= $cita['IDcita'] ?>">
+                    
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label for="fecha"><i class="far fa-calendar-alt"></i> Fecha*</label>
+                            <input type="date" id="fecha" name="fecha" required 
+                                   value="<?= htmlspecialchars(date('Y-m-d', strtotime($cita['fecha']))) ?>">
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="hora"><i class="far fa-clock"></i> Hora*</label>
+                            <input type="time" id="hora" name="hora" required 
+                                   value="<?= htmlspecialchars(date('H:i', strtotime($cita['fecha']))) ?>">
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="tratamiento"><i class="fas fa-pills"></i> Tratamiento*</label>
+                            <select id="tratamiento" name="tratamiento" required>
+                                <?php foreach ($tratamientos as $tratamiento): ?>
+                                    <option value="<?= $tratamiento['IDtratamiento'] ?>" 
+                                            data-duracion="<?= $tratamiento['duracion'] ?>"
+                                            <?= $tratamiento['IDtratamiento'] == $cita['IDtratamiento'] ? 'selected' : '' ?>>
+                                        <?= htmlspecialchars($tratamiento['nombre']) ?>
+                                    </option>
+                                <?php endforeach; ?>
+                            </select>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="estado"><i class="fas fa-info-circle"></i> Estado*</label>
+                            <select id="estado" name="estado" required>
+                                <option value="Pendiente" <?= $cita['estado'] == 'Pendiente' ? 'selected' : '' ?>>Pendiente</option>
+                                <option value="Cancelada" <?= $cita['estado'] == 'Cancelada' ? 'selected' : '' ?>>Cancelada</option>
+                                <option value="Completada" <?= $cita['estado'] == 'Completada' ? 'selected' : '' ?>>Completada</option>
+                            </select>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="duracion"><i class="fas fa-hourglass-half"></i> Duración</label>
+                            <input type="text" id="duracion" name="duracion" readonly 
+                                   value="<?= htmlspecialchars($tratamientos[array_search($cita['IDtratamiento'], array_column($tratamientos, 'IDtratamiento'))]['duracion'] ?? '') ?> horas">
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="fechaFin"><i class="fas fa-stopwatch"></i> Hora de Fin</label>
+                            <input type="text" id="fechaFin" name="fechaFin" readonly>
+                        </div>
                     </div>
                     
-                    <div class="form-group">
-                        <label for="hora">Hora*</label>
-                        <input type="time" id="hora" name="hora" required 
-                               value="<?= htmlspecialchars(date('H:i', strtotime($cita['fecha']))) ?>">
+                    <div class="button-group">
+                        <a href="verCitas_Paciente.php" class="btn btn-secondary">
+                            <i class="fas fa-arrow-left"></i> Cancelar
+                        </a>
+                        <button type="submit" name="actualizar_cita" class="btn btn-primary">
+                            <i class="fas fa-save"></i> Guardar Cambios
+                        </button>
                     </div>
-                </div>
-                
-                <div class="form-row">
-                    <div class="form-group">
-                        <label for="tratamiento">Tratamiento*</label>
-                        <select id="tratamiento" name="tratamiento" required>
-                            <?php foreach ($tratamientos as $tratamiento): ?>
-                                <option value="<?= $tratamiento['IDtratamiento'] ?>" 
-                                        data-duracion="<?= $tratamiento['duracion'] ?>"
-                                        <?= $tratamiento['IDtratamiento'] == $cita['IDtratamiento'] ? 'selected' : '' ?>>
-                                    <?= htmlspecialchars($tratamiento['nombre']) ?>
-                                </option>
-                            <?php endforeach; ?>
-                        </select>
-                    </div>
-                    
-                    <div class="form-group">
-                        <label for="estado">Estado*</label>
-                        <select id="estado" name="estado" required>
-                            <option value="Pendiente" <?= $cita['estado'] == 'Pendiente' ? 'selected' : '' ?>>Pendiente</option>
-                            <option value="Cancelada" <?= $cita['estado'] == 'Cancelada' ? 'selected' : '' ?>>Cancelada</option>
-                            <option value="Completada" <?= $cita['estado'] == 'Completada' ? 'selected' : '' ?>>Completada</option>
-                        </select>
-                    </div>
-                </div>
-                
-                <div class="form-row">
-                    <div class="form-group">
-                        <label for="duracion">Duración (horas)</label>
-                        <input type="text" id="duracion" name="duracion" readonly 
-                               value="<?= htmlspecialchars($tratamientos[array_search($cita['IDtratamiento'], array_column($tratamientos, 'IDtratamiento'))]['duracion'] ?? '') ?>">
-                    </div>
-                    <div class="form-group">
-                        <label for="fechaFin">Hora de Fin</label>
-                        <input type="text" id="fechaFin" name="fechaFin" readonly>
-                    </div>
-                </div>
-                
-                <div class="button-group">
-                    <button href="verCitas_Paciente.php" type="submit" name="actualizar_cita" class="btn btn-primary">Guardar Cambios</button>
-                    <a href="verCitas_Paciente.php" class="btn btn-secondary">Cancelar</a>
-                    
-                </div>
-            </form>
+                </form>
+            </div>
         <?php endif; ?>
     </div>
 
@@ -415,3 +527,4 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['actualizar_cita'])) {
 </body>
 </html>
 <?php $con->close(); ?>
+
