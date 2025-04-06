@@ -262,6 +262,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['cancelar_cita'])) {
         .header-button.historial:hover {
             background-color: #007bff;
         }
+
+        .appointment-completada {
+            background-color: #4CAF50; /* Verde para citas completadas */
+        }
     </style>
 </head>
 <body>
@@ -329,64 +333,72 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['cancelar_cita'])) {
                 <h3 class="appointments-title">Citas Agendadas</h3>
                 
                 <?php
-                // Consulta para obtener las citas con información completa
-                $query = "SELECT 
-                            c.IDcita,
-                            c.fecha, 
-                            t.nombre as tratamiento, 
-                            t.detalles as descripcion,
-                            t.precio,
-                            c.estado
-                          FROM Citas c
-                          JOIN Tratamientos t ON c.IDtratamiento = t.IDtratamiento
-                          WHERE c.IDpaciente = '$paciente_id'
-                          ORDER BY c.fecha";
-                
-                $result = $con->query($query);
-                
-                if ($result->num_rows > 0) {
-                    while ($row = $result->fetch_assoc()) {
-                        // Formatear fecha y hora
-                        $fecha_obj = new DateTime($row['fecha']);
-                        $fecha_formateada = $fecha_obj->format('d/m/Y');
-                        $hora_formateada = $fecha_obj->format('H:i');
+    // Consulta para obtener las citas con información completa
+    $query = "SELECT 
+                c.IDcita,
+                c.fecha, 
+                t.nombre as tratamiento, 
+                t.detalles as descripcion,
+                t.precio,
+                c.estado
+              FROM Citas c
+              JOIN Tratamientos t ON c.IDtratamiento = t.IDtratamiento
+              WHERE c.IDpaciente = '$paciente_id'
+              ORDER BY c.fecha";
+    
+    $result = $con->query($query);
+    
+    if ($result->num_rows > 0) {
+        while ($row = $result->fetch_assoc()) {
+            // Formatear fecha y hora
+            $fecha_obj = new DateTime($row['fecha']);
+            $fecha_formateada = $fecha_obj->format('d/m/Y');
+            $hora_formateada = $fecha_obj->format('H:i');
 
-                        // Formatear precio
-                        $precio_formateado = '$' . number_format($row['precio'], 2);
+            // Formatear precio
+            $precio_formateado = '$' . number_format($row['precio'], 2);
 
-                        // Determinar clase CSS según el estado
-                        $clase_estado = strtolower($row['estado']) == 'pendiente' ? 
-                                         'appointment-pendiente' : 'appointment-cancelada';
+            // Determinar clase CSS según el estado
+            $estado = strtolower($row['estado']);
+            $clase_estado = 'appointment-pendiente'; // Por defecto
+            
+            if ($estado == 'cancelada') {
+                $clase_estado = 'appointment-cancelada';
+            } elseif ($estado == 'completada') {
+                $clase_estado = 'appointment-completada';
+            }
 
-                        echo '<div class="appointment-item">';
-                        echo '<div class="appointment-card '.$clase_estado.'">';
-                        echo '<p class="appointment-status">Estado: '.htmlspecialchars($row['estado']).'</p>';
-                        echo '<p><span class="appointment-field">Fecha:</span> '.htmlspecialchars($fecha_formateada).'</p>';
-                        echo '<p><span class="appointment-field">Hora:</span> '.htmlspecialchars($hora_formateada).'</p>';
-                        echo '<p><span class="appointment-field">Tratamiento:</span> '.htmlspecialchars($row['tratamiento']).'</p>';
-                        echo '<p><span class="appointment-field">Precio:</span> '.htmlspecialchars($precio_formateado).'</p>';
-                        echo '<p><span class="appointment-field">Descripción:</span> '.nl2br(htmlspecialchars($row['descripcion'])).'</p>';
-                        echo '</div>';
+            echo '<div class="appointment-item">';
+            echo '<div class="appointment-card '.$clase_estado.'">';
+            echo '<p class="appointment-status">Estado: '.htmlspecialchars($row['estado']).'</p>';
+            echo '<p><span class="appointment-field">Fecha:</span> '.htmlspecialchars($fecha_formateada).'</p>';
+            echo '<p><span class="appointment-field">Hora:</span> '.htmlspecialchars($hora_formateada).'</p>';
+            echo '<p><span class="appointment-field">Tratamiento:</span> '.htmlspecialchars($row['tratamiento']).'</p>';
+            echo '<p><span class="appointment-field">Precio:</span> '.htmlspecialchars($precio_formateado).'</p>';
+            echo '<p><span class="appointment-field">Descripción:</span> '.nl2br(htmlspecialchars($row['descripcion'])).'</p>';
+            echo '</div>';
 
-                        // Botón de editar
-                        echo '<a href="editarCita_Paciente.php?id='.$row['IDcita'].'" class="btn-editar">Editar Cita</a>';
+            // Botón de editar (solo para citas pendientes)
+            if ($estado == 'pendiente') {
+                echo '<a href="editarCita_Paciente.php?id='.$row['IDcita'].'" class="btn-editar">Editar Cita</a>';
+            }
 
-                        // Botón de cancelar (solo para citas pendientes)
-                        if (strtolower($row['estado']) == 'pendiente') {
-                            echo '<form method="POST">';
-                            echo '<input type="hidden" name="cita_id" value="'.$row['IDcita'].'">';
-                            echo '<button type="submit" name="cancelar_cita" class="btn-cancelar">Cancelar Cita</button>';
-                            echo '</form>';
-                        }
+            // Botón de cancelar (solo para citas pendientes)
+            if ($estado == 'pendiente') {
+                echo '<form method="POST">';
+                echo '<input type="hidden" name="cita_id" value="'.$row['IDcita'].'">';
+                echo '<button type="submit" name="cancelar_cita" class="btn-cancelar">Cancelar Cita</button>';
+                echo '</form>';
+            }
 
-                        echo '</div>';
-                    }
-                } else {
-                    echo '<p class="no-appointments">No tienes citas agendadas actualmente</p>';
-                }
-                
-                $con->close();
-                ?>
+            echo '</div>';
+        }
+    } else {
+        echo '<p class="no-appointments">No tienes citas agendadas actualmente</p>';
+    }
+    
+    $con->close();
+    ?>
             </div>
         </div>
     </div>
