@@ -70,9 +70,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['actualizar_cita'])) {
 
             // Check for overlapping appointments
             $query = "SELECT * FROM Citas WHERE 
-                      (fecha <= ? AND fechaFin >= ?) AND IDpaciente != ?";
+                      (fecha <= ? AND fechaFin >= ?) AND IDcita != ?";
             $stmt = $con->prepare($query);
-            $stmt->bind_param("ssi", $fechaFin, $datetime, $IDpaciente);
+            $stmt->bind_param("ssi", $fechaFin, $datetime, $cita_id);
             $stmt->execute();
             $overlapping = $stmt->get_result();
             $stmt->close();
