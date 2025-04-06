@@ -11,26 +11,60 @@
     $IDpaciente = $_SESSION['user_id']; // Get the current user's ID
 
     // Fetch available treatments
-    $query = "SELECT IDtratamiento, nombre FROM Tratamientos";
+    $query = "SELECT IDtratamiento, nombre, duracion FROM Tratamientos";
     $result = mysqli_query($con, $query);
 
     if ($_SERVER['REQUEST_METHOD'] == "POST") {
         $fecha = $_POST['fecha'];
         $hora = $_POST['hora'];
         $IDtratamiento = $_POST['IDtratamiento'];
+        $duracion = (int)$_POST['duracion']; // Ensure duracion is cast to an integer
 
-        if (!empty($fecha) && !empty($hora) && !empty($IDtratamiento)) {
+        // Get the current date
+        $currentDate = date('Y-m-d');
+
+        // Validate that the selected date is not in the past and not the same as today
+        if ($fecha <= $currentDate) {
+            echo "<script>alert('La fecha debe ser un día futuro. No puede ser hoy ni una fecha pasada.');</script>";
+            echo "<script>window.location.href = 'pacienteAgendarCita.php';</script>";
+            exit;
+        }
+
+        // Validate that the hour is within the allowed range
+        if ($hora < "10:00:00" || $hora > "18:00:00") {
+            echo "<script>alert('La hora debe estar entre las 10:00 AM y las 6:00 PM.');</script>";
+            echo "<script>window.location.href = 'pacienteAgendarCita.php';</script>";
+            exit;
+        }
+
+        if (!empty($fecha) && !empty($hora) && !empty($IDtratamiento) && !empty($duracion)) {
             // Combine date and time into a single datetime value
             $datetime = $fecha . ' ' . $hora;
 
-            // Insert the new appointment into the Citas table
-            $query = "INSERT INTO Citas (IDpaciente, IDtratamiento, fecha) VALUES ('$IDpaciente', '$IDtratamiento', '$datetime')";
+            // Calculate fechaFin by adding the duration to the start time
+            $startDateTime = new DateTime($datetime);
+            $startDateTime->modify("+$duracion hours"); // Add the duration as hours
+            $fechaFin = $startDateTime->format('Y-m-d H:i:s');
+
+            // Check for overlapping appointments
+            $query = "SELECT * FROM Citas WHERE 
+                      (fecha <= '$fechaFin' AND fechaFin >= '$datetime')";
             $result = mysqli_query($con, $query);
 
-            if ($result) {
-                echo "<script>alert('Cita agendada exitosamente.'); window.location.href='verCitas_Paciente.php';</script>";
+            if (mysqli_num_rows($result) > 0) {
+                echo "<script>alert('Ya existe una cita en ese horario. Por favor, elija otro horario.');</script>";
+                echo "<script>window.location.href = 'pacienteAgendarCita.php';</script>";
+                exit;
             } else {
-                echo "<script>alert('Error al agendar la cita.');</script>";
+                // Insert the new appointment into the Citas table
+                $query = "INSERT INTO Citas (IDpaciente, IDtratamiento, fecha, fechaFin) VALUES ('$IDpaciente', '$IDtratamiento', '$datetime', '$fechaFin')";
+                $result = mysqli_query($con, $query);
+
+                if ($result) {
+                    echo "<script>alert('Cita agendada exitosamente.'); window.location.href='verCitas_Paciente.php';</script>";
+                } else {
+                    echo "<script>alert('Error al agendar la cita.');</script>";
+                }
             }
         } else {
             echo "<script>alert('Por favor, complete todos los campos.');</script>";
@@ -164,6 +198,53 @@
             }
         }
     </style>
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            initializeEventListeners();
+        });
+
+        function initializeEventListeners() {
+            const tratamientoSelect = document.getElementById("IDtratamiento");
+            const horaInput = document.getElementById("hora");
+            const fechaInput = document.getElementById("fecha");
+
+            // Attach the onchange event listener to the dropdown
+            tratamientoSelect.addEventListener("change", updateDuration);
+
+            // Attach the input event listener to the hora field to recalculate fechaFin
+            horaInput.addEventListener("input", updateDuration);
+
+            // Attach the onchange event listener to the fecha field
+            fechaInput.addEventListener("change", updateDuration);
+        }
+
+        function updateDuration() {
+            const tratamientoSelect = document.getElementById("IDtratamiento");
+            const duracionInput = document.getElementById("duracion");
+            const fechaFinInput = document.getElementById("fechaFin");
+
+            // Get the selected option
+            const selectedOption = tratamientoSelect.options[tratamientoSelect.selectedIndex];
+
+            // Get the "data-duracion" attribute from the selected option
+            const duracion = selectedOption.getAttribute("data-duracion");
+
+            // Update the "duracion" input field
+            duracionInput.value = duracion ? `${duracion} horas` : "";
+
+            // Calculate and update the "fechaFin" input field
+            const horaInicio = document.getElementById("hora").value;
+            if (duracion && horaInicio) {
+                const [hours, minutes] = horaInicio.split(":").map(Number);
+                const duracionHoras = parseInt(duracion, 10);
+                const fechaFin = new Date();
+                fechaFin.setHours(hours + duracionHoras, minutes);
+                fechaFinInput.value = `${fechaFin.getHours().toString().padStart(2, '0')}:${fechaFin.getMinutes().toString().padStart(2, '0')}`;
+            } else {
+                fechaFinInput.value = "";
+            }
+        }
+    </script>
 </head>
 <body>
     <div class="form-container">
@@ -176,18 +257,25 @@
             <input type="time" id="hora" name="hora" required>
 
             <label for="IDtratamiento">Tratamiento:</label>
-            <select id="IDtratamiento" name="IDtratamiento" required>
+            <select id="IDtratamiento" name="IDtratamiento" required onchange="updateDuration()">
                 <option value="">Seleccione un tratamiento</option>
                 <?php
                     while ($row = mysqli_fetch_assoc($result)) {
-                        echo "<option value='" . htmlspecialchars($row['IDtratamiento']) . "'>" . htmlspecialchars($row['nombre']) . "</option>";
+                        echo "<option value='" . htmlspecialchars($row['IDtratamiento']) . "' data-duracion='" . htmlspecialchars($row['duracion']) . "'>" . htmlspecialchars($row['nombre']) . "</option>";
                     }
                 ?>
             </select>
 
+            <label for="duracion">Duración (horas):</label>
+            <input type="text" id="duracion" name="duracion" readonly>
+
+            <label for="fechaFin">Hora de Fin:</label>
+            <input type="text" id="fechaFin" name="fechaFin" readonly>
+
             <button type="submit">Agendar Cita</button>
-            <a href ="catalogoTratamientos.php" class ="btn-link">
+            <a href="catalogoTratamientos.php" class="btn-link">
                 <i class="fas fa-arrow-left"></i> Regresar
+            </a>
         </form>
     </div>
 </body>
