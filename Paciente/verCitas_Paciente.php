@@ -192,6 +192,22 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['cancelar_cita'])) {
             background-color: #b71c1c;
         }
         
+        .btn-editar {
+            display: inline-block;
+            background-color: #4CAF50;
+            color: white;
+            text-decoration: none;
+            padding: 10px 15px;
+            border-radius: 6px;
+            font-weight: bold;
+            transition: background-color 0.3s;
+            margin-top: 10px;
+        }
+
+        .btn-editar:hover {
+            background-color: #45a049;
+        }
+        
         .mensaje {
             padding: 10px;
             margin: 10px 0;
@@ -215,11 +231,51 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['cancelar_cita'])) {
             font-style: italic;
             padding: 20px;
         }
+
+        .header-buttons {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            display: flex;
+            gap: 10px;
+        }
+
+        .header-button {
+            padding: 10px 20px;
+            background-color: #007bff;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            text-decoration: none;
+            font-size: 14px;
+        }
+
+        .header-button:hover {
+            background-color: #0056b3;
+        }
+
+        .header-button.historial {
+            background-color: #007bff;
+        }
+
+        .header-button.historial:hover {
+            background-color: #007bff;
+        }
     </style>
 </head>
 <body>
-    <!-- Flecha de retroceso -->
-    <a href="javascript:history.back()" class="back-button">←</a>
+    <div class="header-buttons">
+        <button class="header-button historial" onclick="window.location.href='VerHistorial_Paciente.php'">
+            <i class="fas fa-history"></i> Ver Historial
+        </button>
+        <button class="header-button" onclick="window.location.href='../verPerfil.php'">
+            <i class="fas fa-user"></i> Ver Perfil
+        </button>
+        <button class="header-button" onclick="window.location.href='catalogoTratamientos.php'">
+            <i class="fas fa-user"></i> Catalogo
+        </button>
+    </div>
     
     <!-- Título centrado -->
     <div class="header">
@@ -238,7 +294,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['cancelar_cita'])) {
         <!-- Sección izquierda (historial clínico) -->
         <div class="left-section">
             <div class="medical-history">
-                <h3>Historial clínico</h3>
+                <h3>Datos de usuario</h3>
                 
                 <div class="form-group">
                     <label for="nombre">Nombre</label>
@@ -259,7 +315,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['cancelar_cita'])) {
                 </div>
                 
                 <div class="form-group">
-                    <label for="detalles">Detalles médicos</label>
+                    <label for="detalles">Detalles</label>
                     <textarea id="detalles" name="detalles" readonly rows="4"><?php 
                         echo htmlspecialchars($user_data['detalles'] ?? ''); 
                     ?></textarea>
@@ -289,19 +345,19 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['cancelar_cita'])) {
                 $result = $con->query($query);
                 
                 if ($result->num_rows > 0) {
-                    while($row = $result->fetch_assoc()) {
+                    while ($row = $result->fetch_assoc()) {
                         // Formatear fecha y hora
                         $fecha_obj = new DateTime($row['fecha']);
                         $fecha_formateada = $fecha_obj->format('d/m/Y');
                         $hora_formateada = $fecha_obj->format('H:i');
-                        
+
                         // Formatear precio
                         $precio_formateado = '$' . number_format($row['precio'], 2);
-                        
+
                         // Determinar clase CSS según el estado
                         $clase_estado = strtolower($row['estado']) == 'pendiente' ? 
                                          'appointment-pendiente' : 'appointment-cancelada';
-                        
+
                         echo '<div class="appointment-item">';
                         echo '<div class="appointment-card '.$clase_estado.'">';
                         echo '<p class="appointment-status">Estado: '.htmlspecialchars($row['estado']).'</p>';
@@ -311,7 +367,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['cancelar_cita'])) {
                         echo '<p><span class="appointment-field">Precio:</span> '.htmlspecialchars($precio_formateado).'</p>';
                         echo '<p><span class="appointment-field">Descripción:</span> '.nl2br(htmlspecialchars($row['descripcion'])).'</p>';
                         echo '</div>';
-                        
+
+                        // Botón de editar
+                        echo '<a href="editarCita_Paciente.php?id='.$row['IDcita'].'" class="btn-editar">Editar Cita</a>';
+
                         // Botón de cancelar (solo para citas pendientes)
                         if (strtolower($row['estado']) == 'pendiente') {
                             echo '<form method="POST">';
@@ -319,13 +378,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['cancelar_cita'])) {
                             echo '<button type="submit" name="cancelar_cita" class="btn-cancelar">Cancelar Cita</button>';
                             echo '</form>';
                         }
-                        
+
                         echo '</div>';
                     }
                 } else {
                     echo '<p class="no-appointments">No tienes citas agendadas actualmente</p>';
                 }
-                //hola
+                
                 $con->close();
                 ?>
             </div>
