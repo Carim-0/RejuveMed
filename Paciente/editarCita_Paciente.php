@@ -56,7 +56,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['actualizar_cita'])) {
         // Validate that the selected date is not in the past and not the same as today
         if ($fecha <= $currentDate) {
             $mensaje = "La fecha debe ser un día futuro. No puede ser hoy ni una fecha pasada.";
-        } elseif ($hora < "10:00:00" || $hora > "18:00:00") {
+        } elseif ($hora < "10:00:00" || $hora > "18:00:00" || $startDateTime->format('H:i') > "18:00") {
             // Validate that the hour is within the allowed range
             $mensaje = "La hora debe estar entre las 10:00 AM y las 6:00 PM.";
         } else {
@@ -70,9 +70,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['actualizar_cita'])) {
 
             // Check for overlapping appointments
             $query = "SELECT * FROM Citas WHERE 
-                      (fecha <= ? AND fechaFin >= ?) AND IDpaciente != ?";
+            (fecha <= ? AND fechaFin >= ?) AND IDcita != ?";
             $stmt = $con->prepare($query);
-            $stmt->bind_param("ssi", $fechaFin, $datetime, $IDpaciente);
+            $stmt->bind_param("ssi", $fechaFin, $datetime, $cita_id);
             $stmt->execute();
             $overlapping = $stmt->get_result();
             $stmt->close();
