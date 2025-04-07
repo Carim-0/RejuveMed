@@ -71,7 +71,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['actualizar_cita'])) {
 
     // Validate the date
     if ($fecha <= $currentDate) {
-        $mensaje = "La fecha debe ser un día futuro. No puede ser hoy ni una fecha pasada.";
+        $mensaje = "La fecha tiene que ser después de mañana como mínimo.";
     }
 
     // Validate the date
