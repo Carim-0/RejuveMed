@@ -38,21 +38,35 @@ if ($result_paciente && $result_paciente->num_rows > 0) {
 }
 $stmt->close();
 
-// Handle form submission to delete the historial medico
+// Procesar eliminación del historial
 if ($_SERVER['REQUEST_METHOD'] == "POST" && isset($_POST['delete'])) {
-    // Delete the record from the Historial Medico table
-    $query = "DELETE FROM `Historial Medico` WHERE IDpaciente = ?";
-    $stmt = $con->prepare($query);
-    $stmt->bind_param("i", $id_paciente);
-    $stmt->execute();
-
-    if ($stmt->affected_rows > 0) {
-        echo "<script>alert('Historial médico eliminado exitosamente.'); window.location.href='tablaPacientes.php';</script>";
-    } else {
-        echo "<script>alert('Error al eliminar el historial médico.');</script>";
-    }
+    // 1. Primero archivamos en la tabla Archivo
+    $query_archivar = "INSERT INTO Archivo (IDpaciente, detalles) VALUES (?, ?)";
+    $stmt = $con->prepare($query_archivar);
+    $stmt->bind_param("is", $id_paciente, $historial['detalles']);
+    $archivado = $stmt->execute();
     $stmt->close();
-    exit; // Stop further execution after deletion
+    
+    if ($archivado) {
+        // 2. Luego eliminamos el registro original
+        $query_eliminar = "DELETE FROM `Historial Medico` WHERE IDpaciente = ?";
+        $stmt = $con->prepare($query_eliminar);
+        $stmt->bind_param("i", $id_paciente);
+        $eliminado = $stmt->execute();
+        
+        if ($eliminado && $stmt->affected_rows > 0) {
+            echo "<script>
+                alert('Historial médico archivado y eliminado exitosamente.');
+                window.location.href='tablaPacientes.php';
+            </script>";
+        } else {
+            echo "<script>alert('Error al eliminar el historial médico.');</script>";
+        }
+        $stmt->close();
+    } else {
+        echo "<script>alert('Error al archivar el historial médico.');</script>";
+    }
+    exit;
 }
 
 // Handle form submission to update the historial medico
