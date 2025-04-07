@@ -88,7 +88,7 @@ if ($_SERVER['REQUEST_METHOD'] == "POST" && isset($_POST['agendar_cita'])) {
 
         // Validate that the selected date is not in the past and not the same as today
         if ($fecha <= $currentDate) {
-            echo "<script>alert('La fecha debe ser un día futuro. No puede ser hoy ni una fecha pasada.');</script>";
+            echo "<script>alert('La fecha tiene que ser después de mañana como mínimo.');</script>";
             echo "<script>window.location.href = 'verCitasPacientes_Personal.php';</script>";
             exit;
             }
