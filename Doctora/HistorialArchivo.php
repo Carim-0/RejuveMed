@@ -3,19 +3,43 @@ session_start();
 include("../connection.php");
 include("../functions.php");
 
-// Verificar permisos 
+// Verificar permisos
 $user_data = check_login($con);
-if($_SESSION['user_type'] !== 'Personal') { 
+if($_SESSION['user_type'] !== 'Personal') {
     header("Location: ../unauthorized.php");
     exit();
 }
 
-// Consulta para obtener todos los historiales archivados
+// Configuración de paginación
+$por_pagina = 10;
+$pagina = isset($_GET['pagina']) ? (int)$_GET['pagina'] : 1;
+$inicio = ($pagina - 1) * $por_pagina;
+
+// Búsqueda
+$busqueda = isset($_GET['busqueda']) ? trim($_GET['busqueda']) : '';
+$condicion_busqueda = '';
+if(!empty($busqueda)) {
+    $condicion_busqueda = "AND (p.nombre LIKE '%".mysqli_real_escape_string($con, $busqueda)."%' 
+                          OR a.detalles LIKE '%".mysqli_real_escape_string($con, $busqueda)."%')";
+}
+
+// Consulta principal con paginación
 $query = "SELECT a.IDpaciente, a.detalles, p.nombre as nombre_paciente 
           FROM Archivo a
           JOIN Pacientes p ON a.IDpaciente = p.IDpaciente
-          ORDER BY a.IDpaciente";
+          WHERE 1=1 $condicion_busqueda
+          ORDER BY a.IDpaciente
+          LIMIT $inicio, $por_pagina";
 $result = mysqli_query($con, $query);
+
+// Total de registros para paginación
+$query_total = "SELECT COUNT(*) as total 
+                FROM Archivo a
+                JOIN Pacientes p ON a.IDpaciente = p.IDpaciente
+                WHERE 1=1 $condicion_busqueda";
+$result_total = mysqli_query($con, $query_total);
+$total_registros = mysqli_fetch_assoc($result_total)['total'];
+$total_paginas = ceil($total_registros / $por_pagina);
 ?>
 
 <!DOCTYPE html>
@@ -37,9 +61,9 @@ $result = mysqli_query($con, $query);
         }
         
         body {
-            background-color: var(--color-secundario);
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            padding-bottom: 50px;
+            color: var(--color-texto);
+            background-color: var(--color-secundario);
         }
         
         .header-container {
@@ -47,64 +71,42 @@ $result = mysqli_query($con, $query);
             color: white;
             padding: 20px 0;
             margin-bottom: 30px;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
         }
         
-        .card {
-            border-radius: 10px;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
-            margin-bottom: 20px;
-        }
-        
-        .card-header {
-            background-color: var(--color-primario);
-            color: white;
-            border-radius: 10px 10px 0 0 !important;
-            padding: 15px 20px;
-        }
-        
-        .historial-content {
-            white-space: pre-wrap;
-            padding: 20px;
-            background-color: white;
-            border-radius: 0 0 10px 10px;
-        }
-        
-        .btn-volver {
-            background-color: var(--color-primario);
-            color: white;
-            margin-top: 20px;
-        }
-        
-        .btn-volver:hover {
-            background-color: #142a8a;
-            color: white;
-        }
-        
-        .badge-archivado {
-            background-color: var(--color-advertencia);
-            color: var(--color-texto);
-        }
-        
-        .table-responsive {
-            border-radius: 8px;
-            overflow: hidden;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-        }
-        
-        .table thead {
-            background-color: var(--color-primario);
-            color: white;
+        .header-container h1 {
+            font-weight: 600;
         }
         
         .action-link {
             color: var(--color-primario);
             text-decoration: none;
-            margin: 0 5px;
+            transition: color 0.3s;
         }
         
         .action-link:hover {
+            color: #0d6efd;
             text-decoration: underline;
+        }
+        
+        .historial-content {
+            padding: 15px;
+            max-height: 400px;
+            overflow-y: auto;
+            white-space: pre-line;
+        }
+        
+        .pagination .page-item.active .page-link {
+            background-color: var(--color-primario);
+            border-color: var(--color-primario);
+        }
+        
+        .pagination .page-link {
+            color: var(--color-primario);
+        }
+        
+        .search-box {
+            margin-bottom: 20px;
         }
     </style>
 </head>
@@ -116,6 +118,24 @@ $result = mysqli_query($con, $query);
     </div>
 
     <div class="container">
+        <!-- Barra de búsqueda -->
+        <div class="row search-box">
+            <div class="col-md-6">
+                <form method="GET" class="input-group">
+                    <input type="text" class="form-control" name="busqueda" value="<?= htmlspecialchars($busqueda) ?>" 
+                           placeholder="Buscar por nombre o detalles...">
+                    <button class="btn btn-primary" type="submit">
+                        <i class="fas fa-search"></i> Buscar
+                    </button>
+                    <?php if(!empty($busqueda)): ?>
+                        <a href="historiales_archivados.php" class="btn btn-secondary">
+                            <i class="fas fa-times"></i> Limpiar
+                        </a>
+                    <?php endif; ?>
+                </form>
+            </div>
+        </div>
+        
         <?php if(mysqli_num_rows($result) > 0): ?>
             <div class="table-responsive">
                 <table class="table table-hover">
@@ -134,7 +154,8 @@ $result = mysqli_query($con, $query);
                                 <td><?= htmlspecialchars($row['nombre_paciente']) ?></td>
                                 <td>
                                     <div style="max-height: 100px; overflow-y: auto;">
-                                        <?= nl2br(htmlspecialchars($row['detalles'])) ?>
+                                        <?= nl2br(htmlspecialchars(substr($row['detalles'], 0, 200))) ?>
+                                        <?= strlen($row['detalles']) > 200 ? '...' : '' ?>
                                     </div>
                                 </td>
                                 <td>
@@ -159,7 +180,7 @@ $result = mysqli_query($con, $query);
                                                 <div class="card-header">
                                                     <h6 class="mb-0">
                                                         <i class="fas fa-user"></i> Paciente: <?= htmlspecialchars($row['nombre_paciente']) ?>
-                                                        <span class="badge badge-archivado ms-2">Archivado</span>
+                                                        <span class="badge bg-warning text-dark ms-2">Archivado</span>
                                                     </h6>
                                                 </div>
                                                 <div class="historial-content">
@@ -179,14 +200,61 @@ $result = mysqli_query($con, $query);
                     </tbody>
                 </table>
             </div>
+            
+            <!-- Paginación -->
+            <nav aria-label="Page navigation">
+                <ul class="pagination justify-content-center">
+                    <?php if($pagina > 1): ?>
+                        <li class="page-item">
+                            <a class="page-link" href="?pagina=1&busqueda=<?= urlencode($busqueda) ?>">
+                                <i class="fas fa-angle-double-left"></i>
+                            </a>
+                        </li>
+                        <li class="page-item">
+                            <a class="page-link" href="?pagina=<?= $pagina-1 ?>&busqueda=<?= urlencode($busqueda) ?>">
+                                <i class="fas fa-angle-left"></i>
+                            </a>
+                        </li>
+                    <?php endif; ?>
+                    
+                    <?php 
+                    $inicio_pagina = max(1, $pagina - 2);
+                    $fin_pagina = min($total_paginas, $pagina + 2);
+                    
+                    for($i = $inicio_pagina; $i <= $fin_pagina; $i++): ?>
+                        <li class="page-item <?= $i == $pagina ? 'active' : '' ?>">
+                            <a class="page-link" href="?pagina=<?= $i ?>&busqueda=<?= urlencode($busqueda) ?>">
+                                <?= $i ?>
+                            </a>
+                        </li>
+                    <?php endfor; ?>
+                    
+                    <?php if($pagina < $total_paginas): ?>
+                        <li class="page-item">
+                            <a class="page-link" href="?pagina=<?= $pagina+1 ?>&busqueda=<?= urlencode($busqueda) ?>">
+                                <i class="fas fa-angle-right"></i>
+                            </a>
+                        </li>
+                        <li class="page-item">
+                            <a class="page-link" href="?pagina=<?= $total_paginas ?>&busqueda=<?= urlencode($busqueda) ?>">
+                                <i class="fas fa-angle-double-right"></i>
+                            </a>
+                        </li>
+                    <?php endif; ?>
+                </ul>
+            </nav>
+            
+            <div class="text-center text-muted mb-4">
+                Mostrando <?= ($inicio + 1) ?> a <?= min($inicio + $por_pagina, $total_registros) ?> de <?= $total_registros ?> registros
+            </div>
         <?php else: ?>
             <div class="alert alert-info text-center">
-                <i class="fas fa-info-circle"></i> No hay historiales médicos archivados.
+                <i class="fas fa-info-circle"></i> No se encontraron historiales médicos archivados.
             </div>
         <?php endif; ?>
         
         <div class="text-center mt-4">
-            <a href="tablaPacientes.php" class="btn btn-volver">
+            <a href="tablaPacientes.php" class="btn btn-primary">
                 <i class="fas fa-arrow-left"></i> Volver a la lista de pacientes
             </a>
         </div>
