@@ -29,6 +29,10 @@ $citas = [];
 $error_message = '';
 $success_message = '';
 
+if (isset($_GET['success']) && $_GET['success'] == 1) {
+    $success_message = "La cita se agendó correctamente.";
+}
+
 if (isset($_GET['paciente_id'])) {
     $paciente_id = $_GET['paciente_id'];
 
@@ -55,7 +59,7 @@ if (isset($_GET['paciente_id'])) {
                     FROM Citas c
                     JOIN Tratamientos t ON c.IDtratamiento = t.IDtratamiento
                     WHERE c.IDpaciente = ?
-                    ORDER BY c.fecha ASC"; // Order by fecha in ascending order
+                    ORDER BY c.fecha ASC";
     $stmt = $con->prepare($query_citas);
     $stmt->bind_param("i", $paciente_id);
     $stmt->execute();
@@ -113,11 +117,12 @@ if ($_SERVER['REQUEST_METHOD'] == "POST" && isset($_POST['agendar_cita'])) {
             exit;
             } 
 
+            
             // Check for overlapping appointments
             $query = "SELECT * FROM Citas WHERE 
-                      (fecha <= ? AND fechaFin >= ?) AND IDpaciente = ?";
+                      (fecha <= ? AND fechaFin >= ?)";
             $stmt = $con->prepare($query);
-            $stmt->bind_param("ssi", $fechaFin, $datetime, $paciente_id);
+            $stmt->bind_param("ss", $fechaFin, $datetime); // Removed $paciente_id
             $stmt->execute();
             $result = $stmt->get_result();
             $stmt->close();
@@ -134,7 +139,9 @@ if ($_SERVER['REQUEST_METHOD'] == "POST" && isset($_POST['agendar_cita'])) {
                 $stmt->bind_param("sssis", $datetime, $fechaFin, $paciente_id, $IDtratamiento, $estado);
 
                 if ($stmt->execute()) {
-                    $success_message = "La cita se agendó correctamente.";
+                    // Redirect to refresh the page and display the updated list of citas
+                    header("Location: verCitasPacientes_Doctora.php?paciente_id=$paciente_id&success=1");
+                    exit;
                 } else {
                     $error_message = "Error al agendar la cita: " . $con->error;
                 }
