@@ -234,6 +234,9 @@
         <button class="nav-button" onclick="window.location.href='calendario.php'">
             <i class="fas fa-calendar-alt"></i> Calendario
         </button>
+        <button class="nav-button" onclick="window.location.href='HistorialArchivo.php'">
+            <i class="fas fa-user-injured"></i> Archivo
+        </button>
     </div>
 
     <div class="container">
