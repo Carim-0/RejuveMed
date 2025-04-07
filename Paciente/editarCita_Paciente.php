@@ -55,7 +55,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['actualizar_cita'])) {
 
         // Validate that the selected date is not in the past and not the same as today
         if ($fecha <= $currentDate) {
-            $mensaje = "La fecha debe ser un día futuro. No puede ser hoy ni una fecha pasada.";
+            $mensaje = "La fecha tiene que ser después de mañana como mínimo.";
         } elseif ($hora < "10:00:00" || $hora > "18:00:00" || $startDateTime->format('H:i') > "18:00") {
             // Validate that the hour is within the allowed range
             $mensaje = "La hora debe estar entre las 10:00 AM y las 6:00 PM.";
