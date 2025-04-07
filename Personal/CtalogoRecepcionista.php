@@ -98,11 +98,7 @@
         <h1><br>
         Hola, recepcionista  <?php echo $user_data['nombre']; ?></h1>
 
-        <!-- Opciones Agendar cita o ver citas -->
-        <div class="options">
-        <button class="btn" onclick="window.location.href='pacienteAgendarCita_Personal.php'">Agendar una cita</button>
-            
-        </div>
+        
 
         <!-- Calendario e Icono -->
         <div class="calendar-section">
