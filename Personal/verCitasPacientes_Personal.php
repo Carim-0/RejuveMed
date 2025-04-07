@@ -146,460 +146,470 @@ if ($_SERVER['REQUEST_METHOD'] == "POST" && isset($_POST['agendar_cita'])) {
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Vista Doctor - RejuveMed</title>
+  <title>Vista Recepcionista - RejuveMed</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   <style>
     :root {
-      --color-primario: #1a37b5;
-      --color-secundario: #FFF9EB;
-      --color-terciario: #C4C4C4;
-      --color-button: #fe652b;
-      --color-button-hover: #501801;
-      --color-text: #444444;
-      --color-fondo: #e2dfdf;
-      --color-white: #FFFFFF;
+      --primary-color: #4a6fa5;
+      --secondary-color: #6b8cae;
+      --accent-color: #4a6fa5;
+      --light-color: #f8f9fa;
+      --dark-color: #343a40;
+      --success-color: #28a745;
+      --warning-color: #ffc107;
+      --danger-color: #dc3545;
+      --border-radius: 8px;
+      --box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
     }
 
     * {
       margin: 0;
       padding: 0;
       box-sizing: border-box;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
     }
 
     body {
-      font-family: Arial, sans-serif;
+      background-color: #f0f2f5;
       display: flex;
-      background-color: #f5f5f5;
-      border: 0;
-      box-sizing: border-box;
-      padding: 20px;
       min-height: 100vh;
     }
 
-    .search-bar input,
-    .search-btn,
-    .search-btn:before,
-    .search-btn:after {
-      transition: all 0.25s ease-out;
-    }
-
-    .search-bar input,
-    .search-btn {
-      width: 3em;
-      height: 3em;
-    }
-
-    .search-bar input:invalid:not(:focus),
-    .search-btn {
-      cursor: pointer;
-    }
-
-    .search-bar,
-    .search-bar input:focus,
-    .search-bar input:valid {
-      width: 80%;
-    }
-
-    .search-bar input:focus,
-    .search-bar input:not(:focus)+.search-btn:focus {
-      outline: transparent;
-    }
-
-    .search-bar {
-      margin: auto;
-      padding: 1.5em;
-      justify-content: center;
-      max-width: 20em;
-    }
-
-    .search-bar input {
-      background: transparent;
-      border-radius: 1.5em;
-      box-shadow: 0 0 0 0.4em #171717 inset;
-      padding: 0.75em;
-      transform: translate(0.5em, 0.5em) scale(0.5);
-      transform-origin: 100% 0;
-      -webkit-appearance: none;
-      -moz-appearance: none;
-      appearance: none;
-    }
-
-    .search-bar input::-webkit-search-decoration {
-      -webkit-appearance: none;
-    }
-
-    .search-bar input:focus,
-    .search-bar input:valid {
-      background: #fff;
-      border-radius: 0.375em 0 0 0.375em;
-      box-shadow: 0 0 0 0.1em #d9d9d9 inset;
-      transform: scale(1);
-    }
-
-    .search-btn {
-      background: #171717;
-      border-radius: 0 0.75em 0.75em 0 / 0 1.5em 1.5em 0;
-      padding: 0.75em;
-      position: relative;
-      transform: translate(0.25em, 0.25em) rotate(45deg) scale(0.25, 0.125);
-      transform-origin: 0 50%;
-    }
-
-    .search-btn:before,
-    .search-btn:after {
-      content: "";
-      display: block;
-      opacity: 0;
-      position: absolute;
-    }
-
-    .search-btn:before {
-      border-radius: 50%;
-      box-shadow: 0 0 0 0.2em #f1f1f1 inset;
-      top: 0.75em;
-      left: 0.75em;
-      width: 1.2em;
-      height: 1.2em;
-    }
-
-    .search-btn:after {
-      background: #f1f1f1;
-      border-radius: 0 0.25em 0.25em 0;
-      top: 51%;
-      left: 51%;
-      width: 0.75em;
-      height: 0.25em;
-      transform: translate(0.2em, 0) rotate(45deg);
-      transform-origin: 0 50%;
-    }
-
-    .search-btn span {
-      display: inline-block;
-      overflow: hidden;
-      width: 1px;
-      height: 1px;
-    }
-
-    /* Active state */
-    .search-bar input:focus+.search-btn,
-    .search-bar input:valid+.search-btn {
-      background: #2762f3;
-      border-radius: 0 0.375em 0.375em 0;
-      transform: scale(1);
-    }
-
-    .search-bar input:focus+.search-btn:before,
-    .search-bar input:focus+.search-btn:after,
-    .search-bar input:valid+.search-btn:before,
-    .search-bar input:valid+.search-btn:after {
-      opacity: 1;
-    }
-
-    .search-bar input:focus+.search-btn:hover,
-    .search-bar input:valid+.search-btn:hover,
-    .search-bar input:valid:not(:focus)+.search-btn:focus {
-      background: #0c48db;
-    }
-
-    .search-bar input:focus+.search-btn:active,
-    .search-bar input:valid+.search-btn:active {
-      transform: translateY(1px);
-    }
-
-    /* Barra lateral (lista de pacientes) */
+    /* Sidebar Styles */
     .sidebar {
-      width: 30%;
-      background-color: #f1f1f1;
-      padding: 1rem;
+      width: 350px;
+      background-color: white;
+      border-right: 1px solid #e0e0e0;
+      padding: 25px;
       overflow-y: auto;
     }
 
-    .sidebar h2 {
-      margin-bottom: 1rem;
-      margin-top: 0;
-      color: #0066cc;
+    .search-container {
+      margin-bottom: 25px;
+      position: relative;
     }
 
-    .patient-information {
-      border: 1px solid #ccc;
-      border-radius: 8px;
-      padding: 20px;
-      background-color: white;
-      box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    .search-input {
+      width: 100%;
+      padding: 12px 15px;
+      padding-left: 40px;
+      border: 1px solid #ddd;
+      border-radius: var(--border-radius);
+      font-size: 15px;
+      transition: all 0.3s;
+    }
+
+    .search-input:focus {
+      border-color: var(--primary-color);
+      outline: none;
+      box-shadow: 0 0 0 3px rgba(74, 111, 165, 0.2);
+    }
+
+    .search-icon {
+      position: absolute;
+      left: 15px;
+      top: 50%;
+      transform: translateY(-50%);
+      color: var(--secondary-color);
+    }
+
+    .sidebar-title {
+      color: var(--primary-color);
+      font-size: 20px;
+      margin-bottom: 20px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
     }
 
     .patient-list {
       list-style: none;
     }
 
-    .patient-list li {
-      padding: 0.8rem;
-      border-bottom: 1px solid #ccc;
+    .patient-item {
+      padding: 15px;
+      border-radius: var(--border-radius);
+      margin-bottom: 10px;
       cursor: pointer;
-      transition: background-color 0.2s;
+      transition: all 0.3s;
+      border-left: 3px solid transparent;
+      background-color: var(--light-color);
     }
 
-    .patient-list li:hover {
-      background-color: #e0e0e0;
+    .patient-item:hover {
+      background-color: rgba(74, 111, 165, 0.1);
     }
 
-    .patient-list li.active {
-      background-color: #0066cc;
-      color: white;
+    .patient-item.active {
+      background-color: rgba(74, 111, 165, 0.1);
+      border-left: 3px solid var(--primary-color);
     }
 
-    /* Contenido principal (formulario y detalles) */
+    .patient-name {
+      font-weight: 500;
+      color: var(--dark-color);
+      margin-bottom: 5px;
+    }
+
+    .patient-age {
+      font-size: 14px;
+      color: var(--secondary-color);
+    }
+
+    /* Main Content Styles */
     .main-content {
       flex: 1;
-      padding: 1rem;
+      padding: 30px;
       overflow-y: auto;
     }
 
-    .form-container {
+    .patient-card {
+      background-color: white;
+      border-radius: var(--border-radius);
+      box-shadow: var(--box-shadow);
+      padding: 30px;
+      margin-bottom: 30px;
+    }
+
+    .card-title {
+      color: var(--primary-color);
+      font-size: 24px;
+      margin-bottom: 25px;
       display: flex;
-      gap: 30px;
-      margin-left: 20px;
-      margin-top: 20px;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .form-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+      gap: 20px;
+      margin-bottom: 20px;
     }
 
     .form-group {
-      display: flex;
-      flex-direction: column;
       margin-bottom: 15px;
-      width: 100%;
     }
 
     .form-group label {
       display: block;
-      margin-bottom: 5px;
-      font-weight: bold;
-      color: #555;
+      margin-bottom: 8px;
+      font-weight: 500;
+      color: var(--secondary-color);
+      font-size: 14px;
     }
 
     .form-group input,
     .form-group select,
     .form-group textarea {
       width: 100%;
-      padding: 0.5rem;
-      border: 1px solid #ccc;
-      border-radius: 4px;
+      padding: 12px 15px;
+      border: 1px solid #ddd;
+      border-radius: var(--border-radius);
+      font-size: 15px;
     }
 
-    .form-group input[readonly] {
-      background-color: #f5f5f5;
+    .form-group input[readonly],
+    .form-group textarea[readonly] {
+      background-color: var(--light-color);
+      color: #777;
+      border-color: #eee;
     }
 
-    .appointments-list {
-      list-style: none;
-      margin: 1rem 0;
-      padding: 0;
-      border: 1px solid #ccc;
-      border-radius: 4px;
-      color: #555;
+    .form-group textarea {
+      min-height: 120px;
+      resize: vertical;
     }
 
-    .appointments-list li {
-      padding: 0.8rem;
-      border-bottom: 1px solid #eee;
-      color: #555;
-    }
-
-    .appointments-list li:last-child {
-      border-bottom: none;
-    }
-
-    /* Encabezado de sección */
-    h3 {
-      margin-top: 1.5rem;
-      margin-bottom: 0.5rem;
-      color: #0066cc;
-    }
-
-    /* Botones */
-    .actions {
-      margin-top: 1.5rem;
+    .section-title {
+      color: var(--primary-color);
+      font-size: 18px;
+      margin: 25px 0 15px;
       display: flex;
+      align-items: center;
       gap: 10px;
     }
 
-    .btn {
-      padding: 0.6rem 1.2rem;
-      border: none;
-      border-radius: 4px;
-      cursor: pointer;
-      font-weight: bold;
-      transition: background-color 0.3s;
+    /* Appointments List */
+    .appointments-list {
+      list-style: none;
+      margin: 20px 0;
     }
 
-    .btn-save {
-      background-color: #28a745;
-      color: #fff;
-    }
-
-    .btn-save:hover {
-      background-color: #218838;
-    }
-
-    .btn-delete {
-      background-color: #dc3545;
-      color: #fff;
-    }
-
-    .btn-delete:hover {
-      background-color: #c82333;
-    }
-
-    /* Mensajes */
-    .alert {
-      padding: 10px;
+    .appointment-item {
+      padding: 15px;
+      border-radius: var(--border-radius);
       margin-bottom: 15px;
-      border-radius: 4px;
+      background-color: rgba(74, 111, 165, 0.05);
+      border-left: 4px solid var(--primary-color);
+    }
+
+    .appointment-field {
+      font-weight: 500;
+      color: var(--secondary-color);
+      font-size: 14px;
+      margin-bottom: 5px;
+    }
+
+    .appointment-value {
+      color: var(--dark-color);
+      margin-bottom: 10px;
+    }
+
+    .appointment-actions {
+      display: flex;
+      justify-content: flex-end;
+      margin-top: 10px;
+    }
+
+    .edit-link {
+      color: var(--primary-color);
+      text-decoration: none;
+      font-size: 14px;
+      display: flex;
+      align-items: center;
+      gap: 5px;
+    }
+
+    .edit-link:hover {
+      text-decoration: underline;
+    }
+
+    /* New Appointment Form */
+    .appointment-form {
+      margin-top: 30px;
+    }
+
+    .form-actions {
+      display: flex;
+      justify-content: flex-end;
+      margin-top: 20px;
+    }
+
+    .btn {
+      padding: 12px 25px;
+      border-radius: var(--border-radius);
+      font-size: 16px;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all 0.3s;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .btn-primary {
+      background-color: var(--primary-color);
+      color: white;
+      border: none;
+    }
+
+    .btn-primary:hover {
+      background-color: #3a5a8a;
+      transform: translateY(-2px);
+    }
+
+    /* Navigation Buttons */
+    .nav-buttons {
+      position: fixed;
+      bottom: 20px;
+      right: 20px;
+      display: flex;
+      gap: 15px;
+    }
+
+    .nav-button {
+      padding: 12px 20px;
+      background-color: var(--primary-color);
+      color: white;
+      border: none;
+      border-radius: var(--border-radius);
+      cursor: pointer;
+      font-weight: 500;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .nav-button:hover {
+      background-color: #3a5a8a;
+    }
+
+    /* Alerts */
+    .alert {
+      padding: 15px;
+      margin-bottom: 25px;
+      border-radius: var(--border-radius);
+      display: flex;
+      align-items: center;
+      gap: 10px;
     }
 
     .alert-success {
-      background-color: #d4edda;
-      color: #155724;
+      background-color: rgba(var(--success-color), 0.2);
+      color: var(--success-color);
+      border-left: 4px solid var(--success-color);
     }
 
     .alert-danger {
-      background-color: #f8d7da;
-      color: #721c24;
+      background-color: rgba(var(--danger-color), 0.2);
+      color: var(--danger-color);
+      border-left: 4px solid var(--danger-color);
+    }
+
+    /* Empty State */
+    .empty-state {
+      text-align: center;
+      padding: 40px 0;
+      color: #777;
+    }
+
+    .empty-state i {
+      font-size: 48px;
+      margin-bottom: 15px;
+      color: var(--secondary-color);
     }
 
     /* Responsive */
-    @media (max-width: 768px) {
+    @media (max-width: 1024px) {
       body {
         flex-direction: column;
       }
       
       .sidebar {
         width: 100%;
+        border-right: none;
+        border-bottom: 1px solid #e0e0e0;
       }
-    }
-
-    .bottom-buttons {
-      position: fixed;
-      bottom: 20px;
-      left: 20px;
-      display: flex;
-      flex-direction: column;
-      gap: 10px;
-    }
-
-    .bottom-buttons button {
-      padding: 10px 20px;
-      background-color: #007bff;
-      color: white;
-      border: none;
-      border-radius: 5px;
-      cursor: pointer;
-      font-size: 14px;
-    }
-
-    .bottom-buttons button:hover {
-      background-color: #0056b3;
+      
+      .nav-buttons {
+        position: static;
+        margin-top: 20px;
+        justify-content: center;
+      }
     }
   </style>
 </head>
 
 <body>
   <div class="sidebar">
-    <form action="" method="GET" class="search-bar">
-      <input type="search" name="search" pattern=".*\S.*" required 
+    <form action="" method="GET" class="search-container">
+      <i class="fas fa-search search-icon"></i>
+      <input type="search" name="search" class="search-input" 
              placeholder="Buscar paciente..." value="<?= htmlspecialchars($_GET['search'] ?? '') ?>">
-      <button class="search-btn" type="submit">
-        <span>Buscar</span>
-      </button>
     </form>
 
-    <h2>Pacientes:</h2>
+    <h2 class="sidebar-title"><i class="fas fa-users"></i> Pacientes</h2>
     <ul class="patient-list">
       <?php if (!empty($pacientes)): ?>
         <?php foreach ($pacientes as $paciente): ?>
-          <li class="<?= (isset($_GET['paciente_id']) && $_GET['paciente_id'] == $paciente['IDpaciente']) ? 'active' : '' ?>"
+          <li class="patient-item <?= (isset($_GET['paciente_id']) && $_GET['paciente_id'] == $paciente['IDpaciente']) ? 'active' : '' ?>"
               onclick="window.location.href='?search=<?= urlencode($_GET['search'] ?? '') ?>&paciente_id=<?= $paciente['IDpaciente'] ?>'">
-            <?= htmlspecialchars($paciente['nombre']) ?> 
-            (<?= htmlspecialchars($paciente['edad']) ?> años)
+            <div class="patient-name"><?= htmlspecialchars($paciente['nombre']) ?></div>
+            <div class="patient-age"><?= htmlspecialchars($paciente['edad']) ?> años</div>
           </li>
         <?php endforeach; ?>
       <?php else: ?>
-        <li>Ingrese un término de búsqueda</li>
+        <div class="empty-state">
+          <i class="fas fa-search"></i>
+          <p>Ingrese un término de búsqueda</p>
+        </div>
       <?php endif; ?>
     </ul>
   </div>
 
   <div class="main-content">
     <?php if (isset($paciente_actual)): ?>
-      <div class="patient-information">
-        <h2>Información del Paciente</h2>
+      <div class="patient-card">
+        <h2 class="card-title"><i class="fas fa-user-injured"></i> Información del Paciente</h2>
         
         <?php if (!empty($success_message)): ?>
-          <div class="alert alert-success"><?= htmlspecialchars($success_message) ?></div>
+          <div class="alert alert-success">
+            <i class="fas fa-check-circle"></i> <?= htmlspecialchars($success_message) ?>
+          </div>
         <?php elseif (!empty($error_message)): ?>
-          <div class="alert alert-danger"><?= htmlspecialchars($error_message) ?></div>
+          <div class="alert alert-danger">
+            <i class="fas fa-exclamation-circle"></i> <?= htmlspecialchars($error_message) ?>
+          </div>
         <?php endif; ?>
 
-        <div class="patient-details">
+        <div class="form-grid">
           <div class="form-group">
-            <label for="nombre">Nombre:</label>
+            <label for="nombre">Nombre</label>
             <input type="text" id="nombre" name="nombre" readonly
                    value="<?= htmlspecialchars($paciente_actual['nombre'] ?? '') ?>">
           </div>
 
           <div class="form-group">
-            <label for="edad">Edad:</label>
+            <label for="edad">Edad</label>
             <input type="text" id="edad" name="edad" readonly
                    value="<?= htmlspecialchars($paciente_actual['edad'] ?? '') ?>">
           </div>
 
           <div class="form-group">
-            <label for="telefono">Teléfono:</label>
+            <label for="telefono">Teléfono</label>
             <input type="text" id="telefono" name="telefono" readonly
                    value="<?= htmlspecialchars($paciente_actual['telefono'] ?? '') ?>">
           </div>
-
-          <h3>Detalles</h3>
-          <div class="form-group">
-            <textarea id="detalles" name="detalles" readonly rows="4"><?= 
-              htmlspecialchars($paciente_actual['detalles'] ?? '') 
-            ?></textarea>
-          </div>
-
-          <h3>Citas Agendadas</h3>
-          <ul class="appointments-list">
-            <?php if (!empty($citas)): ?>
-              <?php foreach ($citas as $cita): ?>
-                <li>
-                  <strong>Fecha:</strong> <?= htmlspecialchars($cita['fecha']) ?><br>
-                  <strong>Tratamiento:</strong> <?= htmlspecialchars($cita['tratamiento']) ?><br>
-                  <strong>Estado:</strong> <?= htmlspecialchars($cita['estado']) ?><br>
-                  <strong>Duración:</strong> <?= htmlspecialchars($cita['duracion']) ?> <strong>hrs</strong>
-                  <a href="editarCita_Personal.php?id=<?= $cita['IDcita'] ?>" title="Editar">✏️</a>
-                </li>
-              <?php endforeach; ?>
-            <?php else: ?>
-              <li>No hay citas agendadas</li>
-            <?php endif; ?>
-          </ul>
         </div>
-        
-          <!-- Detalles de nueva cita -->
-        <h3>Nueva Cita</h3>
-        <form method="POST" id="citaForm">
+
+        <h3 class="section-title"><i class="fas fa-info-circle"></i> Detalles</h3>
+        <div class="form-group">
+          <textarea id="detalles" name="detalles" readonly><?= 
+            htmlspecialchars($paciente_actual['detalles'] ?? '') 
+          ?></textarea>
+        </div>
+
+        <h3 class="section-title"><i class="fas fa-calendar-check"></i> Citas Agendadas</h3>
+        <ul class="appointments-list">
+          <?php if (!empty($citas)): ?>
+            <?php foreach ($citas as $cita): ?>
+              <li class="appointment-item">
+                <div class="appointment-field">Fecha y Hora</div>
+                <div class="appointment-value"><?= htmlspecialchars($cita['fecha']) ?></div>
+                
+                <div class="appointment-field">Tratamiento</div>
+                <div class="appointment-value"><?= htmlspecialchars($cita['tratamiento']) ?></div>
+                
+                <div class="appointment-field">Estado</div>
+                <div class="appointment-value"><?= htmlspecialchars($cita['estado']) ?></div>
+                
+                <div class="appointment-field">Duración</div>
+                <div class="appointment-value"><?= htmlspecialchars($cita['duracion']) ?> horas</div>
+                
+                <div class="appointment-actions">
+                  <a href="editarCita_Personal.php?id=<?= $cita['IDcita'] ?>" class="edit-link">
+                    <i class="fas fa-edit"></i> Editar Cita
+                  </a>
+                </div>
+              </li>
+            <?php endforeach; ?>
+          <?php else: ?>
+            <div class="empty-state">
+              <i class="far fa-calendar-times"></i>
+              <p>No hay citas agendadas</p>
+            </div>
+          <?php endif; ?>
+        </ul>
+
+        <!-- Formulario de Nueva Cita -->
+        <h3 class="section-title"><i class="fas fa-plus-circle"></i> Nueva Cita</h3>
+        <form method="POST" id="citaForm" class="appointment-form">
           <input type="hidden" name="paciente_id" value="<?= $paciente_actual['IDpaciente'] ?>">
           
-          <div class="form-container">
+          <div class="form-grid">
             <div class="form-group">
-              <label for="fecha">Fecha:</label>
+              <label for="fecha">Fecha</label>
               <input type="date" id="fecha" name="fecha" required>
             </div>
             <div class="form-group">
-              <label for="hora">Hora:</label>
-              <input type="time" id="hora" name="hora" required>
+              <label for="hora">Hora</label>
+              <input type="time" id="hora" name="hora" required min="10:00" max="18:00">
             </div>
           </div>
          
           <div class="form-group">
-            <label for="tratamiento">Tratamiento:</label>
+            <label for="tratamiento">Tratamiento</label>
             <select id="IDtratamiento" name="IDtratamiento" required>
                 <option value="">Seleccione un tratamiento</option>
                 <?php
@@ -614,50 +624,42 @@ if ($_SERVER['REQUEST_METHOD'] == "POST" && isset($_POST['agendar_cita'])) {
             </select>
           </div>
 
-          <div class="form-group">
-            <label for="duracion">Duración (horas):</label>
-            <input type="text" id="duracion" name="duracion" readonly>
-          </div>
-          <div class="form-group">
-            <label for="horaFin">Hora de Fin:</label>
-            <input type="text" id="horaFin" name="horaFin" readonly>
+          <div class="form-grid">
+            <div class="form-group">
+              <label for="duracion">Duración</label>
+              <input type="text" id="duracion" name="duracion" readonly>
+            </div>
+            <div class="form-group">
+              <label for="horaFin">Hora de Fin</label>
+              <input type="text" id="horaFin" name="horaFin" readonly>
+            </div>
           </div>
 
-          <div class="actions">
-              <button type="submit" name="agendar_cita" class="btn btn-save">Agendar Cita</button>
+          <div class="form-actions">
+            <button type="submit" name="agendar_cita" class="btn btn-primary">
+              <i class="fas fa-calendar-plus"></i> Agendar Cita
+            </button>
           </div>
         </form>
       </div>
     <?php else: ?>
-      <div class="patient-information">
-        <h2>Seleccione un paciente</h2>
-        <p>Busque y seleccione un paciente de la lista para ver su información médica y citas.</p>
+      <div class="patient-card">
+        <div class="empty-state">
+          <i class="fas fa-user-injured"></i>
+          <h2>Seleccione un paciente</h2>
+          <p>Busque y seleccione un paciente de la lista para ver su información médica y citas.</p>
+        </div>
       </div>
     <?php endif; ?>
   </div>
 
-  <div class="bottom-buttons">
-    <button onclick="window.location.href='CtalogoRecepcionista.php'">Ir a Tratamientos</button>
+  <div class="nav-buttons">
+    <button class="nav-button" onclick="window.location.href='CtalogoRecepcionista.php'">
+      <i class="fas fa-pills"></i> Tratamientos
+    </button>
   </div>
 
   <script>
-    document.querySelector('.search-bar input').focus();
-    
-    document.getElementById('citaForm')?.addEventListener('submit', function(e) {
-      const fecha = document.getElementById('fecha').value;
-      const hora = document.getElementById('hora').value;
-      
-      if (!fecha || !hora) {
-        e.preventDefault();
-        alert('Por favor complete todos los campos requeridos');
-        return;
-      }
-      
-      
-      
-      
-    });
-
     document.addEventListener("DOMContentLoaded", function () {
         const tratamientoSelect = document.getElementById("IDtratamiento");
         const horaInput = document.getElementById("hora");
@@ -686,8 +688,46 @@ if ($_SERVER['REQUEST_METHOD'] == "POST" && isset($_POST['agendar_cita'])) {
         }
 
         // Attach event listeners
-        tratamientoSelect.addEventListener("change", updateFields);
-        horaInput.addEventListener("input", updateFields);
+        if (tratamientoSelect) {
+            tratamientoSelect.addEventListener("change", updateFields);
+        }
+        if (horaInput) {
+            horaInput.addEventListener("input", updateFields);
+        }
+
+        // Form validation
+        document.getElementById('citaForm')?.addEventListener('submit', function(e) {
+          const fecha = document.getElementById('fecha').value;
+          const hora = document.getElementById('hora').value;
+          const tratamiento = document.getElementById('IDtratamiento').value;
+          
+          if (!fecha || !hora || !tratamiento) {
+            e.preventDefault();
+            alert('Por favor complete todos los campos requeridos');
+            return;
+          }
+          
+          // Validación de fecha futura
+          const fechaCita = new Date(fecha);
+          const hoy = new Date();
+          hoy.setHours(0, 0, 0, 0);
+          
+          if (fechaCita <= hoy) {
+            e.preventDefault();
+            alert('La fecha debe ser posterior a hoy');
+            return;
+          }
+          
+          // Validación de horario (10:00 - 18:00)
+          const horaCita = hora.split(':');
+          const horaNum = parseInt(horaCita[0]);
+          
+          if (horaNum < 10 || horaNum >= 18) {
+            e.preventDefault();
+            alert('La hora debe estar entre las 10:00 AM y las 6:00 PM');
+            return;
+          }
+        });
     });
   </script>
 </body>
