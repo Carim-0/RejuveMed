@@ -25,7 +25,7 @@
 
         // Validate that the selected date is not in the past and not the same as today
         if ($fecha <= $currentDate) {
-            echo "<script>alert('La fecha debe ser un día futuro. No puede ser hoy ni una fecha pasada.');</script>";
+            echo "<script>alert('La fecha tiene que ser después de mañana como mínimo.');</script>";
             echo "<script>window.location.href = 'pacienteAgendarCita.php';</script>";
             exit;
         }
