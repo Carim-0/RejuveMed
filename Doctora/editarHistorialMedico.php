@@ -38,6 +38,25 @@ if ($result_paciente && $result_paciente->num_rows > 0) {
 }
 $stmt->close();
 
+// Get the current system date
+$currentDate = date('Y-m-d');
+
+// Fetch the cita with the same date and matching IDpaciente
+$query_cita = "SELECT c.IDcita, c.fecha, c.estado, t.nombre as tratamiento, t.duracion 
+               FROM Citas c
+               JOIN Tratamientos t ON c.IDtratamiento = t.IDtratamiento
+               WHERE DATE(c.fecha) = ? AND c.IDpaciente = ? LIMIT 1";
+$stmt = $con->prepare($query_cita);
+$stmt->bind_param("si", $currentDate, $id_paciente);
+$stmt->execute();
+$result_cita = $stmt->get_result();
+
+$cita = null;
+if ($result_cita && $result_cita->num_rows > 0) {
+    $cita = $result_cita->fetch_assoc();
+}
+$stmt->close();
+
 // Procesar eliminación del historial
 if ($_SERVER['REQUEST_METHOD'] == "POST" && isset($_POST['delete'])) {
     // 1. Primero archivamos en la tabla Archivo
@@ -69,25 +88,50 @@ if ($_SERVER['REQUEST_METHOD'] == "POST" && isset($_POST['delete'])) {
     exit;
 }
 
-// Handle form submission to update the historial medico
-if ($_SERVER['REQUEST_METHOD'] == "POST" && !isset($_POST['delete'])) {
+// Handle form submission to update the historial medico and cita
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && !isset($_POST['delete'])) {
     $detalles = $_POST['detalles'];
 
+    // Update the Historial Médico
     if (!empty($detalles)) {
-        // Update the detalles column in the Historial Medico table
         $query = "UPDATE `Historial Medico` SET detalles = ? WHERE IDpaciente = ?";
         $stmt = $con->prepare($query);
         $stmt->bind_param("si", $detalles, $id_paciente);
         $stmt->execute();
 
         if ($stmt->affected_rows > 0) {
-            echo "<script>alert('Historial médico actualizado exitosamente.'); window.location.href='tablaPacientes.php';</script>";
+            $historial_updated = true;
         } else {
-            echo "<script>alert('No se realizaron cambios o ocurrió un error.');</script>";
+            $historial_updated = false;
         }
         $stmt->close();
     } else {
         echo "<script>alert('El campo de detalles no puede estar vacío.');</script>";
+    }
+
+    // Update the Cita (if available)
+    if (isset($_POST['id_cita']) && isset($_POST['estado'])) {
+        $new_estado = $_POST['estado'];
+        $id_cita = $_POST['id_cita'];
+
+        $query_update_cita = "UPDATE Citas SET estado = ? WHERE IDcita = ?";
+        $stmt = $con->prepare($query_update_cita);
+        $stmt->bind_param("si", $new_estado, $id_cita);
+        $stmt->execute();
+
+        if ($stmt->affected_rows > 0) {
+            $cita_updated = true;
+        } else {
+            $cita_updated = false;
+        }
+        $stmt->close();
+    }
+
+    // Display success or error messages
+    if ($historial_updated || $cita_updated) {
+        echo "<script>alert('Cambios guardados exitosamente.'); window.location.href='editarHistorialMedico.php?id=$id_paciente';</script>";
+    } else {
+        echo "<script>alert('No se realizaron cambios o ocurrió un error.');</script>";
     }
 }
 ?>
@@ -128,12 +172,18 @@ if ($_SERVER['REQUEST_METHOD'] == "POST" && !isset($_POST['delete'])) {
             padding: 20px;
         }
 
+        .contenedor-principal {
+            display: flex;
+            gap: 20px;
+            justify-content: center;
+            align-items: flex-start;
+        }
+
         .contenedor-edicion {
+            flex: 1;
             background-color: var(--color-fondo);
             border-radius: 10px;
             box-shadow: var(--sombra);
-            width: 100%;
-            max-width: 500px;
             overflow: hidden;
         }
 
@@ -142,12 +192,6 @@ if ($_SERVER['REQUEST_METHOD'] == "POST" && !isset($_POST['delete'])) {
             color: white;
             padding: 20px;
             text-align: center;
-        }
-
-        .titulo-edicion {
-            font-size: 24px;
-            font-weight: 600;
-            margin: 0;
         }
 
         .form-content {
@@ -171,94 +215,90 @@ if ($_SERVER['REQUEST_METHOD'] == "POST" && !isset($_POST['delete'])) {
             border: 1px solid var(--color-borde);
             border-radius: 6px;
             font-size: 16px;
-            transition: border-color 0.3s;
-        }
-
-        .form-control:focus {
-            border-color: var(--color-primario);
-            outline: none;
-            box-shadow: 0 0 0 3px rgba(26, 111, 181, 0.1);
-        }
-
-        .btn {
-            display: inline-block;
-            padding: 12px 20px;
-            border-radius: 6px;
-            font-size: 16px;
-            font-weight: 500;
-            cursor: pointer;
-            transition: all 0.3s;
-            text-align: center;
-            border: none;
-        }
-
-        .btn-primary {
-            background-color: var(--color-primario);
-            color: white;
-            width: 100%;
-        }
-
-        .btn-primary:hover {
-            background-color: #0d4b7a;
-        }
-
-        .btn-link {
-            color: var(--color-primario);
-            text-decoration: none;
-            display: inline-block;
-            margin-top: 15px;
-            font-size: 14px;
-        }
-
-        .btn-link:hover {
-            text-decoration: underline;
         }
     </style>
 </head>
 <body>
-    
+    <div class="contenedor-principal">
+        <div class="contenedor-edicion">
+            <div class="header-edicion">
+                <h1 class="titulo-edicion">
+                    <i class="fas fa-notes-medical"></i> Editar Historial Médico
+                </h1>
+            </div>
+            
+            <div class="form-content">
+                <form method="post">
+                    <!-- Left Form: Editar Historial Médico -->
+                    <div class="form-group">
+                        <label for="id_paciente">ID del Paciente</label>
+                        <input type="text" class="form-control" id="id_paciente" name="id_paciente" 
+                               value="<?php echo htmlspecialchars($id_paciente); ?>" readonly>
+                    </div>
 
-    <div class="contenedor-edicion">
-        <div class="header-edicion">
-            <h1 class="titulo-edicion">
-                <i class="fas fa-notes-medical"></i> Editar Historial Médico
-            </h1>
-        </div>
-        
-        <div class="form-content">
-            <form method="post">
-                <div class="form-group">
-                    <label for="id_paciente">ID del Paciente</label>
-                    <input type="text" class="form-control" id="id_paciente" name="id_paciente" 
-                           value="<?php echo htmlspecialchars($id_paciente); ?>" readonly>
-                </div>
+                    <div class="form-group">
+                        <label for="nombre">Nombre del Paciente</label>
+                        <input type="text" class="form-control" id="nombre" name="nombre" 
+                               value="<?php echo htmlspecialchars($paciente['nombre']); ?>" readonly>
+                    </div>
 
-                <div class="form-group">
-                    <label for="nombre">Nombre del Paciente</label>
-                    <input type="text" class="form-control" id="nombre" name="nombre" 
-                        value="<?php echo htmlspecialchars($paciente['nombre']); ?>" readonly>
-                </div>
-                
-                <div class="form-group">
-                    <label for="detalles">Detalles del Historial Médico</label>
-                    <textarea class="form-control" id="detalles" name="detalles" rows="6" required><?php 
-                        echo htmlspecialchars($historial['detalles']); 
-                    ?></textarea>
-                </div>
-                
-                <button type="submit" class="btn btn-primary">
-                    <i class="fas fa-save"></i> Guardar Cambios
-                </button>
+                    <div class="form-group">
+                        <label for="detalles">Detalles del Historial Médico</label>
+                        <textarea class="form-control" id="detalles" name="detalles" rows="6" required><?php 
+                            echo htmlspecialchars($historial['detalles']); 
+                        ?></textarea>
+                    </div>
 
-                <button type="submit" name="delete" class="btn btn-primary" style="background-color: var(--color-error);"
-                        onclick="return confirm('¿Estás seguro de que deseas eliminar este historial médico?');">
-                    <i class="fas fa-trash"></i> Eliminar Historial
-                </button>
-                
-                <a href="tablaPacientes.php" class="btn-link">
-                    <i class="fas fa-arrow-left"></i> Volver a la lista de pacientes
-                </a>
-            </form>
+                    <!-- Right Form: Cita del Día -->
+                    <?php if ($cita): ?>
+                        <div class="form-group">
+                            <label for="id_cita">ID de la Cita</label>
+                            <input type="text" class="form-control" id="id_cita" name="id_cita" 
+                                   value="<?php echo htmlspecialchars($cita['IDcita']); ?>" readonly>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="fecha_cita">Fecha de la Cita</label>
+                            <input type="text" class="form-control" id="fecha_cita" name="fecha_cita" 
+                                   value="<?php echo htmlspecialchars(date('d/m/Y', strtotime($cita['fecha']))); ?>" readonly>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="tratamiento">Tratamiento</label>
+                            <input type="text" class="form-control" id="tratamiento" name="tratamiento" 
+                                   value="<?php echo htmlspecialchars($cita['tratamiento']); ?>" readonly>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="duracion">Duración</label>
+                            <input type="text" class="form-control" id="duracion" name="duracion" 
+                                   value="<?php echo htmlspecialchars($cita['duracion'] . ' horas'); ?>" readonly>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="estado">Estado</label>
+                            <select class="form-control" id="estado" name="estado">
+                                <option value="Pendiente" <?php echo ($cita['estado'] === 'Pendiente') ? 'selected' : ''; ?>>Pendiente</option>
+                                <option value="Cancelada" <?php echo ($cita['estado'] === 'Cancelada') ? 'selected' : ''; ?>>Cancelada</option>
+                                <option value="Completada" <?php echo ($cita['estado'] === 'Completada') ? 'selected' : ''; ?>>Completada</option>
+                            </select>
+                        </div>
+                    <?php endif; ?>
+
+                    <button type="submit" class="btn btn-primary">
+                        <i class="fas fa-save"></i> Guardar Cambios
+                    </button>
+
+                    <button type="submit" name="delete" class="btn btn-primary" style="background-color: var(--color-error);"
+                            onclick="return confirm('¿Estás seguro de que deseas eliminar este historial médico?');">
+                        <i class="fas fa-trash"></i> Eliminar Historial
+                    </button>
+                    
+                    <a href="tablaPacientes.php" class="btn-link">
+                        <i class="fas fa-arrow-left"></i> Volver a la lista de pacientes
+                    </a>
+                </form>
+            </div>
         </div>
     </div>
 </body>
