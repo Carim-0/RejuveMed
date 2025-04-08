@@ -236,6 +236,35 @@
             .btn {
                 width: 100%;
             }
+
+            
+        .action-link {
+            color: var(--color-primario);
+            text-decoration: none;
+            transition: color 0.3s;
+        }
+        
+        .action-link:hover {
+            color: #0d6efd;
+            text-decoration: underline;
+        }
+        
+        .historial-content {
+            padding: 15px;
+            max-height: 400px;
+            overflow-y: auto;
+            white-space: pre-line;
+        }
+        
+        .pagination .page-item.active .page-link {
+            background-color: var(--color-primario);
+            border-color: var(--color-primario);
+        }
+        
+        .pagination .page-link {
+            color: var(--color-primario);
+        }
+        
         }
     </style>
 </head>
@@ -289,12 +318,32 @@
                 <a href="catalogoTratamientos.php" class="btn btn-secondary">
                     <i class="fas fa-arrow-left"></i> Regresar
                 </a>
-                <button type="submit" class="btn btn-primary">
+                <button type="submit" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#detalleModal">
                     <i class="fas fa-calendar-check"></i> Agendar Cita
                 </button>
             </div>
+
+             <div class="modal fade" id="detalleModal  "tabindex="-1" aria-hidden="true">
+                <div class="modal-dialog modal-dialog-centered">
+                                    <div class="modal-content">
+                                        <div class="modal-header">
+                                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                        </div>
+                                        <div class="modal-body">
+                                            <i class="fas fa-user"></i> Paciente
+                                        </div>
+                                        <div class="modal-footer">
+                                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                                                <i class="fas fa-times"></i> Regresar
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
         </form>
     </div>
+    
+    
+
 
     <script>
         document.addEventListener("DOMContentLoaded", function () {
