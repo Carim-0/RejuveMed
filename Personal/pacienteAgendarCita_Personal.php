@@ -191,6 +191,35 @@
             display: none;
         }
 
+        .overlay{
+            position: fixed;
+            top:0;
+            left:0;
+            width:100%;
+            height:100%;
+            display:flex;
+            justify-content:center;
+            align-items:center;
+            visibility:hidden;
+            opacity:0;
+            transition: opacity 0.3 ease;
+        }
+
+        .overlay.active{
+            visibility: visible;
+            opacity:1;
+        }
+
+        .popup{
+            background-color: rgba(94, 110, 141, 0.9);
+            padding: 30px;
+            border-radius: 8px;
+            text-align: center;
+        }
+
+
+
+
         @media (max-width: 576px) {
             .form-content {
                 padding: 20px;
@@ -226,9 +255,16 @@
                     }
                 ?>
             </select>
-
-            <button type="submit">Agendar Cita</button>
-            <a href="CtalogoRecepcionista.php" class="btn-link">
+            
+            <button onclick="document.querySelector('.overlay').classList.add('active')" 
+            type="submit" id='btnAgendarCita'>Agendar Cita</button>
+                <div class="overlay" onclick="this.classList.remove('active')">
+                    <div class ="popup">
+                        <p>Tu cita ha sido agendada.</p>
+                    </div>
+                </div>
+     
+                <a href="CtalogoRecepcionista.php" class="btn-link">
                 <i class="fas fa-arrow-left"></i> Regresar
             </a>
         </form>
