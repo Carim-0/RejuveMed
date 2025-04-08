@@ -58,9 +58,9 @@
                         setTimeout(loadSwal, 100);
                     } else {
                         Swal.fire({
-                            icon: "error",
-                            title: "Oops...",
-                            text: "Ya existe una cita en ese horario. Por favor, elija otro horario.",
+                            icon: 'error',
+                            title: 'Oops...',
+                            text: 'Ya existe una cita en ese horario. Por favor, elija otro horario.',
                             });
                     }
                 }
@@ -97,9 +97,9 @@
                             setTimeout(loadSwal, 100);
                         } else {
                             Swal.fire({
-                                icon: "error",
-                                title: "Oops...",
-                                text: "Ourrió un error al agendar la cita",
+                                icon: 'error',
+                                title: 'Oops',
+                                text: 'Ourrió un error al agendar la cita',
                                 });
                         }
                     }
