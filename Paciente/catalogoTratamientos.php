@@ -114,4 +114,6 @@
 <body>
     <div class="header-buttons">
         <button class="header-button historial" onclick="window.location.href='VerHistorial_Paciente.php'">
-            <i class="fas fa-history"></i> Ver Hist
+            <i class="fas fa-history"></i> Ver Historial
+        </button>
+        <button class="header-button" onclick="window.location.href='../ver
