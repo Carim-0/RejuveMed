@@ -321,9 +321,7 @@
                 <button type="submit" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#detalleModal">
                     <i class="fas fa-calendar-check"></i> Agendar Cita
                 </button>
-            </div>
-
-             <div class="modal fade" id="detalleModal  "tabindex="-1" role="dialog" aria-labelledby='detalleModal'>
+                <div class="modal fade" id="detalleModal  "tabindex="-1" role="dialog" aria-labelledby='detalleModal'>
                 <div class="modal-dialog modal-dialog-centered" role = 'document'>
                     <div class="modal-content">
                         <div class="modal-header">
@@ -342,6 +340,9 @@
                     </div>
                 </div>
             </div>
+            </div>
+
+            
         </form>
     </div>
     
