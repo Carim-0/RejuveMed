@@ -71,6 +71,7 @@
             transform: translateY(-2px);
         }
 
+        /* Estilos para los tratamientos */
         .treatments {
             display: flex;
             flex-wrap: wrap;
@@ -131,6 +132,7 @@
             box-shadow: 0 6px 10px rgba(0,0,0,0.15);
         }
 
+        /* Estilo para el calendario */
         .calendar-container {
             margin-top: 20px;
             display: flex;
@@ -170,25 +172,14 @@
     </style>
 </head>
 <body>
-<div class="header-container">
+    <div class="header-container">
         <div class="container">
             <h1 class="text-center mb-0">Hola, <?php echo $user_data['nombre']; ?></h1>
             <button class="profile-button" onclick="window.location.href='../verPerfil.php'">
-                <i class="fas fa-user-circle"></i> Hola, <?php echo $user_data['nombre']; ?>
+                <i class="fas fa-user-circle"></i> Ver Perfil
             </button>
-        </div>
-    </div>
-
-    <!-- Botones principales -->
-    <div class="main-buttons">
-        <button class="main-button" onclick="window.location.href='pacienteAgendarCita.php'">
-            <i class="fas fa-calendar-plus"></i> Agendar una cita
-        </button>
-        
-        <div class="calendar-icon">
-            <img src="../IMG/calendar-icon.png" alt="Calendario">
-            <button class="main-button" onclick="window.location.href='verCitas_Paciente.php'">
-                <i class="fas fa-calendar-check"></i> Ver citas agendadas
+            <button class="profile-button" onclick="window.location.href='../verHistorial.php'">
+                <i class="fas fa-history"></i> Ver Historial
             </button>
         </div>
     </div>
