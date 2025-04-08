@@ -51,7 +51,7 @@
 
         .treatment img {
             width: 100%;
-            height: 150px; /* Ajusta la altura */
+            height: 100px; /* Ajusta la altura */
             object-fit: cover; /* Mantiene la imagen recortada correctamente */
             border-radius: 8px;
             margin-bottom: 15px;
