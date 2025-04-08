@@ -8,6 +8,21 @@
         die("Acceso denegado. Por favor, inicie sesión como paciente.");
     }
 
+    echo "<script>
+                function loadSwal() {
+                    if (typeof Swal === 'undefined') {
+                        setTimeout(loadSwal, 100);
+                    } else {
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Oops...',
+                            text: 'Ya existe una cita en ese horario. Por favor, elija otro horario.',
+                            });
+                    }
+                }
+                loadSwal();
+                </script>";
+
     $IDpaciente = $_SESSION['user_id']; // Get the current user's ID
 
     // Fetch available treatments
@@ -385,7 +400,7 @@
 
 
     <script>
-        console.log('Hola 2');
+        console.log('Hola 3');
         document.addEventListener("DOMContentLoaded", function () {
             initializeEventListeners();
         });
