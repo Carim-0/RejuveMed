@@ -68,17 +68,20 @@
             background-color: #28a745; /* Verde */
             color: white;
             border: none;
-            padding: 12px 20px;
-            border-radius: 5px;
+            padding: 12px 24px;
+            border-radius: 6px;
             cursor: pointer;
             font-size: 16px;
             text-transform: uppercase;
-            transition: background-color 0.3s;
+            transition: all 0.3s ease;
             margin-top: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Sombra suave */
         }
 
         .treatment button:hover {
             background-color: #218838; /* Verde oscuro */
+            transform: translateY(-6px); /* Efecto de elevarse al hacer hover */
+            box-shadow: 0 8px 12px rgba(0, 0, 0, 0.2); /* Sombra más profunda */
         }
 
         /* Estilo para el mensaje de bienvenida */
@@ -103,34 +106,41 @@
         }
 
         .header-button {
-            padding: 10px 20px;
+            padding: 12px 24px;
             background-color: #007bff;
             color: white;
             border: none;
-            border-radius: 5px;
+            border-radius: 6px;
             cursor: pointer;
             font-size: 14px;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Sombra suave */
         }
 
         .header-button:hover {
-            background-color: #0056b3;
+            background-color: #0056b3; /* Azul oscuro */
+            transform: translateY(-6px); /* Elevar ligeramente */
+            box-shadow: 0 8px 12px rgba(0, 0, 0, 0.2); /* Sombra más profunda */
         }
 
         /* Botones específicos para "Ver citas" y "Agendar" */
         .btn {
             background-color: #007bff; /* Azul */
             color: white;
-            padding: 10px 20px;
-            border-radius: 5px;
+            padding: 12px 24px;
+            border-radius: 6px;
             cursor: pointer;
             font-size: 16px;
             display: inline-block;
             margin-top: 20px;
-            transition: background-color 0.3s;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Sombra suave */
         }
 
         .btn:hover {
-            background-color: #0056b3;
+            background-color: #0056b3; /* Azul oscuro */
+            transform: translateY(-6px); /* Elevar ligeramente */
+            box-shadow: 0 8px 12px rgba(0, 0, 0, 0.2); /* Sombra más profunda */
         }
 
         .calendar-section {
@@ -176,18 +186,4 @@
         <div class="treatments">
             <?php
                 // Loop through the fetched data and display each treatment
-                while ($row = mysqli_fetch_assoc($result)) {
-                    echo "<div class='treatment'>";
-                    echo "<h3>" . htmlspecialchars($row['nombre']) . "</h3>";
-                    echo "<img src='" . htmlspecialchars($row['imagenURL']) . "' alt='" . htmlspecialchars($row['nombre']) . "'>";
-                    echo "<form action='detalleTratamiento.php' method='GET'>";
-                    echo "<input type='hidden' name='IDtratamiento' value='" . htmlspecialchars($row['IDtratamiento']) . "'>";
-                    echo "<button type='submit'>Ver tratamiento</button>";
-                    echo "</form>";
-                    echo "</div>";
-                }
-            ?>
-        </div>
-    </div>
-</body>
-</html>
+                while ($row = mysqli
