@@ -1,108 +1,144 @@
 <?php
     session_start();
-    
+
     include("../connection.php");
-    include("../functions.php");    
 
-    $user_data = check_login($con);
+    // Ensure the user is logged in
+    if (!isset($_SESSION['user_id']) || $_SESSION['user_type'] !== 'Personal') {
+        die("Acceso denegado. Por favor, inicie sesión como personal.");
+    }
 
-    // Fetch data from the "Tratamientos" table
-    $query = "SELECT IDtratamiento, nombre, imagenURL FROM Tratamientos";
+    $IDpersonal = $_SESSION['user_id']; // Get the current user's ID
+
+    // Fetch available treatments
+    $query = "SELECT IDtratamiento, nombre FROM Tratamientos";
     $result = mysqli_query($con, $query);
 
-    if (!$result) {
-        die("Error al obtener los tratamientos: " . mysqli_error($con));
+    // Fetch patients for autocomplete
+    $pacientes_query = "SELECT IDpaciente, nombre FROM Pacientes";
+    $pacientes_result = mysqli_query($con, $pacientes_query);
+    $pacientes = [];
+    while ($row = mysqli_fetch_assoc($pacientes_result)) {
+        $pacientes[] = [
+            'id' => $row['IDpaciente'],
+            'nombre_completo' => $row['nombre']
+        ];
     }
-    
-    // Obtener citas del día actual
-    $today = date('Y-m-d');
-    $citas_query = "SELECT c.IDcita, c.fecha, p.nombre AS paciente_nombre, t.nombre AS tratamiento_nombre 
-                    FROM Citas c
-                    JOIN Pacientes p ON c.IDpaciente = p.IDpaciente
-                    JOIN Tratamientos t ON c.IDtratamiento = t.IDtratamiento
-                    WHERE DATE(c.fecha) = '$today'
-                    ORDER BY c.fecha ASC";
-    $citas_result = mysqli_query($con, $citas_query);
-    $citas_hoy = [];
-    if ($citas_result) {
-        $citas_hoy = mysqli_fetch_all($citas_result, MYSQLI_ASSOC);
+
+    if ($_SERVER['REQUEST_METHOD'] == "POST") {
+        $fecha = $_POST['fecha'];
+        $hora = $_POST['hora'];
+        $IDtratamiento = $_POST['IDtratamiento'];
+        $IDpaciente = $_POST['IDpaciente'];
+
+        if (!empty($fecha) && !empty($hora) && !empty($IDtratamiento) && !empty($IDpaciente)) {
+            // Combine date and time into a single datetime value
+            $datetime = $fecha . ' ' . $hora;
+
+            // Insert the new appointment into the Citas table
+            $query = "INSERT INTO Citas (IDpaciente, IDtratamiento, fecha) VALUES ('$IDpaciente', '$IDtratamiento', '$datetime')";
+            $result = mysqli_query($con, $query);
+
+            if ($result) {
+                echo "<script>alert('Cita agendada exitosamente.'); window.location.href='verCitasPacientes_Personal.php';</script>";
+            } else {
+                echo "<script>alert('Error al agendar la cita.');</script>";
+            }
+        } else {
+            echo "<script>alert('Por favor, complete todos los campos.');</script>";
+        }
     }
 ?>
 
 <!DOCTYPE html>
 <html lang="es">
 <head>
-    <meta charset="utf-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Agendar Cita</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    <title>Tratamientos</title>
+    <link rel="stylesheet" href="https://code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
     <style>
-        /* Estilos */
-        /* Usamos un esquema similar al anterior, asegurándonos de que se pueda visualizar bien. */
+        /* Estilos aquí... */
     </style>
 </head>
 <body>
-    <div class="header-container">
-        <div class="container">
-            <h1 class="text-center mb-0">Hola, <?php echo $user_data['nombre']; ?></h1>
-            <button class="profile-button" onclick="window.location.href='../verPerfil.php'">
-                <i class="fas fa-user-circle"></i> Hola, <?php echo $user_data['nombre']; ?>
-            </button>
-        </div>
-    </div>
+    <div class="form-container">
+        <h2>Agendar Cita</h2>
+        <form method="POST">
+            <label for="paciente">Paciente:</label>
+            <input type="text" id="paciente" name="paciente" placeholder="Buscar paciente..." autocomplete="off">
+            <input type="hidden" id="IDpaciente" name="IDpaciente">
 
-    <!-- Botones principales -->
-    <div class="buttons-container">
-        <!-- Enlace para agendar una cita -->
-        <button class="main-button" onclick="location.href='agendarCitaRecepcionista.php'">
-            <i class="fas fa-calendar-plus"></i> Agendar una cita
-        </button>
+            <label for="fecha">Fecha:</label>
+            <input type="date" id="fecha" name="fecha" required>
+
+            <label for="hora">Hora:</label>
+            <input type="time" id="hora" name="hora" required>
+
+            <label for="IDtratamiento">Tratamiento:</label>
+            <select id="IDtratamiento" name="IDtratamiento" required>
+                <option value="">Seleccione un tratamiento</option>
+                <?php
+                    mysqli_data_seek($result, 0); // Reset pointer to beginning
+                    while ($row = mysqli_fetch_assoc($result)) {
+                        echo "<option value='" . htmlspecialchars($row['IDtratamiento']) . "'>" . htmlspecialchars($row['nombre']) . "</option>";
+                    }
+                ?>
+            </select>
+            
+            <button type="submit" id="btnAgendarCita" class="btn-primary">Agendar Cita</button>
+            <div class="overlay" onclick="this.classList.remove('active')">
+                <div class ="popup">
+                    <p>Tu cita ha sido agendada.</p>
+                </div>
+            </div>
+     
+            <a href="CtalogoRecepcionista.php" class="btn-link">
+                <i class="fas fa-arrow-left"></i> Regresar
+            </a>
+        </form>
         
-        <!-- Enlace para ver todas las citas -->
-        <button class="main-button" onclick="location.href='verCitasRecepcionista.php'">
-            <i class="fas fa-calendar-check"></i> Ver todas las citas
-        </button>
-
-        <!-- Enlace para ver pacientes -->
-        <button class="main-button" onclick="location.href='verPacientes.php'">
+        <!-- Agregar el botón de "Ver Pacientes" -->
+        <a href="tablaPacientes.php" class="btn-link">
             <i class="fas fa-users"></i> Ver Pacientes
-        </button>
-        
-        <!-- Enlace para ver el historial -->
-        <button class="main-button" onclick="location.href='verHistorial.php'">
-            <i class="fas fa-history"></i> Ver Historial Clínico
-        </button>
-        
-        <!-- Enlace para ver citas de hoy -->
-        <div class="citas-btn-container">
-            <button class="main-button" id="verCitasHoyBtn" onclick="location.href='citasHoy.php'">
-                <i class="fas fa-calendar-day"></i> Citas de hoy
-            </button>
-            <?php if(count($citas_hoy) > 0): ?>
-                <span class="citas-badge" id="citasBadge"><?php echo count($citas_hoy); ?></span>
-            <?php endif; ?>
-        </div>
+        </a>
     </div>
 
-    <!-- Tratamientos con imágenes -->
-    <div class="treatments">
-        <?php
-            // Loop through the fetched data and display each treatment
-            while ($row = mysqli_fetch_assoc($result)) {
-                echo "<div class='treatment'>";
-                echo "<h3>" . htmlspecialchars($row['nombre']) . "</h3>";
-                echo "<img src='" . htmlspecialchars($row['imagenURL']) . "' alt='" . htmlspecialchars($row['nombre']) . "'>";
-                echo "<form action='detalleTratamiento.php' method='GET'>";
-                echo "<input type='hidden' name='IDtratamiento' value='" . htmlspecialchars($row['IDtratamiento']) . "'>";
-                echo "<button type='submit'><i class='fas fa-eye'></i> Ver tratamiento</button>";
-                echo "</form>";
-                echo "</div>";
-            }
-        ?>
-    </div>
-    
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.min.js"></script>
+    <script>
+        $(function() {
+            var pacientes = <?php echo json_encode($pacientes); ?>;
+            
+            // Prepare data for autocomplete
+            var pacienteData = pacientes.map(function(paciente) {
+                return {
+                    label: paciente.nombre_completo,
+                    value: paciente.nombre_completo,
+                    id: paciente.id
+                };
+            });
+            
+            // Initialize autocomplete
+            $("#paciente").autocomplete({
+                source: pacienteData,
+                minLength: 2,
+                select: function(event, ui) {
+                    $("#IDpaciente").val(ui.item.id);
+                    $("#paciente").val(ui.item.label);
+                    return false;
+                },
+                focus: function(event, ui) {
+                    $("#paciente").val(ui.item.label);
+                    return false;
+                }
+            }).autocomplete("instance")._renderItem = function(ul, item) {
+                return $("<li>")
+                    .append("<div>" + item.label + "</div>")
+                    .appendTo(ul);
+            };
+        });
+    </script>
 </body>
 </html>
