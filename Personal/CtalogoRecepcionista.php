@@ -20,8 +20,10 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Bienvenido Recepcionista</title>
+    <title>Bienvenido </title>
     <link rel="stylesheet" href="tratamientos_style.css">
+    <!-- Agregar los archivos CSS de Bootstrap -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
     <style>
         .treatments {
             display: flex;
@@ -50,17 +52,33 @@
             margin: 10px 0;
         }
 
-        .treatment button {
-            background-color: rgb(45, 153, 165);
+        /* Estilo para el botón "Ver citas agendadas" */
+        .btn.ver-citas {
+            background-color: #007bff; /* Azul */
             color: white;
             border: none;
-            padding: 10px;
+            padding: 10px 20px;
+            border-radius: 5px;
+            font-size: 16px;
+            cursor: pointer;
+        }
+
+        .btn.ver-citas:hover {
+            background-color: #0056b3; /* Azul oscuro */
+        }
+
+        /* Estilo para el botón "Ver tratamiento" */
+        .treatment button.ver-tratamiento {
+            background-color: #28a745; /* Verde */
+            color: white;
+            border: none;
+            padding: 10px 20px;
             border-radius: 5px;
             cursor: pointer;
         }
 
-        .treatment button:hover {
-            background-color:rgb(45, 153, 165);
+        .treatment button.ver-tratamiento:hover {
+            background-color: #218838; /* Verde oscuro */
         }
 
         .header-buttons {
@@ -71,7 +89,7 @@
             gap: 10px;
         }
 
-        .header-btn {
+        .header-button {
             padding: 10px 20px;
             background-color: #007bff;
             color: white;
@@ -82,34 +100,87 @@
             font-size: 14px;
         }
 
-        .header-btn:hover {
+        .header-button:hover {
             background-color: #0056b3;
+        }
+
+        .header-button.historial {
+            background-color: #007bff;
+        }
+
+        .header-button.historial:hover {
+            background-color: #007bff;
+        }
+
+        /* Estilo para el saludo con cuadro azul y letras blancas */
+        h1 {
+            background-color: #007bff; /* Azul */
+            color: white;
+            padding: 20px;
+            text-align: center;
+            border-radius: 8px;
+            margin-top: 40px;
+            font-size: 24px;
+        }
+
+        /* Carrusel de imágenes */
+        .carousel-inner img {
+            width: 100%;
+            height: auto;
         }
     </style>
 </head>
 <body>
     <div class="header-buttons">
-        <button class="header-btn" onclick="window.location.href='tablaPacientes.php'">Ver Pacientes</button>
-        <button class="header-btn" onclick="window.location.href='../verPerfil.php'">Ver Perfil</button>
+        <button class="header-button historial" onclick="window.location.href='VerHistorial_Paciente.php'">
+            <i class="fas fa-history"></i> Ver Historial
+        </button>
+        <button class="header-button" onclick="window.location.href='../verPerfil.php'">
+            <i class="fas fa-user"></i> Ver Perfil
+        </button>
     </div>
 
     <div class="container">
-        <!-- Mensaje de bienvenida -->
-        <h1><br>
-        Hola, recepcionista  <?php echo $user_data['nombre']; ?></h1>
+        <!-- Mensaje de bienvenida con estilo -->
+        <h1>Hola, <?php echo $user_data['nombre']; ?></h1>
 
-        
+        <!-- Carrusel de imágenes -->
+        <div id="carouselExample" class="carousel slide my-4">
+            <div class="carousel-inner">
+                <?php
+                    $first = true;
+                    // Loop through the fetched data and display each treatment image in the carousel
+                    while ($row = mysqli_fetch_assoc($result)) {
+                        $activeClass = $first ? " active" : "";
+                        echo "<div class='carousel-item$activeClass'>";
+                        echo "<img src='" . htmlspecialchars($row['imagenURL']) . "' class='d-block w-100' alt='" . htmlspecialchars($row['nombre']) . "'>";
+                        echo "</div>";
+                        $first = false;
+                    }
+                ?>
+            </div>
+            <button class="carousel-control-prev" type="button" data-bs-target="#carouselExample" data-bs-slide="prev">
+                <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                <span class="visually-hidden">Previous</span>
+            </button>
+            <button class="carousel-control-next" type="button" data-bs-target="#carouselExample" data-bs-slide="next">
+                <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                <span class="visually-hidden">Next</span>
+            </button>
+        </div>
+
+        <!-- Opciones Agendar cita o ver citas -->
+        <div class="options">
+            <button class="btn" onclick="window.location.href='pacienteAgendarCita.php'">Agendar una cita</button>
+        </div>
 
         <!-- Calendario e Icono -->
         <div class="calendar-section">
             <div class="calendar-icon">
                 <img src="../IMG/calendar-icon.png" alt="Calendario" width="30" height="30">
             </div>
-            <button class="btn" onclick="window.location.href='verCitasPacientes_Personal.php'">Ver citas agendadas</button>
+            <button class="btn ver-citas" onclick="window.location.href='verCitas_Paciente.php'">Ver citas agendadas</button>
         </div>
-
-        <!-- Ver catálogo de tratamientos -->
-        
 
         <!-- Tratamientos con imágenes -->
         <div class="treatments">
@@ -121,12 +192,15 @@
                     echo "<img src='" . htmlspecialchars($row['imagenURL']) . "' alt='" . htmlspecialchars($row['nombre']) . "'>";
                     echo "<form action='detalleTratamiento.php' method='GET'>";
                     echo "<input type='hidden' name='IDtratamiento' value='" . htmlspecialchars($row['IDtratamiento']) . "'>";
-                    echo "<button type='submit'>Ver tratamiento</button>";
+                    echo "<button class='ver-tratamiento' type='submit'>Ver tratamiento</button>";
                     echo "</form>";
                     echo "</div>";
                 }
             ?>
         </div>
     </div>
+
+    <!-- Agregar los archivos JS de Bootstrap -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>
