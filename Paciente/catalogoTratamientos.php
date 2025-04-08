@@ -1,7 +1,8 @@
 <?php
     session_start();
+    
     include("../connection.php");
-    include("../functions.php");
+    include("../functions.php");    
 
     $user_data = check_login($con);
 
@@ -17,193 +18,300 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-    <meta charset="UTF-8">
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Catálogo de Tratamientos</title>
-    <link rel="stylesheet" href="tratamientos_style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <title>Tratamientos</title>
     <style>
-        /* Estilos base para el diseño */
         :root {
-            --color-primario: #4a8cff; /* Azul similar al de doctora */
+            --color-primario: #1a37b5; /*Azul original*/
             --color-secundario: #f8f9fa;
             --color-terciario: #e9ecef;
+            --color-exito: #28a745;
+            --color-error: #dc3545;
             --color-texto: #212529;
-            --color-borde: #ced4da;
-            --color-fondo: #ffffff;
-            --sombra: 0 4px 6px rgba(0, 0, 0, 0.1);
-        }
-
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            --color-borde: #e0e0e0;
         }
 
         body {
-            background-color: var(--color-terciario);
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            min-height: 100vh;
-            padding: 20px;
-        }
-
-        .catalog-container {
-            background-color: var(--color-fondo);
-            border-radius: 10px;
-            box-shadow: var(--sombra);
-            width: 100%;
-            max-width: 1000px;
-            padding: 20px;
-        }
-
-        .catalog-header {
-            background-color: var(--color-primario);
-            color: white;
-            padding: 20px;
-            text-align: center;
-        }
-
-        .catalog-header h1 {
-            font-size: 28px;
-            font-weight: 600;
-        }
-
-        .catalog-body {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 20px;
-            justify-content: center;
-        }
-
-        .treatment-card {
             background-color: var(--color-secundario);
-            border-radius: 10px;
-            width: 300px;
-            box-shadow: var(--sombra);
-            overflow: hidden;
-            text-align: center;
-            transition: transform 0.3s ease;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            padding-bottom: 20px;
         }
 
-        .treatment-card:hover {
-            transform: translateY(-10px);
-            box-shadow: 0 10px 15px rgba(0, 0, 0, 0.2);
-        }
-
-        .treatment-card img {
-            width: 100%;
-            height: 200px;
-            object-fit: cover;
-        }
-
-        .treatment-card-content {
-            padding: 15px;
-        }
-
-        .treatment-card h3 {
-            font-size: 20px;
-            margin-bottom: 10px;
-        }
-
-        .treatment-card p {
-            font-size: 14px;
-            color: var(--color-texto);
-            margin-bottom: 10px;
-        }
-
-        .treatment-card .price {
-            font-size: 18px;
-            font-weight: 600;
-            color: var(--color-primario);
-            margin-bottom: 15px;
-        }
-
-        .btn-view {
-            display: inline-block;
-            padding: 12px 20px;
-            border-radius: 6px;
-            font-size: 16px;
-            font-weight: 500;
-            cursor: pointer;
+        .header-container {
             background-color: var(--color-primario);
             color: white;
-            text-decoration: none;
-            transition: all 0.3s;
-            margin-bottom: 10px;
+            padding: 15px 0;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            position: relative;
         }
 
-        .btn-view:hover {
-            background-color: #3a7ae8;
-            transform: scale(1.1); /* Pulsación al hacer hover */
-        }
-
-        /* Estilos para los botones de la parte superior */
-        .header-buttons {
-            position: absolute;
-            top: 20px;
-            right: 20px;
+        .nav-buttons {
             display: flex;
             gap: 10px;
+            justify-content: center;
+            margin: 15px 0;
+            flex-wrap: wrap;
         }
 
-        .header-button {
-            padding: 12px 24px;
+        .nav-button {
             background-color: var(--color-primario);
             color: white;
             border: none;
-            border-radius: 6px;
-            cursor: pointer;
-            font-size: 14px;
+            border-radius: 5px;
+            padding: 8px 15px;
+            font-size: 0.9rem;
+            transition: all 0.3s;
+        }
+
+        .nav-button:hover {
+            background-color: #142a8a;
+            transform: translateY(-2px);
+        }
+
+        .profile-button {
+            background-color: white;
+            color: var(--color-primario);
+            border: none;
+            border-radius: 50px;
+            padding: 6px 15px;
+            font-weight: 500;
+            font-size: 0.9rem;
+            transition: all 0.3s;
+            position: absolute;
+            top: 15px;
+            right: 15px;
+        }
+
+        .profile-button:hover {
+            background-color: #f0f0f0;
+            transform: translateY(-2px);
+        }
+
+        .card {
+            border: none;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+            margin: 0 auto;
+            max-width: 95%;
+        }
+
+        .card-header {
+            background-color: var(--color-primario);
+            color: white;
+            padding: 12px 15px;
+            border-bottom: none;
+        }
+
+        .card-header h2 {
+            font-size: 1.1rem;
+            margin: 0;
+            text-align: center;
+        }
+
+        /* Estilos para los tratamientos */
+        .treatments {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 20px;
+            margin-top: 30px;
+            padding: 0 15px;
+        }
+
+        .treatment {
+            text-align: center;
+            border: 1px solid var(--color-borde);
+            border-radius: 12px;
+            padding: 20px;
+            width: 250px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+            background-color: white;
             transition: all 0.3s ease;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
         }
 
-        .header-button:hover {
-            background-color: #0056b3;
-            transform: translateY(-6px);
-            box-shadow: 0 8px 12px rgba(0, 0, 0, 0.2);
+        .treatment:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 10px 15px rgba(0,0,0,0.2);
         }
 
-        .calendar-section {
+        .treatment img {
+            width: 100%;
+            height: 150px;
+            object-fit: cover;
+            border-radius: 12px;
+            margin-bottom: 15px;
+        }
+
+        .treatment h3 {
+            font-size: 20px;
+            color: var(--color-texto);
+            font-weight: bold;
+            margin-bottom: 12px;
+        }
+
+        .treatment button {
+            background-color: var(--color-primario);
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 30px;
+            cursor: pointer;
+            font-size: 16px;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+            width: 100%;
+        }
+
+        .treatment button:hover {
+            background-color: #142a8a;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 10px rgba(0,0,0,0.15);
+        }
+
+        /* Botones principales */
+        .main-buttons {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            margin: 30px 0;
+            flex-wrap: wrap;
+        }
+
+        .main-button {
+            background-color: var(--color-primario);
+            color: white;
+            border: none;
+            border-radius: 30px;
+            padding: 12px 25px;
+            font-size: 1rem;
+            transition: all 0.3s;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .main-button:hover {
+            background-color: #142a8a;
+            transform: translateY(-3px);
+            box-shadow: 0 6px 12px rgba(0,0,0,0.15);
+        }
+
+        .calendar-icon {
             display: flex;
             align-items: center;
             gap: 10px;
         }
 
         .calendar-icon img {
-            width: 30px;
-            height: 30px;
+            width: 35px;
+            height: 35px;
+        }
+
+        @media (max-width: 768px) {
+            .treatment {
+                width: 200px;
+            }
+            
+            .main-button {
+                padding: 10px 20px;
+                font-size: 0.9rem;
+            }
+        }
+
+        @media (max-width: 576px) {
+            .treatment {
+                width: 100%;
+                max-width: 300px;
+            }
+            
+            .profile-button {
+                position: relative;
+                top: auto;
+                right: auto;
+                display: block;
+                margin: 10px auto;
+                width: fit-content;
+            }
+            
+            .main-buttons {
+                flex-direction: column;
+                align-items: center;
+            }
         }
     </style>
 </head>
 <body>
-    <div class="header-buttons">
-        <button class="header-button historial" onclick="window.location.href='VerHistorial_Paciente.php'">
-            <i class="fas fa-history"></i> Ver Historial
+<div class="header-container">
+        <div class="container">
+            <h1 class="text-center mb-0"><i class="fas fa-pills"></i> Tratamientos Disponibles</h1>
+            <button class="profile-button" onclick="window.location.href='../verPerfil.php'">
+                <i class="fas fa-user-circle"></i> <?php echo $user_data['nombre']; ?>
+            </button>
+        </div>
+    </div>
+
+    <div class="nav-buttons">
+        <button class="nav-button" onclick="window.location.href='tablaTratamientos.php'">
+            <i class="fas fa-pills"></i> Tratamientos
         </button>
-        <button class="header-button" onclick="window.location.href='../verPerfil.php'">
-            <i class="fas fa-user"></i> Ver Perfil
+        <button class="nav-button" onclick="window.location.href='tablaPacientes.php'">
+            <i class="fas fa-user-injured"></i> Pacientes
+        </button>
+        <button class="nav-button" onclick="window.location.href='verCitasPacientes_Doctora.php'">
+            <i class="fas fa-calendar-alt"></i> Citas
+        </button>
+        <button class="nav-button" onclick="window.location.href='calendario.php'">
+            <i class="fas fa-calendar-alt"></i> Calendario
+        </button>
+        <button class="nav-button" onclick="window.location.href='HistorialArchivo.php'">
+            <i class="fas fa-user-injured"></i> Archivo
         </button>
     </div>
 
     <div class="container">
-        <h1>Catálogo de Tratamientos</h1>
+        <!-- Botones principales -->
+        <div class="main-buttons">
+            <button class="main-button" onclick="window.location.href='pacienteAgendarCita.php'">
+                <i class="fas fa-calendar-plus"></i> Agendar una cita
+            </button>
+            
+            <div class="calendar-icon">
+                <img src="../IMG/calendar-icon.png" alt="Calendario">
+                <button class="main-button" onclick="window.location.href='verCitas_Paciente.php'">
+                    <i class="fas fa-calendar-check"></i> Ver citas agendadas
+                </button>
+            </div>
+            
+            <button class="main-button" onclick="window.location.href='VerHistorial_Paciente.php'">
+                <i class="fas fa-history"></i> Ver Historial
+            </button>
+        </div>
+
+        <!-- Tratamientos con imágenes -->
         <div class="treatments">
             <?php
                 // Loop through the fetched data and display each treatment
-                while ($row = mysqli_fetch_assoc($result)):
+                while ($row = mysqli_fetch_assoc($result)) {
+                    echo "<div class='treatment'>";
+                    echo "<h3>" . htmlspecialchars($row['nombre']) . "</h3>";
+                    echo "<img src='" . htmlspecialchars($row['imagenURL']) . "' alt='" . htmlspecialchars($row['nombre']) . "'>";
+                    echo "<form action='detalleTratamiento.php' method='GET'>";
+                    echo "<input type='hidden' name='IDtratamiento' value='" . htmlspecialchars($row['IDtratamiento']) . "'>";
+                    echo "<button type='submit'><i class='fas fa-eye'></i> Ver tratamiento</button>";
+                    echo "</form>";
+                    echo "</div>";
+                }
             ?>
-                <div class="treatment">
-                    <img src="<?php echo htmlspecialchars($row['imagenURL']); ?>" alt="<?php echo htmlspecialchars($row['nombre']); ?>">
-                    <h3><?php echo htmlspecialchars($row['nombre']); ?></h3>
-                    <button class="btn-view" onclick="window.location.href='detalleTratamiento.php?IDtratamiento=<?php echo $row['IDtratamiento']; ?>'">
-                        Ver detalles
-                    </button>
-                </div>
-            <?php endwhile; ?>
         </div>
     </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>
