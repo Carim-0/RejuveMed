@@ -252,64 +252,38 @@
         <div class="container">
             <h1 class="text-center mb-0"><i class="fas fa-pills"></i> Tratamientos Disponibles</h1>
             <button class="profile-button" onclick="window.location.href='../verPerfil.php'">
-                <i class="fas fa-user-circle"></i> <?php echo $user_data['nombre']; ?>
+                <i class="fas fa-user-circle"></i> Hola, <?php echo $user_data['nombre']; ?>
             </button>
         </div>
     </div>
 
-    <div class="nav-buttons">
-        <button class="nav-button" onclick="window.location.href='tablaTratamientos.php'">
-            <i class="fas fa-pills"></i> Tratamientos
+    <div class="main-buttons">
+        <button class="main-button" onclick="window.location.href='pacienteAgendarCita.php'">
+            <i class="fas fa-calendar-plus"></i> Agendar una cita
         </button>
-        <button class="nav-button" onclick="window.location.href='tablaPacientes.php'">
-            <i class="fas fa-user-injured"></i> Pacientes
-        </button>
-        <button class="nav-button" onclick="window.location.href='verCitasPacientes_Doctora.php'">
-            <i class="fas fa-calendar-alt"></i> Citas
-        </button>
-        <button class="nav-button" onclick="window.location.href='calendario.php'">
-            <i class="fas fa-calendar-alt"></i> Calendario
-        </button>
-        <button class="nav-button" onclick="window.location.href='HistorialArchivo.php'">
-            <i class="fas fa-user-injured"></i> Archivo
-        </button>
+        
+        <div class="calendar-icon">
+            <img src="../IMG/calendar-icon.png" alt="Calendario">
+            <button class="main-button" onclick="window.location.href='verCitas_Paciente.php'">
+                <i class="fas fa-calendar-check"></i> Ver citas agendadas
+            </button>
+        </div>
     </div>
 
-    <div class="container">
-        <!-- Botones principales -->
-        <div class="main-buttons">
-            <button class="main-button" onclick="window.location.href='pacienteAgendarCita.php'">
-                <i class="fas fa-calendar-plus"></i> Agendar una cita
-            </button>
-            
-            <div class="calendar-icon">
-                <img src="../IMG/calendar-icon.png" alt="Calendario">
-                <button class="main-button" onclick="window.location.href='verCitas_Paciente.php'">
-                    <i class="fas fa-calendar-check"></i> Ver citas agendadas
-                </button>
-            </div>
-            
-            <button class="main-button" onclick="window.location.href='VerHistorial_Paciente.php'">
-                <i class="fas fa-history"></i> Ver Historial
-            </button>
-        </div>
-
-        <!-- Tratamientos con imágenes -->
-        <div class="treatments">
-            <?php
-                // Loop through the fetched data and display each treatment
-                while ($row = mysqli_fetch_assoc($result)) {
-                    echo "<div class='treatment'>";
-                    echo "<h3>" . htmlspecialchars($row['nombre']) . "</h3>";
-                    echo "<img src='" . htmlspecialchars($row['imagenURL']) . "' alt='" . htmlspecialchars($row['nombre']) . "'>";
-                    echo "<form action='detalleTratamiento.php' method='GET'>";
-                    echo "<input type='hidden' name='IDtratamiento' value='" . htmlspecialchars($row['IDtratamiento']) . "'>";
-                    echo "<button type='submit'><i class='fas fa-eye'></i> Ver tratamiento</button>";
-                    echo "</form>";
-                    echo "</div>";
-                }
-            ?>
-        </div>
+    <div class="treatments">
+        <?php
+            // Loop through the fetched data and display each treatment
+            while ($row = mysqli_fetch_assoc($result)) {
+                echo "<div class='treatment'>";
+                echo "<h3>" . htmlspecialchars($row['nombre']) . "</h3>";
+                echo "<img src='" . htmlspecialchars($row['imagenURL']) . "' alt='" . htmlspecialchars($row['nombre']) . "'>";
+                echo "<form action='detalleTratamiento.php' method='GET'>";
+                echo "<input type='hidden' name='IDtratamiento' value='" . htmlspecialchars($row['IDtratamiento']) . "'>";
+                echo "<button type='submit'><i class='fas fa-eye'></i> Ver tratamiento</button>";
+                echo "</form>";
+                echo "</div>";
+            }
+        ?>
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
