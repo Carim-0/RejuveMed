@@ -68,18 +68,11 @@
 
             if (mysqli_num_rows($result) > 0) {
                 echo "<script>
-                function loadSwal() {
-                    if (typeof Swal === 'undefined') {
-                        setTimeout(loadSwal, 100);
-                    } else {
                         Swal.fire({
                             icon: 'error',
                             title: 'Oops...',
                             text: 'Ya existe una cita en ese horario. Por favor, elija otro horario.',
                             });
-                    }
-                }
-                loadSwal();
                 </script>";
                 echo "<script>window.location.href = 'pacienteAgendarCita.php';</script>";
                 exit;
@@ -400,7 +393,7 @@
 
 
     <script>
-        console.log('Hola 3');
+        console.log('Hola 4');
         document.addEventListener("DOMContentLoaded", function () {
             initializeEventListeners();
         });
