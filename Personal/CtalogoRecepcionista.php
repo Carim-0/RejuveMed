@@ -87,7 +87,7 @@
         <h1>Hola, <?php echo $user_data['nombre']; ?></h1>
 
         <!-- Carrusel de imágenes -->
-        <div id="carouselExample" class="carousel slide my-4">
+        <div id="carouselExample" class="carousel slide my-4" data-bs-ride="carousel">
             <div class="carousel-inner">
                 <?php
                     $first = true;
