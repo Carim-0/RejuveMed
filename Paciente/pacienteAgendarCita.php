@@ -325,20 +325,23 @@
 
              <div class="modal fade" id="detalleModal  "tabindex="-1" role="dialog" aria-labelledby='detalleModal'>
                 <div class="modal-dialog modal-dialog-centered" role = 'document'>
-                                    <div class="modal-content">
-                                        <div class="modal-header">
-                                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                                        </div>
-                                        <div class="modal-body">
-                                            <i class="fas fa-user"></i> Paciente
-                                        </div>
-                                        <div class="modal-footer">
-                                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
-                                                <i class="fas fa-times"></i> Regresar
-                                            </button>
-                                        </div>
-                                    </div>
-                                </div>
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close">
+                                <span aria-hidden="true">&times;</span>
+                            </button>
+                        </div>
+                        <div class="modal-body">
+                            <i class="fas fa-user"></i>Se ha agendado una cita
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                                <i class="fas fa-times"></i> Regresar
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </form>
     </div>
     
