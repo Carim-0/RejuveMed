@@ -61,7 +61,13 @@
                 $result = mysqli_query($con, $query);
 
                 if ($result) {
-                    echo "<script>alert('Cita agendada exitosamente.'); window.location.href='verCitas_Paciente.php';</script>";
+                    echo "<script>
+                        document.addEventListener('DOMContentLoaded', function() {
+                            const successModal = new bootstrap.Modal('#successModal');
+                            successModal.show();
+                            setTimeout(() => window.location.href = 'verCitas_Paciente.php', 3000);
+                        });
+                    </script>";
                 } else {
                     echo "<script>alert('Error al agendar la cita.');</script>";
                 }
@@ -70,6 +76,10 @@
             echo "<script>alert('Por favor, complete todos los campos.');</script>";
         }
     }
+
+    
+    
+
 ?>
 
 <!DOCTYPE html>
@@ -323,19 +333,6 @@
         document.addEventListener("DOMContentLoaded", function () {
             initializeEventListeners();
         });
-
-        // En la sección PHP donde se verifica el éxito
-if ($result) {
-    echo "<script>
-        document.addEventListener('DOMContentLoaded', function() {
-            const successModal = new bootstrap.Modal('#successModal');
-            successModal.show();
-            setTimeout(() => window.location.href = 'verCitas_Paciente.php', 3000);
-        });
-    </script>";
-} else {
-    echo "<script>alert('Error al agendar la cita.');</script>";
-}
 
         function initializeEventListeners() {
             const tratamientoSelect = document.getElementById("IDtratamiento");
