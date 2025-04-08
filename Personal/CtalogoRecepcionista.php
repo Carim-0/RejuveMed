@@ -322,7 +322,7 @@
                 <i class="fas fa-calendar-day"></i> Citas de hoy
             </button>
             <?php if(count($citas_hoy) > 0): ?>
-                <span class="citas-badge"><?php echo count($citas_hoy); ?></span>
+                <span class="citas-badge" id="citasBadge"><?php echo count($citas_hoy); ?></span>
             <?php endif; ?>
         </div>
     </div>
@@ -378,20 +378,24 @@
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script>
         // Mostrar/ocultar overlay de citas
-        document.getElementById('verCitasHoyBtn').addEventListener('click', function() {
-            document.getElementById('citasOverlay').style.display = 'flex';
-        });
-        
-        document.getElementById('closeCitasOverlay').addEventListener('click', function() {
-            document.getElementById('citasOverlay').style.display = 'none';
-        });
-        
-        // Cerrar overlay al hacer clic fuera del contenido
-        document.getElementById('citasOverlay').addEventListener('click', function(e) {
-            if(e.target === this) {
-                this.style.display = 'none';
-            }
-        });
+document.getElementById('verCitasHoyBtn').addEventListener('click', function() {
+    document.getElementById('citasOverlay').style.display = 'flex';
+    // Ocultar el badge cuando se abre el overlay
+    var badge = document.getElementById('citasBadge');
+    if(badge) {
+        badge.style.display = 'none';
+    }
+});
+
+document.getElementById('closeCitasOverlay').addEventListener('click', function() {
+    document.getElementById('citasOverlay').style.display = 'none';
+});
+
+document.getElementById('citasOverlay').addEventListener('click', function(e) {
+    if(e.target === this) {
+        this.style.display = 'none';
+    }
+});
     </script>
 </body>
 </html>
