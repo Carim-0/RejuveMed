@@ -7,6 +7,7 @@
     if (!isset($_SESSION['user_id']) || $_SESSION['user_type'] !== 'Paciente') {
         die("Acceso denegado. Por favor, inicie sesión como paciente.");
     }
+    echo "<script>console.log('Hola desde PHP');</script>";
     $IDpaciente = $_SESSION['user_id']; // Get the current user's ID
 
     // Fetch available treatments
