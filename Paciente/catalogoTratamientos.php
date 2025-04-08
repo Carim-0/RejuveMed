@@ -151,10 +151,39 @@
                 width: fit-content;
             }
         }
+
+        .buttons-container {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            margin-top: 30px;
+        }
+
+        .main-button {
+            background-color: var(--color-primario);
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 30px;
+            cursor: pointer;
+            font-size: 16px;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+            transition: all 0.3s ease;
+        }
+
+        .main-button:hover {
+            background-color: #142a8a;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 10px rgba(0,0,0,0.15);
+        }
+
+        .main-button i {
+            margin-right: 8px;
+        }
     </style>
 </head>
 <body>
-<div class="header-container">
+    <div class="header-container">
         <div class="container">
             <h1 class="text-center mb-0">Hola, <?php echo $user_data['nombre']; ?></h1>
             <button class="profile-button" onclick="window.location.href='../verPerfil.php'">
@@ -164,17 +193,14 @@
     </div>
 
     <!-- Botones principales -->
-    <div class="main-buttons">
+    <div class="buttons-container">
         <button class="main-button" onclick="window.location.href='pacienteAgendarCita.php'">
             <i class="fas fa-calendar-plus"></i> Agendar una cita
         </button>
         
-        <div class="calendar-icon">
-            <img src="../IMG/calendar-icon.png" alt="Calendario">
-            <button class="main-button" onclick="window.location.href='verCitas_Paciente.php'">
-                <i class="fas fa-calendar-check"></i> Ver citas agendadas
-            </button>
-        </div>
+        <button class="main-button" onclick="window.location.href='verCitas_Paciente.php'">
+            <i class="fas fa-calendar-check"></i> Ver citas agendadas
+        </button>
     </div>
 
     <!-- Tratamientos con imágenes -->
