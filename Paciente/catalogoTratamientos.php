@@ -20,83 +20,65 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Bienvenido</title>
+    <title>Bienvenido </title>
     <link rel="stylesheet" href="tratamientos_style.css">
     <style>
-        /* Estilo general para el contenedor de tratamientos */
         .treatments {
             display: flex;
             flex-wrap: wrap;
             justify-content: center;
             gap: 20px;
-            margin-top: 40px;
         }
 
-        /* Estilo para cada caja de tratamiento */
         .treatment {
             text-align: center;
             border: 1px solid #ddd;
             border-radius: 8px;
-            padding: 15px;
-            width: 250px;
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-            background-color: #f8f9fa; /* Fondo más suave */
-            transition: all 0.3s ease; /* Transición suave al hacer hover */
-        }
-
-        .treatment:hover {
-            transform: translateY(-10px); /* Efecto de elevarse al hacer hover */
-            box-shadow: 0 10px 15px rgba(0, 0, 0, 0.2); /* Sombra más fuerte */
+            padding: 10px;
+            width: 200px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
         }
 
         .treatment img {
             width: 100%;
-            height: 100px; /* Ajusta la altura */
-            object-fit: cover; /* Mantiene la imagen recortada correctamente */
+            height: auto;
             border-radius: 8px;
-            margin-bottom: 15px;
         }
 
         .treatment h3 {
             font-size: 18px;
-            color: #333;
-            margin-bottom: 10px;
-            font-weight: 600;
+            margin: 10px 0;
         }
 
-        .treatment button {
+        /* Estilo para el botón "Ver citas agendadas" */
+        .btn.ver-citas {
+            background-color: #007bff; /* Azul */
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            font-size: 16px;
+            cursor: pointer;
+        }
+
+        .btn.ver-citas:hover {
+            background-color: #0056b3; /* Azul oscuro */
+        }
+
+        /* Estilo para el botón "Ver tratamiento" */
+        .treatment button.ver-tratamiento {
             background-color: #28a745; /* Verde */
             color: white;
             border: none;
-            padding: 12px 24px;
-            border-radius: 6px;
+            padding: 10px 20px;
+            border-radius: 5px;
             cursor: pointer;
-            font-size: 16px;
-            text-transform: uppercase;
-            transition: all 0.3s ease;
-            margin-top: 10px;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Sombra suave */
         }
 
-        .treatment button:hover {
+        .treatment button.ver-tratamiento:hover {
             background-color: #218838; /* Verde oscuro */
-            transform: translateY(-6px); /* Efecto de elevarse al hacer hover */
-            box-shadow: 0 8px 12px rgba(0, 0, 0, 0.2); /* Sombra más profunda */
         }
 
-        /* Estilo para el mensaje de bienvenida */
-        h1 {
-            background-color: #007bff; /* Azul */
-            color: white;
-            padding: 20px;
-            text-align: center;
-            border-radius: 8px;
-            margin-top: 40px;
-            font-size: 24px;
-            font-weight: bold;
-        }
-
-        /* Estilo para los botones de la parte superior */
         .header-buttons {
             position: absolute;
             top: 20px;
@@ -106,52 +88,37 @@
         }
 
         .header-button {
-            padding: 12px 24px;
+            padding: 10px 20px;
             background-color: #007bff;
             color: white;
             border: none;
-            border-radius: 6px;
+            border-radius: 5px;
             cursor: pointer;
+            text-decoration: none;
             font-size: 14px;
-            transition: all 0.3s ease;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Sombra suave */
         }
 
         .header-button:hover {
-            background-color: #0056b3; /* Azul oscuro */
-            transform: translateY(-6px); /* Elevar ligeramente */
-            box-shadow: 0 8px 12px rgba(0, 0, 0, 0.2); /* Sombra más profunda */
+            background-color: #0056b3;
         }
 
-        /* Botones específicos para "Ver citas" y "Agendar" */
-        .btn {
+        .header-button.historial {
+            background-color: #007bff;
+        }
+
+        .header-button.historial:hover {
+            background-color: #007bff;
+        }
+
+        /* Estilo para el saludo con cuadro azul y letras blancas */
+        h1 {
             background-color: #007bff; /* Azul */
             color: white;
-            padding: 12px 24px;
-            border-radius: 6px;
-            cursor: pointer;
-            font-size: 16px;
-            display: inline-block;
-            margin-top: 20px;
-            transition: all 0.3s ease;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Sombra suave */
-        }
-
-        .btn:hover {
-            background-color: #0056b3; /* Azul oscuro */
-            transform: translateY(-6px); /* Elevar ligeramente */
-            box-shadow: 0 8px 12px rgba(0, 0, 0, 0.2); /* Sombra más profunda */
-        }
-
-        .calendar-section {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-
-        .calendar-icon img {
-            width: 30px;
-            height: 30px;
+            padding: 20px;
+            text-align: center;
+            border-radius: 8px;
+            margin-top: 40px;
+            font-size: 24px;
         }
     </style>
 </head>
@@ -166,7 +133,7 @@
     </div>
 
     <div class="container">
-        <!-- Mensaje de bienvenida con diseño mejorado -->
+        <!-- Mensaje de bienvenida con estilo -->
         <h1>Hola, <?php echo $user_data['nombre']; ?></h1>
 
         <!-- Opciones Agendar cita o ver citas -->
@@ -179,11 +146,25 @@
             <div class="calendar-icon">
                 <img src="../IMG/calendar-icon.png" alt="Calendario" width="30" height="30">
             </div>
-            <button class="btn" onclick="window.location.href='verCitas_Paciente.php'">Ver citas agendadas</button>
+            <button class="btn ver-citas" onclick="window.location.href='verCitas_Paciente.php'">Ver citas agendadas</button>
         </div>
 
-        <!-- Tratamientos con imágenes y diseño mejorado -->
+        <!-- Tratamientos con imágenes -->
         <div class="treatments">
             <?php
                 // Loop through the fetched data and display each treatment
-                while ($row = mysqli
+                while ($row = mysqli_fetch_assoc($result)) {
+                    echo "<div class='treatment'>";
+                    echo "<h3>" . htmlspecialchars($row['nombre']) . "</h3>";
+                    echo "<img src='" . htmlspecialchars($row['imagenURL']) . "' alt='" . htmlspecialchars($row['nombre']) . "'>";
+                    echo "<form action='detalleTratamiento.php' method='GET'>";
+                    echo "<input type='hidden' name='IDtratamiento' value='" . htmlspecialchars($row['IDtratamiento']) . "'>";
+                    echo "<button class='ver-tratamiento' type='submit'>Ver tratamiento</button>";
+                    echo "</form>";
+                    echo "</div>";
+                }
+            ?>
+        </div>
+    </div>
+</body>
+</html>
