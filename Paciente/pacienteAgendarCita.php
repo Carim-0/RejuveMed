@@ -346,7 +346,7 @@
         });
 
 
-        
+                
         function initializeEventListeners() {
             const tratamientoSelect = document.getElementById("IDtratamiento");
             const horaInput = document.getElementById("hora");
