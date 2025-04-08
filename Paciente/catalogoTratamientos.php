@@ -1,8 +1,7 @@
 <?php
     session_start();
-    
     include("../connection.php");
-    include("../functions.php");    
+    include("../functions.php");
 
     $user_data = check_login($con);
 
@@ -20,151 +19,153 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Bienvenido</title>
+    <title>Catálogo de Tratamientos</title>
     <link rel="stylesheet" href="tratamientos_style.css">
     <style>
-        /* Estilos Generales */
+        /* Estilos base para el diseño */
+        :root {
+            --color-primario: #4a8cff; /* Azul similar al de doctora */
+            --color-secundario: #f8f9fa;
+            --color-terciario: #e9ecef;
+            --color-texto: #212529;
+            --color-borde: #ced4da;
+            --color-fondo: #ffffff;
+            --sombra: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
         }
 
         body {
-            font-family: 'Arial', sans-serif;
-            background-color: #f4f6f9;
-            color: #333;
+            background-color: var(--color-terciario);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            padding: 20px;
         }
 
-        /* Mensaje de bienvenida */
-        h1 {
-            background-color: #28a745; /* Color verde suave */
+        .catalog-container {
+            background-color: var(--color-fondo);
+            border-radius: 10px;
+            box-shadow: var(--sombra);
+            width: 100%;
+            max-width: 1000px;
+            padding: 20px;
+        }
+
+        .catalog-header {
+            background-color: var(--color-primario);
             color: white;
             padding: 20px;
             text-align: center;
-            border-radius: 12px;
-            margin-top: 40px;
-            font-size: 26px;
-            font-weight: bold;
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-            transition: all 0.3s ease;
         }
 
-        h1:hover {
-            transform: translateY(-6px);
-            box-shadow: 0 8px 15px rgba(0, 0, 0, 0.15);
+        .catalog-header h1 {
+            font-size: 28px;
+            font-weight: 600;
         }
 
-        /* Estilo para los botones en el header */
+        .catalog-body {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 20px;
+            justify-content: center;
+        }
+
+        .treatment-card {
+            background-color: var(--color-secundario);
+            border-radius: 10px;
+            width: 300px;
+            box-shadow: var(--sombra);
+            overflow: hidden;
+            text-align: center;
+            transition: transform 0.3s ease;
+        }
+
+        .treatment-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 10px 15px rgba(0, 0, 0, 0.2);
+        }
+
+        .treatment-card img {
+            width: 100%;
+            height: 200px;
+            object-fit: cover;
+        }
+
+        .treatment-card-content {
+            padding: 15px;
+        }
+
+        .treatment-card h3 {
+            font-size: 20px;
+            margin-bottom: 10px;
+        }
+
+        .treatment-card p {
+            font-size: 14px;
+            color: var(--color-texto);
+            margin-bottom: 10px;
+        }
+
+        .treatment-card .price {
+            font-size: 18px;
+            font-weight: 600;
+            color: var(--color-primario);
+            margin-bottom: 15px;
+        }
+
+        .btn-view {
+            display: inline-block;
+            padding: 12px 20px;
+            border-radius: 6px;
+            font-size: 16px;
+            font-weight: 500;
+            cursor: pointer;
+            background-color: var(--color-primario);
+            color: white;
+            text-decoration: none;
+            transition: all 0.3s;
+            margin-bottom: 10px;
+        }
+
+        .btn-view:hover {
+            background-color: #3a7ae8;
+            transform: scale(1.1); /* Pulsación al hacer hover */
+        }
+
+        /* Estilos para los botones de la parte superior */
         .header-buttons {
             position: absolute;
             top: 20px;
             right: 20px;
             display: flex;
-            gap: 15px;
+            gap: 10px;
         }
 
         .header-button {
-            padding: 14px 28px;
-            background-color: #28a745; /* Color verde suave */
+            padding: 12px 24px;
+            background-color: var(--color-primario);
             color: white;
             border: none;
-            border-radius: 30px; /* Bordes redondeados */
+            border-radius: 6px;
             cursor: pointer;
-            font-size: 16px;
+            font-size: 14px;
             transition: all 0.3s ease;
             box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
         }
 
         .header-button:hover {
-            background-color: #218838; /* Verde más oscuro */
-            transform: translateY(-6px);
-            box-shadow: 0 8px 12px rgba(0, 0, 0, 0.2);
-        }
-
-        /* Botón para agendar cita y ver citas */
-        .btn {
-            background-color: #007bff; /* Color azul para destacar */
-            color: white;
-            padding: 14px 28px;
-            border-radius: 30px; /* Bordes redondeados */
-            cursor: pointer;
-            font-size: 18px;
-            display: inline-block;
-            transition: all 0.3s ease;
-            margin-top: 20px;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-        }
-
-        .btn:hover {
-            background-color: #0056b3; /* Azul más oscuro al hacer hover */
-            transform: translateY(-6px);
-            box-shadow: 0 8px 12px rgba(0, 0, 0, 0.2);
-        }
-
-        /* Contenedor de tratamientos */
-        .treatments {
-            display: flex;
-            flex-wrap: wrap;
-            justify-content: center;
-            gap: 20px;
-            margin-top: 40px;
-        }
-
-        /* Estilo para las cajas de tratamiento */
-        .treatment {
-            text-align: center;
-            border: 1px solid #ddd;
-            border-radius: 12px;
-            padding: 20px;
-            width: 250px;
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-            background-color: #ffffff;
-            transition: all 0.3s ease;
-            overflow: hidden;
-        }
-
-        .treatment:hover {
-            transform: translateY(-10px);
-            box-shadow: 0 10px 15px rgba(0, 0, 0, 0.2);
-        }
-
-        .treatment img {
-            width: 100%;
-            height: 150px;
-            object-fit: cover;
-            border-radius: 12px;
-            margin-bottom: 15px;
-        }
-
-        .treatment h3 {
-            font-size: 20px;
-            color: #333;
-            font-weight: bold;
-            margin-bottom: 12px;
-        }
-
-        /* Estilo para los botones de tratamiento */
-        .treatment button {
-            background-color: #007bff;
-            color: white;
-            border: none;
-            padding: 14px 28px;
-            border-radius: 30px;
-            cursor: pointer;
-            font-size: 16px;
-            text-transform: uppercase;
-            transition: all 0.3s ease;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-        }
-
-        .treatment button:hover {
             background-color: #0056b3;
             transform: translateY(-6px);
             box-shadow: 0 8px 12px rgba(0, 0, 0, 0.2);
         }
 
-        /* Sección calendario con íconos */
         .calendar-section {
             display: flex;
             align-items: center;
@@ -172,8 +173,8 @@
         }
 
         .calendar-icon img {
-            width: 35px;
-            height: 35px;
+            width: 30px;
+            height: 30px;
         }
     </style>
 </head>
@@ -188,37 +189,20 @@
     </div>
 
     <div class="container">
-        <!-- Mensaje de bienvenida con diseño mejorado -->
-        <h1>Hola, <?php echo $user_data['nombre']; ?></h1>
-
-        <!-- Opciones Agendar cita o ver citas -->
-        <div class="options">
-            <button class="btn" onclick="window.location.href='pacienteAgendarCita.php'">Agendar una cita</button>
-        </div>
-
-        <!-- Calendario e Icono -->
-        <div class="calendar-section">
-            <div class="calendar-icon">
-                <img src="../IMG/calendar-icon.png" alt="Calendario" width="35" height="35">
-            </div>
-            <button class="btn" onclick="window.location.href='verCitas_Paciente.php'">Ver citas agendadas</button>
-        </div>
-
-        <!-- Tratamientos con imágenes y diseño mejorado -->
+        <h1>Catálogo de Tratamientos</h1>
         <div class="treatments">
             <?php
                 // Loop through the fetched data and display each treatment
-                while ($row = mysqli_fetch_assoc($result)) {
-                    echo "<div class='treatment'>";
-                    echo "<h3>" . htmlspecialchars($row['nombre']) . "</h3>";
-                    echo "<img src='" . htmlspecialchars($row['imagenURL']) . "' alt='" . htmlspecialchars($row['nombre']) . "'>";
-                    echo "<form action='detalleTratamiento.php' method='GET'>";
-                    echo "<input type='hidden' name='IDtratamiento' value='" . htmlspecialchars($row['IDtratamiento']) . "'>";
-                    echo "<button type='submit'>Ver tratamiento</button>";
-                    echo "</form>";
-                    echo "</div>";
-                }
+                while ($row = mysqli_fetch_assoc($result)):
             ?>
+                <div class="treatment">
+                    <img src="<?php echo htmlspecialchars($row['imagenURL']); ?>" alt="<?php echo htmlspecialchars($row['nombre']); ?>">
+                    <h3><?php echo htmlspecialchars($row['nombre']); ?></h3>
+                    <button class="btn-view" onclick="window.location.href='detalleTratamiento.php?IDtratamiento=<?php echo $row['IDtratamiento']; ?>'">
+                        Ver detalles
+                    </button>
+                </div>
+            <?php endwhile; ?>
         </div>
     </div>
 </body>
