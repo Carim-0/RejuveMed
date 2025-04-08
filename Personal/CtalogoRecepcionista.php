@@ -40,7 +40,6 @@
     <title>Tratamientos</title>
     <style>
         /* Estilos */
-        /* Usamos un esquema similar al anterior, asegurándonos de que se pueda visualizar bien. */
     </style>
 </head>
 <body>
