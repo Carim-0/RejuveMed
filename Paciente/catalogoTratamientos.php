@@ -180,6 +180,43 @@
         .main-button i {
             margin-right: 8px;
         }
+
+        .calendar-container {
+            text-align: center;
+            margin-top: 30px;
+        }
+
+        .calendar {
+            display: inline-block;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+            background-color: white;
+        }
+
+        .calendar table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 14px;
+        }
+
+        .calendar th, .calendar td {
+            padding: 10px;
+            text-align: center;
+        }
+
+        .calendar th {
+            background-color: var(--color-primario);
+            color: white;
+        }
+
+        .calendar td {
+            cursor: pointer;
+        }
+
+        .calendar td:hover {
+            background-color: #e9ecef;
+        }
+
     </style>
 </head>
 <body>
@@ -201,6 +238,72 @@
         <button class="main-button" onclick="window.location.href='verCitas_Paciente.php'">
             <i class="fas fa-calendar-check"></i> Ver citas agendadas
         </button>
+    </div>
+
+    <!-- Calendario estático -->
+    <div class="calendar-container">
+        <div class="calendar">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Dom</th>
+                        <th>Lun</th>
+                        <th>Mar</th>
+                        <th>Mié</th>
+                        <th>Jue</th>
+                        <th>Vie</th>
+                        <th>Sáb</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>1</td>
+                        <td>2</td>
+                        <td>3</td>
+                        <td>4</td>
+                        <td>5</td>
+                        <td>6</td>
+                        <td>7</td>
+                    </tr>
+                    <tr>
+                        <td>8</td>
+                        <td>9</td>
+                        <td>10</td>
+                        <td>11</td>
+                        <td>12</td>
+                        <td>13</td>
+                        <td>14</td>
+                    </tr>
+                    <tr>
+                        <td>15</td>
+                        <td>16</td>
+                        <td>17</td>
+                        <td>18</td>
+                        <td>19</td>
+                        <td>20</td>
+                        <td>21</td>
+                    </tr>
+                    <tr>
+                        <td>22</td>
+                        <td>23</td>
+                        <td>24</td>
+                        <td>25</td>
+                        <td>26</td>
+                        <td>27</td>
+                        <td>28</td>
+                    </tr>
+                    <tr>
+                        <td>29</td>
+                        <td>30</td>
+                        <td>31</td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
     </div>
 
     <!-- Tratamientos con imágenes -->
