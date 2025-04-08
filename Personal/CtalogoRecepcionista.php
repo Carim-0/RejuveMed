@@ -28,7 +28,7 @@
         /* Estilo del carrusel */
         .carousel-inner img {
             width: 100%; /* Asegura que las imágenes ocupen el 100% del ancho */
-            height: 250px; /* Ajusta la altura de las imágenes más pequeña */
+            height: 150px; /* Ajusta la altura de las imágenes más pequeña */
             object-fit: cover; /* Asegura que las imágenes se recorten bien */
         }
 
@@ -93,7 +93,7 @@
 
         .treatment img {
             width: 100%;
-            height: auto;
+            height: 150px; /* Imagen más pequeña */
             border-radius: 8px;
         }
     </style>
