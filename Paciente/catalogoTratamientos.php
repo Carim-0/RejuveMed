@@ -1,21 +1,16 @@
 <?php
+    session_start();
     include("../connection.php");
+    include("../functions.php");
 
-    // Check if the ID is provided in the URL
-    if (isset($_GET['IDtratamiento']) && is_numeric($_GET['IDtratamiento'])) {
-        $id = $_GET['IDtratamiento'];
+    $user_data = check_login($con);
 
-        // Fetch the treatment details from the database
-        $query = "SELECT nombre, detalles, precio, imagenURL FROM Tratamientos WHERE IDtratamiento = $id LIMIT 1";
-        $result = mysqli_query($con, $query);
+    // Fetch data from the "Tratamientos" table
+    $query = "SELECT IDtratamiento, nombre, imagenURL FROM Tratamientos";
+    $result = mysqli_query($con, $query);
 
-        if ($result && mysqli_num_rows($result) > 0) {
-            $treatment = mysqli_fetch_assoc($result);
-        } else {
-            die("Tratamiento no encontrado.");
-        }
-    } else {
-        die("ID de tratamiento no válido.");
+    if (!$result) {
+        die("Error al obtener los tratamientos: " . mysqli_error($con));
     }
 ?>
 
@@ -24,11 +19,12 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Detalle del Tratamiento</title>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <title>Catálogo de Tratamientos</title>
+    <link rel="stylesheet" href="tratamientos_style.css">
     <style>
+        /* Estilos base para el diseño */
         :root {
-            --color-primario: #4a8cff; /* Azul para tratamientos */
+            --color-primario: #4a8cff; /* Azul similar al de doctora */
             --color-secundario: #f8f9fa;
             --color-terciario: #e9ecef;
             --color-texto: #212529;
@@ -53,99 +49,160 @@
             padding: 20px;
         }
 
-        .container {
+        .catalog-container {
             background-color: var(--color-fondo);
             border-radius: 10px;
             box-shadow: var(--sombra);
             width: 100%;
-            max-width: 600px;
-            overflow: hidden;
+            max-width: 1000px;
+            padding: 20px;
         }
 
-        .header {
+        .catalog-header {
             background-color: var(--color-primario);
             color: white;
             padding: 20px;
             text-align: center;
         }
 
-        .header h1 {
-            font-size: 24px;
+        .catalog-header h1 {
+            font-size: 28px;
             font-weight: 600;
         }
 
-        .body {
-            padding: 30px;
+        .catalog-body {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 20px;
+            justify-content: center;
+        }
+
+        .treatment-card {
+            background-color: var(--color-secundario);
+            border-radius: 10px;
+            width: 300px;
+            box-shadow: var(--sombra);
+            overflow: hidden;
             text-align: center;
+            transition: transform 0.3s ease;
         }
 
-        .body img {
+        .treatment-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 10px 15px rgba(0, 0, 0, 0.2);
+        }
+
+        .treatment-card img {
             width: 100%;
-            height: auto;
-            border-radius: 8px;
-            margin-bottom: 20px;
+            height: 200px;
+            object-fit: cover;
         }
 
-        .body p {
-            font-size: 18px;
-            margin: 10px 0;
+        .treatment-card-content {
+            padding: 15px;
+        }
+
+        .treatment-card h3 {
+            font-size: 20px;
+            margin-bottom: 10px;
+        }
+
+        .treatment-card p {
+            font-size: 14px;
             color: var(--color-texto);
+            margin-bottom: 10px;
         }
 
-        .btn {
+        .treatment-card .price {
+            font-size: 18px;
+            font-weight: 600;
+            color: var(--color-primario);
+            margin-bottom: 15px;
+        }
+
+        .btn-view {
             display: inline-block;
             padding: 12px 20px;
             border-radius: 6px;
             font-size: 16px;
             font-weight: 500;
             cursor: pointer;
-            transition: all 0.3s;
-            text-align: center;
-            border: none;
             background-color: var(--color-primario);
             color: white;
-            width: 100%;
-        }
-
-        .btn:hover {
-            background-color: #3a7ae8;
-        }
-
-        .btn-link {
-            color: var(--color-primario);
             text-decoration: none;
-            display: inline-block;
-            margin-top: 15px;
+            transition: all 0.3s;
+            margin-bottom: 10px;
+        }
+
+        .btn-view:hover {
+            background-color: #3a7ae8;
+            transform: scale(1.1); /* Pulsación al hacer hover */
+        }
+
+        /* Estilos para los botones de la parte superior */
+        .header-buttons {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            display: flex;
+            gap: 10px;
+        }
+
+        .header-button {
+            padding: 12px 24px;
+            background-color: var(--color-primario);
+            color: white;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
             font-size: 14px;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
         }
 
-        .btn-link:hover {
-            text-decoration: underline;
+        .header-button:hover {
+            background-color: #0056b3;
+            transform: translateY(-6px);
+            box-shadow: 0 8px 12px rgba(0, 0, 0, 0.2);
         }
 
-        @media (max-width: 576px) {
-            .body {
-                padding: 20px;
-            }
+        .calendar-section {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
 
-            .header {
-                padding: 15px;
-            }
+        .calendar-icon img {
+            width: 30px;
+            height: 30px;
         }
     </style>
 </head>
 <body>
-    <div class="container">
-        <div class="header">
-            <h1><i class="fas fa-prescription-bottle-alt"></i> Detalles del Tratamiento</h1>
-        </div>
+    <div class="header-buttons">
+        <button class="header-button historial" onclick="window.location.href='VerHistorial_Paciente.php'">
+            <i class="fas fa-history"></i> Ver Historial
+        </button>
+        <button class="header-button" onclick="window.location.href='../verPerfil.php'">
+            <i class="fas fa-user"></i> Ver Perfil
+        </button>
+    </div>
 
-        <div class="body">
-            <h2><?php echo htmlspecialchars($treatment['nombre']); ?></h2>
-            <img src="<?php echo htmlspecialchars($treatment['imagenURL']); ?>" alt="<?php echo htmlspecialchars($treatment['nombre']); ?>">
-            <p><strong>Detalles:</strong> <?php echo htmlspecialchars($treatment['detalles']); ?></p>
-            <p><strong>Precio:</strong> $<?php echo htmlspecialchars($treatment['precio']); ?></p>
-            <a href="catalogoTratamientos.php" class="btn">Regresar</a>
+    <div class="container">
+        <h1>Catálogo de Tratamientos</h1>
+        <div class="treatments">
+            <?php
+                // Loop through the fetched data and display each treatment
+                while ($row = mysqli_fetch_assoc($result)):
+            ?>
+                <div class="treatment">
+                    <img src="<?php echo htmlspecialchars($row['imagenURL']); ?>" alt="<?php echo htmlspecialchars($row['nombre']); ?>">
+                    <h3><?php echo htmlspecialchars($row['nombre']); ?></h3>
+                    <button class="btn-view" onclick="window.location.href='detalleTratamiento.php?IDtratamiento=<?php echo $row['IDtratamiento']; ?>'">
+                        Ver detalles
+                    </button>
+                </div>
+            <?php endwhile; ?>
         </div>
     </div>
 </body>
