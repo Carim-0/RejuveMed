@@ -61,10 +61,17 @@
                 $result = mysqli_query($con, $query);
 
                 if ($result) {
-                    echo "<script>alert('Cita agendada exitosamente.'); window.location.href='verCitas_Paciente.php';</script>";
+                    echo '<script>
+                        document.addEventListener("DOMContentLoaded", function() {
+                            const successModal = new bootstrap.Modal("#successModal");
+                            successModal.show();
+                            setTimeout(() => window.location.href = "verCitas_Paciente.php", 3000);
+                        });
+                    </script>';
                 } else {
                     echo "<script>alert('Error al agendar la cita.');</script>";
                 }
+               
             }
         } else {
             echo "<script>alert('Por favor, complete todos los campos.');</script>";
@@ -75,6 +82,8 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Agendar Cita - RejuveMed</title>
@@ -294,7 +303,31 @@
                 </button>
             </div>
         </form>
+        <!-- Modal de éxito -->
+
     </div>
+    <div class="modal fade" id="successModal" tabindex="-1" aria-labelledby="successModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header bg-success text-white">
+                <h5 class="modal-title" id="successModalLabel">
+                    <i class="fas fa-check-circle"></i> Cita Agendada
+                </h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+            </div>
+            <div class="modal-body text-center py-4">
+                <i class="fas fa-calendar-check fa-3x text-success mb-3"></i>
+                <h4 class="mb-3">¡Cita registrada exitosamente!</h4>
+                <p class="mb-0">Serás redirigido automáticamente en 3 segundos...</p>
+            </div>
+            <div class="modal-footer justify-content-center">
+                <button type="button" class="btn btn-success" data-bs-dismiss="modal">
+                    <i class="fas fa-times me-2"></i>Cerrar ahora
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
 
     <script>
         document.addEventListener("DOMContentLoaded", function () {
