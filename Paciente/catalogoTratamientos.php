@@ -23,6 +23,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Flatpickr CSS -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
     <title>Tratamientos</title>
     <style>
         :root {
@@ -69,7 +71,6 @@
             transform: translateY(-2px);
         }
 
-        /* Estilos para los tratamientos */
         .treatments {
             display: flex;
             flex-wrap: wrap;
@@ -130,6 +131,21 @@
             box-shadow: 0 6px 10px rgba(0,0,0,0.15);
         }
 
+        .calendar-container {
+            margin-top: 20px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .calendar-container input {
+            padding: 10px;
+            font-size: 16px;
+            border-radius: 8px;
+            border: 1px solid var(--color-borde);
+            width: 300px;
+        }
+
         @media (max-width: 768px) {
             .treatment {
                 width: 200px;
@@ -177,7 +193,37 @@
         </div>
     </div>
 
+    <!-- Calendario para elegir fecha -->
+    <div class="calendar-container">
+        <input type="text" id="fecha" placeholder="Selecciona una fecha">
+    </div>
+
     <!-- Tratamientos con imágenes -->
     <div class="treatments">
         <?php
-            // Loop through the fetched data and display each treatment
+            while ($row = mysqli_fetch_assoc($result)) {
+                echo "<div class='treatment'>";
+                echo "<h3>" . htmlspecialchars($row['nombre']) . "</h3>";
+                echo "<img src='" . htmlspecialchars($row['imagenURL']) . "' alt='" . htmlspecialchars($row['nombre']) . "'>";
+                echo "<form action='detalleTratamiento.php' method='GET'>";
+                echo "<input type='hidden' name='IDtratamiento' value='" . htmlspecialchars($row['IDtratamiento']) . "'>";
+                echo "<button type='submit'><i class='fas fa-eye'></i> Ver tratamiento</button>";
+                echo "</form>";
+                echo "</div>";
+            }
+        ?>
+    </div>
+
+    <!-- Flatpickr JS -->
+    <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+    <script>
+        // Inicializar Flatpickr
+        flatpickr("#fecha", {
+            dateFormat: "Y-m-d",
+            minDate: "today" // Solo permite seleccionar fechas a partir de hoy
+        });
+    </script>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
