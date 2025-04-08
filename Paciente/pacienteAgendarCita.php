@@ -78,7 +78,10 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Agendar Cita - RejuveMed</title>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css  ">
+
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">  
+        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <style>
         :root {
             --primary-color: #4a6fa5;
@@ -296,10 +299,43 @@
         </form>
     </div>
 
+    <!-- Modal de éxito -->
+<div class="modal fade" id="successModal" tabindex="-1" aria-labelledby="successModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header bg-success text-white">
+                <h5 class="modal-title" id="successModalLabel">
+                    <i class="fas fa-check-circle"></i> Cita Agendada
+                </h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+            </div>
+            <div class="modal-body">
+                Se ha agendado la cita exitosamente.
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-success" data-bs-dismiss="modal">Cerrar</button>
+            </div>
+        </div>
+    </div>
+</div>
+
     <script>
         document.addEventListener("DOMContentLoaded", function () {
             initializeEventListeners();
         });
+
+        // En la sección PHP donde se verifica el éxito
+if ($result) {
+    echo "<script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const successModal = new bootstrap.Modal('#successModal');
+            successModal.show();
+            setTimeout(() => window.location.href = 'verCitas_Paciente.php', 3000);
+        });
+    </script>";
+} else {
+    echo "<script>alert('Error al agendar la cita.');</script>";
+}
 
         function initializeEventListeners() {
             const tratamientoSelect = document.getElementById("IDtratamiento");
