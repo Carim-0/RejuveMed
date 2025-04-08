@@ -69,6 +69,7 @@
             transform: translateY(-2px);
         }
 
+        /* Estilos para los tratamientos */
         .treatments {
             display: flex;
             flex-wrap: wrap;
@@ -129,45 +130,6 @@
             box-shadow: 0 6px 10px rgba(0,0,0,0.15);
         }
 
-        .calendar-icon {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-
-        .calendar-icon img {
-            width: 35px;
-            height: 35px;
-        }
-
-        .main-buttons {
-            display: flex;
-            justify-content: center;
-            gap: 20px;
-            margin: 30px 0;
-            flex-wrap: wrap;
-        }
-
-        .main-button {
-            background-color: var(--color-primario);
-            color: white;
-            border: none;
-            border-radius: 30px;
-            padding: 12px 25px;
-            font-size: 1rem;
-            transition: all 0.3s;
-            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
-
-        .main-button:hover {
-            background-color: #142a8a;
-            transform: translateY(-3px);
-            box-shadow: 0 6px 12px rgba(0,0,0,0.15);
-        }
-
         @media (max-width: 768px) {
             .treatment {
                 width: 200px;
@@ -188,54 +150,34 @@
                 margin: 10px auto;
                 width: fit-content;
             }
-            
-            .main-buttons {
-                flex-direction: column;
-                align-items: center;
-            }
         }
     </style>
 </head>
 <body>
 <div class="header-container">
-    <div class="container">
-        <h1 class="text-center mb-0">Hola, <?php echo $user_data['nombre']; ?></h1>
-        <button class="profile-button" onclick="window.location.href='../verPerfil.php'">
-            <i class="fas fa-user-circle"></i> <?php echo $user_data['nombre']; ?>
-        </button>
+        <div class="container">
+            <h1 class="text-center mb-0">Hola, <?php echo $user_data['nombre']; ?></h1>
+            <button class="profile-button" onclick="window.location.href='../verPerfil.php'">
+                <i class="fas fa-user-circle"></i> Hola, <?php echo $user_data['nombre']; ?>
+            </button>
+        </div>
     </div>
-</div>
 
-<!-- Botones principales -->
-<div class="main-buttons">
-    <button class="main-button" onclick="window.location.href='pacienteAgendarCita.php'">
-        <i class="fas fa-calendar-plus"></i> Agendar una cita
-    </button>
-    
-    <div class="calendar-icon">
-        <img src="../IMG/calendar-icon.png" alt="Calendario">
-        <button class="main-button" onclick="window.location.href='verCitas_Paciente.php'">
-            <i class="fas fa-calendar-check"></i> Ver citas agendadas
+    <!-- Botones principales -->
+    <div class="main-buttons">
+        <button class="main-button" onclick="window.location.href='pacienteAgendarCita.php'">
+            <i class="fas fa-calendar-plus"></i> Agendar una cita
         </button>
+        
+        <div class="calendar-icon">
+            <img src="../IMG/calendar-icon.png" alt="Calendario">
+            <button class="main-button" onclick="window.location.href='verCitas_Paciente.php'">
+                <i class="fas fa-calendar-check"></i> Ver citas agendadas
+            </button>
+        </div>
     </div>
-</div>
 
-<!-- Tratamientos con imágenes -->
-<div class="treatments">
-    <?php
-        // Loop through the fetched data and display each treatment
-        while ($row = mysqli_fetch_assoc($result)) {
-            echo "<div class='treatment'>";
-            echo "<h3>" . htmlspecialchars($row['nombre']) . "</h3>";
-            echo "<img src='" . htmlspecialchars($row['imagenURL']) . "' alt='" . htmlspecialchars($row['nombre']) . "'>";
-            echo "<form action='detalleTratamiento.php' method='GET'>";
-            echo "<input type='hidden' name='IDtratamiento' value='" . htmlspecialchars($row['IDtratamiento']) . "'>";
-            echo "<button type='submit'><i class='fas fa-eye'></i> Ver tratamiento</button>";
-            echo "</form>";
-            echo "</div>";
-        }
-    ?>
-</div>
-
-</body>
-</html>
+    <!-- Tratamientos con imágenes -->
+    <div class="treatments">
+        <?php
+            // Loop through the fetched data and display each treatment
