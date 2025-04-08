@@ -50,17 +50,33 @@
             margin: 10px 0;
         }
 
-        .treatment button {
-            background-color: rgb(45, 153, 165);
+        /* Estilo para el botón "Ver citas agendadas" */
+        .btn.ver-citas {
+            background-color: #007bff; /* Azul */
             color: white;
             border: none;
-            padding: 10px;
+            padding: 10px 20px;
+            border-radius: 5px;
+            font-size: 16px;
+            cursor: pointer;
+        }
+
+        .btn.ver-citas:hover {
+            background-color: #0056b3; /* Azul oscuro */
+        }
+
+        /* Estilo para el botón "Ver tratamiento" */
+        .treatment button.ver-tratamiento {
+            background-color: #28a745; /* Verde */
+            color: white;
+            border: none;
+            padding: 10px 20px;
             border-radius: 5px;
             cursor: pointer;
         }
 
-        .treatment button:hover {
-            background-color: rgb(45, 153, 165);
+        .treatment button.ver-tratamiento:hover {
+            background-color: #218838; /* Verde oscuro */
         }
 
         .header-buttons {
@@ -98,51 +114,4 @@
 <body>
     <div class="header-buttons">
         <button class="header-button historial" onclick="window.location.href='VerHistorial_Paciente.php'">
-            <i class="fas fa-history"></i> Ver Historial
-        </button>
-        <button class="header-button" onclick="window.location.href='../verPerfil.php'">
-            <i class="fas fa-user"></i> Ver Perfil
-        </button>
-    </div>
-
-    <div class="container">
-        <!-- Mensaje de bienvenida -->
-        <h1><br>
-        Hola, <?php echo $user_data['nombre']; ?></h1>
-
-        <!-- Opciones Agendar cita o ver citas -->
-        <div class="options">
-        <button class="btn" onclick="window.location.href='pacienteAgendarCita.php'">Agendar una cita</button>
-            
-        </div>
-
-        <!-- Calendario e Icono -->
-        <div class="calendar-section">
-            <div class="calendar-icon">
-                <img src="../IMG/calendar-icon.png" alt="Calendario" width="30" height="30">
-            </div>
-            <button class="btn" onclick="window.location.href='verCitas_Paciente.php'">Ver citas agendadas</button>
-        </div>
-
-        <!-- Ver catálogo de tratamientos -->
-        
-
-        <!-- Tratamientos con imágenes -->
-        <div class="treatments">
-            <?php
-                // Loop through the fetched data and display each treatment
-                while ($row = mysqli_fetch_assoc($result)) {
-                    echo "<div class='treatment'>";
-                    echo "<h3>" . htmlspecialchars($row['nombre']) . "</h3>";
-                    echo "<img src='" . htmlspecialchars($row['imagenURL']) . "' alt='" . htmlspecialchars($row['nombre']) . "'>";
-                    echo "<form action='detalleTratamiento.php' method='GET'>";
-                    echo "<input type='hidden' name='IDtratamiento' value='" . htmlspecialchars($row['IDtratamiento']) . "'>";
-                    echo "<button type='submit'>Ver tratamiento</button>";
-                    echo "</form>";
-                    echo "</div>";
-                }
-            ?>
-        </div>
-    </div>
-</body>
-</html>
+            <i class="fas fa-history"></i> Ver Hist
