@@ -194,12 +194,12 @@
 
     <!-- Botones principales -->
     <div class="buttons-container">
-        <button class="main-button" onclick="window.location.href='pacienteAgendarCita.php'">
+        <button class="main-button" onclick="window.location.href='agendarCitaRecepcionista.php'">
             <i class="fas fa-calendar-plus"></i> Agendar una cita
         </button>
         
-        <button class="main-button" onclick="window.location.href='verCitas_Paciente.php'">
-            <i class="fas fa-calendar-check"></i> Ver citas agendadas
+        <button class="main-button" onclick="window.location.href='verCitasRecepcionista.php'">
+            <i class="fas fa-calendar-check"></i> Ver todas las citas
         </button>
 
         <!-- Botón de Ver Historial -->
