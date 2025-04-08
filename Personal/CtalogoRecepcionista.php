@@ -50,29 +50,6 @@
             position: relative;
         }
 
-        .nav-buttons {
-            display: flex;
-            gap: 10px;
-            justify-content: center;
-            margin: 15px 0;
-            flex-wrap: wrap;
-        }
-
-        .nav-button {
-            background-color: var(--color-primario);
-            color: white;
-            border: none;
-            border-radius: 5px;
-            padding: 8px 15px;
-            font-size: 0.9rem;
-            transition: all 0.3s;
-        }
-
-        .nav-button:hover {
-            background-color: #142a8a;
-            transform: translateY(-2px);
-        }
-
         .profile-button {
             background-color: white;
             color: var(--color-primario);
@@ -90,27 +67,6 @@
         .profile-button:hover {
             background-color: #f0f0f0;
             transform: translateY(-2px);
-        }
-
-        .card {
-            border: none;
-            border-radius: 8px;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
-            margin: 0 auto;
-            max-width: 95%;
-        }
-
-        .card-header {
-            background-color: var(--color-primario);
-            color: white;
-            padding: 12px 15px;
-            border-bottom: none;
-        }
-
-        .card-header h2 {
-            font-size: 1.1rem;
-            margin: 0;
-            text-align: center;
         }
 
         /* Estilos para los tratamientos */
@@ -174,54 +130,9 @@
             box-shadow: 0 6px 10px rgba(0,0,0,0.15);
         }
 
-        /* Botones principales */
-        .main-buttons {
-            display: flex;
-            justify-content: center;
-            gap: 20px;
-            margin: 30px 0;
-            flex-wrap: wrap;
-        }
-
-        .main-button {
-            background-color: var(--color-primario);
-            color: white;
-            border: none;
-            border-radius: 30px;
-            padding: 12px 25px;
-            font-size: 1rem;
-            transition: all 0.3s;
-            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
-
-        .main-button:hover {
-            background-color: #142a8a;
-            transform: translateY(-3px);
-            box-shadow: 0 6px 12px rgba(0,0,0,0.15);
-        }
-
-        .calendar-icon {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-
-        .calendar-icon img {
-            width: 35px;
-            height: 35px;
-        }
-
         @media (max-width: 768px) {
             .treatment {
                 width: 200px;
-            }
-            
-            .main-button {
-                padding: 10px 20px;
-                font-size: 0.9rem;
             }
         }
 
@@ -239,77 +150,79 @@
                 margin: 10px auto;
                 width: fit-content;
             }
-            
-            .main-buttons {
-                flex-direction: column;
-                align-items: center;
-            }
+        }
+
+        .buttons-container {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            margin-top: 30px;
+        }
+
+        .main-button {
+            background-color: var(--color-primario);
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 30px;
+            cursor: pointer;
+            font-size: 16px;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+            transition: all 0.3s ease;
+        }
+
+        .main-button:hover {
+            background-color: #142a8a;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 10px rgba(0,0,0,0.15);
+        }
+
+        .main-button i {
+            margin-right: 8px;
         }
     </style>
 </head>
 <body>
-<div class="header-container">
+    <div class="header-container">
         <div class="container">
-            <h1 class="text-center mb-0"><i class="fas fa-pills"></i> Tratamientos Disponibles</h1>
+            <h1 class="text-center mb-0">Hola, <?php echo $user_data['nombre']; ?></h1>
             <button class="profile-button" onclick="window.location.href='../verPerfil.php'">
-                <i class="fas fa-user-circle"></i> <?php echo $user_data['nombre']; ?>
+                <i class="fas fa-user-circle"></i> Hola, <?php echo $user_data['nombre']; ?>
             </button>
         </div>
     </div>
 
-    <div class="nav-buttons">
-        <button class="nav-button" onclick="window.location.href='tablaTratamientos.php'">
-            <i class="fas fa-pills"></i> Tratamientos
+    <!-- Botones principales -->
+    <div class="buttons-container">
+        <button class="main-button" onclick="window.location.href='pacienteAgendarCita.php'">
+            <i class="fas fa-calendar-plus"></i> Agendar una cita
         </button>
-        <button class="nav-button" onclick="window.location.href='tablaPacientes.php'">
-            <i class="fas fa-user-injured"></i> Pacientes
+        
+        <button class="main-button" onclick="window.location.href='verCitas_Paciente.php'">
+            <i class="fas fa-calendar-check"></i> Ver citas agendadas
         </button>
-        <button class="nav-button" onclick="window.location.href='verCitasPacientes_Doctora.php'">
-            <i class="fas fa-calendar-alt"></i> Citas
-        </button>
-        <button class="nav-button" onclick="window.location.href='calendario.php'">
-            <i class="fas fa-calendar-alt"></i> Calendario
-        </button>
-        <button class="nav-button" onclick="window.location.href='HistorialArchivo.php'">
-            <i class="fas fa-user-injured"></i> Archivo
+
+        <!-- Botón de Ver Historial -->
+        <button class="main-button" onclick="window.location.href='verHistorial.php'">
+            <i class="fas fa-history"></i> Ver Historial Clínico
         </button>
     </div>
 
-    <div class="container">
-        <!-- Botones principales -->
-        <div class="main-buttons">
-            <button class="main-button" onclick="window.location.href='pacienteAgendarCita.php'">
-                <i class="fas fa-calendar-plus"></i> Agendar una cita
-            </button>
-            
-            <div class="calendar-icon">
-                <img src="../IMG/calendar-icon.png" alt="Calendario">
-                <button class="main-button" onclick="window.location.href='verCitas_Paciente.php'">
-                    <i class="fas fa-calendar-check"></i> Ver citas agendadas
-                </button>
-            </div>
-            
-            <button class="main-button" onclick="window.location.href='VerHistorial_Paciente.php'">
-                <i class="fas fa-history"></i> Ver Historial
-            </button>
-        </div>
-
-        <!-- Tratamientos con imágenes -->
-        <div class="treatments">
-            <?php
-                // Loop through the fetched data and display each treatment
-                while ($row = mysqli_fetch_assoc($result)) {
-                    echo "<div class='treatment'>";
-                    echo "<h3>" . htmlspecialchars($row['nombre']) . "</h3>";
-                    echo "<img src='" . htmlspecialchars($row['imagenURL']) . "' alt='" . htmlspecialchars($row['nombre']) . "'>";
-                    echo "<form action='detalleTratamiento.php' method='GET'>";
-                    echo "<input type='hidden' name='IDtratamiento' value='" . htmlspecialchars($row['IDtratamiento']) . "'>";
-                    echo "<button type='submit'><i class='fas fa-eye'></i> Ver tratamiento</button>";
-                    echo "</form>";
-                    echo "</div>";
-                }
-            ?>
-        </div>
+    <!-- Tratamientos con imágenes -->
+    <div class="treatments">
+        <?php
+            // Loop through the fetched data and display each treatment
+            while ($row = mysqli_fetch_assoc($result)) {
+                echo "<div class='treatment'>";
+                echo "<h3>" . htmlspecialchars($row['nombre']) . "</h3>";
+                echo "<img src='" . htmlspecialchars($row['imagenURL']) . "' alt='" . htmlspecialchars($row['nombre']) . "'>";
+                echo "<form action='detalleTratamiento.php' method='GET'>";
+                echo "<input type='hidden' name='IDtratamiento' value='" . htmlspecialchars($row['IDtratamiento']) . "'>";
+                echo "<button type='submit'><i class='fas fa-eye'></i> Ver tratamiento</button>";
+                echo "</form>";
+                echo "</div>";
+            }
+        ?>
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
