@@ -28,11 +28,9 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         :root {
-            --color-primario: #4a8cff; /*Azul para tratamientos*/
+            --color-primario: #4a8cff; /* Azul para tratamientos */
             --color-secundario: #f8f9fa;
             --color-terciario: #e9ecef;
-            --color-exito: #28a745;
-            --color-error: #dc3545;
             --color-texto: #212529;
             --color-borde: #ced4da;
             --color-fondo: #ffffff;
@@ -62,13 +60,13 @@
             width: 100%;
             max-width: 600px;
             overflow: hidden;
-            text-align: center;
         }
 
         .header {
             background-color: var(--color-primario);
             color: white;
             padding: 20px;
+            text-align: center;
         }
 
         .header h1 {
@@ -78,6 +76,7 @@
 
         .body {
             padding: 30px;
+            text-align: center;
         }
 
         .body img {
@@ -124,17 +123,26 @@
             text-decoration: underline;
         }
 
+        @media (max-width: 576px) {
+            .body {
+                padding: 20px;
+            }
+
+            .header {
+                padding: 15px;
+            }
+        }
     </style>
 </head>
 <body>
     <div class="container">
         <div class="header">
-            <h1>Detalle del Tratamiento</h1>
+            <h1><i class="fas fa-prescription-bottle-alt"></i> Detalles del Tratamiento</h1>
         </div>
-        
+
         <div class="body">
+            <h2><?php echo htmlspecialchars($treatment['nombre']); ?></h2>
             <img src="<?php echo htmlspecialchars($treatment['imagenURL']); ?>" alt="<?php echo htmlspecialchars($treatment['nombre']); ?>">
-            <p><strong>Nombre:</strong> <?php echo htmlspecialchars($treatment['nombre']); ?></p>
             <p><strong>Detalles:</strong> <?php echo htmlspecialchars($treatment['detalles']); ?></p>
             <p><strong>Precio:</strong> $<?php echo htmlspecialchars($treatment['precio']); ?></p>
             <a href="catalogoTratamientos.php" class="btn">Regresar</a>
