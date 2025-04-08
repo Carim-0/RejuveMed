@@ -238,6 +238,11 @@
         <button class="main-button" onclick="window.location.href='verCitas_Paciente.php'">
             <i class="fas fa-calendar-check"></i> Ver citas agendadas
         </button>
+
+        <!-- Botón de Ver Historial -->
+        <button class="main-button" onclick="window.location.href='verHistorial.php'">
+            <i class="fas fa-history"></i> Ver Historial
+        </button>
     </div>
 
     <!-- Calendario estático -->
