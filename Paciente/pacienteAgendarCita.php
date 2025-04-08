@@ -344,17 +344,9 @@
         document.addEventListener("DOMContentLoaded", function () {
             initializeEventListeners();
         });
+
+
         
-        <script src="sweetalert2.all.min.js"></script>
-
-        function popSucc{
-        Swal.fire({
-         title: "Good job!",
-        text: "You clicked the button!",
-        icon: "success"
-        });
-        }
-
         function initializeEventListeners() {
             const tratamientoSelect = document.getElementById("IDtratamiento");
             const horaInput = document.getElementById("hora");
