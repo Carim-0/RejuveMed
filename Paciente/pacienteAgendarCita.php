@@ -8,12 +8,20 @@
         die("Acceso denegado. Por favor, inicie sesión como paciente.");
     }
     echo "<script>
-                        Swal.fire({
-                            title: 'Éxito',
-                            text: 'Cita agendada',
-                            icon: 'success'
-                        })
-                    </script>";
+    // Espera a que SweetAlert2 se cargue
+    function loadSwal() {
+        if (typeof Swal === 'undefined') {
+            setTimeout(loadSwal, 100);
+        } else {
+            Swal.fire({
+                title: 'Éxito',
+                text: 'Cita agendada',
+                icon: 'success'
+            });
+        }
+    }
+    loadSwal();
+</script>";
     $IDpaciente = $_SESSION['user_id']; // Get the current user's ID
 
     // Fetch available treatments
