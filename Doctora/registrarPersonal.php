@@ -209,7 +209,10 @@
                 <div class="form-group">
                     <label for="password">Contraseña</label>
                     <div class="input-icon">
-                        <input type="password" class="form-control" id="password" name="password" required>
+                        <input type="password" class="form-control" id="password" name="password" 
+                               pattern="^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{8,}$" 
+                               title="La contraseña debe de contener por lo menos 8 caracteres, 1 número y 1 letra" 
+                               required>
                         <i class="fas fa-lock"></i>
                     </div>
                     <p class="password-note">Mínimo 8 caracteres, incluir números y letras</p>
@@ -218,7 +221,8 @@
                 <div class="form-group">
                     <label for="confirm_password">Confirmar Contraseña</label>
                     <div class="input-icon">
-                        <input type="password" class="form-control" id="confirm_password" name="confirm_password" required>
+                        <input type="password" class="form-control" id="confirm_password" name="confirm_password" 
+                               required>
                         <i class="fas fa-lock"></i>
                     </div>
                 </div>
@@ -226,14 +230,20 @@
                 <div class="form-group">
                     <label for="telefono">Teléfono</label>
                     <div class="input-icon">
-                        <input type="text" class="form-control" id="telefono" name="telefono" required>
+                        <input type="text" class="form-control" id="telefono" name="telefono" 
+                               pattern="^\d{10}$" 
+                               title="El teléfono debe contener exactamente 10 dígitos" 
+                               required>
                         <i class="fas fa-phone"></i>
                     </div>
                 </div>
                 
                 <div class="form-group">
                     <label for="edad">Edad</label>
-                    <input type="number" class="form-control" id="edad" name="edad" min="18" required>
+                    <input type="number" class="form-control" id="edad" name="edad" min="18" 
+                           oninvalid="this.setCustomValidity('Edad mínima 18 años')" 
+                           oninput="this.setCustomValidity('')" 
+                           required>
                 </div>
                 
                 <div class="form-group">
@@ -251,5 +261,39 @@
             </form>
         </div>
     </div>
+    <script>
+        const passwordInput = document.getElementById('password');
+        const confirmPasswordInput = document.getElementById('confirm_password');
+        const phoneInput = document.getElementById('telefono');
+
+        // Password validation
+        passwordInput.addEventListener('input', function () {
+            const pattern = /^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{8,}$/;
+            if (!pattern.test(passwordInput.value)) {
+                passwordInput.setCustomValidity("La contraseña debe de contener por lo menos 8 caracteres, 1 número y 1 letra");
+            } else {
+                passwordInput.setCustomValidity("");
+            }
+        });
+
+        // Confirm password validation
+        confirmPasswordInput.addEventListener('input', function () {
+            if (confirmPasswordInput.value !== passwordInput.value) {
+                confirmPasswordInput.setCustomValidity("Las contraseñas no coinciden");
+            } else {
+                confirmPasswordInput.setCustomValidity("");
+            }
+        });
+
+        // Phone number validation
+        phoneInput.addEventListener('input', function () {
+            const pattern = /^\d{10}$/;
+            if (!pattern.test(phoneInput.value)) {
+                phoneInput.setCustomValidity("El teléfono debe contener exactamente 10 dígitos");
+            } else {
+                phoneInput.setCustomValidity("");
+            }
+        });
+    </script>
 </body>
 </html>

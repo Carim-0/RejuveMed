@@ -27,6 +27,34 @@
     } else {
         die("Error al obtener los datos del usuario.");
     }
+
+    if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['update_profile'])) {
+        $new_password = $_POST['password'];
+        $new_telefono = $_POST['telefono'];
+
+        // Validate inputs
+        if (empty($new_password) || empty($new_telefono)) {
+            echo "<script>alert('Todos los campos son obligatorios.');</script>";
+        } else {
+            // Determine the table to update based on user type
+            if ($user_type === 'Paciente') {
+                $query_update = "UPDATE Pacientes SET password = ?, telefono = ? WHERE IDpaciente = ?";
+            } elseif ($user_type === 'Personal') {
+                $query_update = "UPDATE Personal SET password = ?, telefono = ? WHERE IDpersonal = ?";
+            }
+
+            // Execute the update query
+            $stmt = $con->prepare($query_update);
+            $stmt->bind_param("ssi", $new_password, $new_telefono, $user_id);
+
+            if ($stmt->execute()) {
+                echo "<script>alert('Perfil actualizado exitosamente.'); window.location.href='verPerfil.php';</script>";
+            } else {
+                echo "<script>alert('Error al actualizar el perfil.');</script>";
+            }
+            $stmt->close();
+        }
+    }
 ?>
 
 <!DOCTYPE html>
@@ -208,65 +236,54 @@
 <body>
     <div class="profile-container">
         <div class="profile-header">
-            <h2 class="form-title">Mi Perfil</h2>
+            <h2 class="form-title">Editar Perfil</h2>
             <span class="user-type-badge" style="--user-type-color: <?php echo $user_type === 'Paciente' ? '#4a6fa5' : '#ff7e5f'; ?>">
                 <?php echo $user_type === 'Paciente' ? 'Paciente' : 'Personal'; ?>
             </span>
         </div>
         
-        <div class="profile-details">
-            <div class="detail-item">
-                <span class="detail-label">ID de Usuario</span>
-                <div class="detail-value">
-                    <?php echo htmlspecialchars($user_type === 'Paciente' ? $user_data['IDpaciente'] : $user_data['IDpersonal']); ?>
+        <form method="POST" action="">
+            <div class="profile-details">
+                <div class="detail-item">
+                    <span class="detail-label">Nombre</span>
+                    <div class="detail-value">
+                        <?php echo htmlspecialchars($user_data['nombre']); ?>
+                    </div>
+                </div>
+
+                <div class="detail-item">
+                    <span class="detail-label">Edad</span>
+                    <div class="detail-value">
+                        <?php echo htmlspecialchars($user_data['edad']); ?>
+                    </div>
+                </div>
+                
+                <div class="detail-item password-container">
+                    <span class="detail-label">Contraseña</span>
+                    <input type="password" class="detail-value" id="password" name="password" 
+                           value="<?php echo htmlspecialchars($user_data['password']); ?>" 
+                           pattern="^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{8,}$" 
+                           title="La contraseña debe de contener por lo menos 8 caracteres, 1 número y 1 letra" 
+                           required>
+                </div>
+
+                <div class="detail-item">
+                    <span class="detail-label">Teléfono</span>
+                    <input type="text" class="detail-value" id="telefono" name="telefono" 
+                           value="<?php echo htmlspecialchars($user_data['telefono']); ?>" 
+                           pattern="^\d{10}$" 
+                           title="El teléfono debe contener exactamente 10 dígitos" 
+                           required>
                 </div>
             </div>
             
-            <div class="detail-item">
-                <span class="detail-label">Nombre</span>
-                <div class="detail-value">
-                    <?php echo htmlspecialchars($user_data['nombre']); ?>
-                </div>
-            </div>
-            
-            <div class="detail-item password-container">
-                <span class="detail-label">Contraseña</span>
-                <div class="detail-value" id="password">
-                    ********
-                    <button class="btn-toggle-password" onclick="togglePassword()">
-                        <i class="fas fa-eye"></i>
-                    </button>
-                </div>
-            </div>
-            
-            <div class="detail-item">
-                <span class="detail-label">Teléfono</span>
-                <div class="detail-value">
-                    <?php echo htmlspecialchars($user_data['telefono']); ?>
-                </div>
-            </div>
-            
-            <div class="detail-item">
-                <span class="detail-label">Edad</span>
-                <div class="detail-value">
-                    <?php echo htmlspecialchars($user_data['edad']); ?>
-                </div>
-            </div>
-            
-            <div class="detail-item" style="grid-column: span 2">
-                <span class="detail-label">Detalles</span>
-                <div class="detail-value">
-                    <?php echo htmlspecialchars($user_data['detalles']); ?>
-                </div>
-            </div>
-        </div>
+            <button type="submit" name="update_profile" class="btn-edit-password">
+                <i class="fas fa-key"></i> Confirmar cambios
+            </button>
+        </form>
         
-        <button class="btn-edit-password" onclick="window.location.href='editarPerfil.php'">
-            <i class="fas fa-key"></i> Editar Contraseña/Telefono
-        </button>
-        
-        <button class="btn-salir" onclick="window.location.href='logout.php'">
-            <i class="fas fa-sign-out-alt"></i> Cerrar Sesión
+        <button class="btn-salir" onclick="window.location.href='verPerfil.php'">
+            <i class="fas fa-sign-out-alt"></i> Cancelar
         </button>
     </div>
 
@@ -289,6 +306,30 @@
                 isPasswordVisible = true;
             }
         }
+    </script>
+    <script>
+        const passwordInput = document.getElementById('password');
+
+        passwordInput.addEventListener('input', function () {
+            const pattern = /^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{8,}$/;
+            if (!pattern.test(passwordInput.value)) {
+                passwordInput.setCustomValidity("La contraseña debe de contener por lo menos 8 caracteres, 1 número y 1 letra");
+            } else {
+                passwordInput.setCustomValidity("");
+            }
+        });
+    </script>
+    <script>
+        const phoneInput = document.getElementById('telefono');
+
+        phoneInput.addEventListener('input', function () {
+            const pattern = /^\d{10}$/;
+            if (!pattern.test(phoneInput.value)) {
+                phoneInput.setCustomValidity("El teléfono debe contener exactamente 10 dígitos");
+            } else {
+                phoneInput.setCustomValidity("");
+            }
+        });
     </script>
 </body>
 </html>
