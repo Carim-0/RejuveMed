@@ -25,13 +25,14 @@
     <!-- Agregar los archivos CSS de Bootstrap -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
     <style>
+        /* Estilo del carrusel */
         .carousel-inner img {
             width: 100%; /* Asegura que las imágenes ocupen el 100% del ancho */
-            height: 300px; /* Limita la altura para que no sean tan grandes */
+            height: 400px; /* Ajusta la altura de las imágenes */
             object-fit: cover; /* Asegura que las imágenes se recorten bien */
         }
 
-        /* Estilo para el botón "Ver citas agendadas" */
+        /* Estilo para los botones de acción */
         .btn.ver-citas {
             background-color: #007bff; /* Azul */
             color: white;
@@ -40,13 +41,13 @@
             border-radius: 5px;
             font-size: 16px;
             cursor: pointer;
+            display: inline-block;
         }
 
         .btn.ver-citas:hover {
             background-color: #0056b3; /* Azul oscuro */
         }
 
-        /* Estilo para el botón "Ver tratamiento" */
         .treatment button.ver-tratamiento {
             background-color: #28a745; /* Verde */
             color: white;
@@ -54,6 +55,9 @@
             padding: 10px 20px;
             border-radius: 5px;
             cursor: pointer;
+            display: block;
+            margin-top: 10px; /* Añadido un margen para separar del contenido */
+            width: 100%; /* Hacer que el botón ocupe todo el ancho de la caja */
         }
 
         .treatment button.ver-tratamiento:hover {
@@ -69,6 +73,28 @@
             border-radius: 8px;
             margin-top: 40px;
             font-size: 24px;
+        }
+
+        .treatments {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 20px;
+        }
+
+        .treatment {
+            text-align: center;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            padding: 10px;
+            width: 250px; /* Ajustado el tamaño de cada tratamiento */
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        }
+
+        .treatment img {
+            width: 100%;
+            height: auto;
+            border-radius: 8px;
         }
     </style>
 </head>
