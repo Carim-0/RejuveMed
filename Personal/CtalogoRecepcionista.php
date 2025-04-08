@@ -58,8 +58,7 @@
         .header-container {
             background-color: var(--color-primario);
             color: white;
-            padding: 15px 0;
-            margin-bottom: 20px;
+            padding: 20px 0;
             box-shadow: 0 2px 5px rgba(0,0,0,0.1);
             position: relative;
         }
@@ -69,13 +68,13 @@
             color: var(--color-primario);
             border: none;
             border-radius: 50px;
-            padding: 6px 15px;
+            padding: 8px 20px;
             font-weight: 500;
-            font-size: 0.9rem;
+            font-size: 1rem;
             transition: all 0.3s;
             position: absolute;
-            top: 15px;
-            right: 15px;
+            top: 20px;
+            right: 20px;
         }
 
         .profile-button:hover {
@@ -94,8 +93,8 @@
             background-color: var(--color-primario);
             color: white;
             border: none;
-            padding: 10px 20px;
-            border-radius: 30px;
+            padding: 12px 25px;
+            border-radius: 50px;
             cursor: pointer;
             font-size: 16px;
             box-shadow: 0 4px 8px rgba(0,0,0,0.1);
@@ -105,7 +104,7 @@
         .main-button:hover {
             background-color: #142a8a;
             transform: translateY(-2px);
-            box-shadow: 0 6px 10px rgba(0,0,0,0.15);
+            box-shadow: 0 6px 12px rgba(0,0,0,0.15);
         }
 
         .treatments {
@@ -131,12 +130,12 @@
 
         .treatment:hover {
             transform: translateY(-10px);
-            box-shadow: 0 10px 15px rgba(0,0,0,0.2);
+            box-shadow: 0 10px 20px rgba(0,0,0,0.15);
         }
 
         .treatment img {
             width: 100%;
-            height: 150px;
+            height: 200px;
             object-fit: cover;
             border-radius: 12px;
             margin-bottom: 15px;
@@ -146,7 +145,7 @@
             font-size: 20px;
             color: var(--color-texto);
             font-weight: bold;
-            margin-bottom: 12px;
+            margin-bottom: 15px;
         }
 
         .treatment button {
@@ -179,7 +178,7 @@
                 width: 100%;
                 max-width: 300px;
             }
-            
+
             .profile-button {
                 position: relative;
                 top: auto;
