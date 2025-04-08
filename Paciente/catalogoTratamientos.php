@@ -38,7 +38,7 @@
 
         /* Mensaje de bienvenida */
         h1 {
-            background-color: #28a745; /* Color verde suave */
+            background-color: #007bff; /* Color azul */
             color: white;
             padding: 20px;
             text-align: center;
@@ -66,7 +66,7 @@
 
         .header-button {
             padding: 14px 28px;
-            background-color: #28a745; /* Color verde suave */
+            background-color: #007bff; /* Azul brillante */
             color: white;
             border: none;
             border-radius: 30px; /* Bordes redondeados */
@@ -77,14 +77,14 @@
         }
 
         .header-button:hover {
-            background-color: #218838; /* Verde más oscuro */
+            background-color: #0056b3; /* Azul más oscuro */
             transform: translateY(-6px);
             box-shadow: 0 8px 12px rgba(0, 0, 0, 0.2);
         }
 
         /* Botón para agendar cita y ver citas */
         .btn {
-            background-color: #007bff; /* Color azul para destacar */
+            background-color: #007bff; /* Azul brillante */
             color: white;
             padding: 14px 28px;
             border-radius: 30px; /* Bordes redondeados */
@@ -97,7 +97,7 @@
         }
 
         .btn:hover {
-            background-color: #0056b3; /* Azul más oscuro al hacer hover */
+            background-color: #0056b3; /* Azul más oscuro */
             transform: translateY(-6px);
             box-shadow: 0 8px 12px rgba(0, 0, 0, 0.2);
         }
@@ -146,7 +146,7 @@
 
         /* Estilo para los botones de tratamiento */
         .treatment button {
-            background-color: #007bff;
+            background-color: #007bff; /* Azul brillante */
             color: white;
             border: none;
             padding: 14px 28px;
@@ -159,7 +159,7 @@
         }
 
         .treatment button:hover {
-            background-color: #0056b3;
+            background-color: #0056b3; /* Azul más oscuro */
             transform: translateY(-6px);
             box-shadow: 0 8px 12px rgba(0, 0, 0, 0.2);
         }
