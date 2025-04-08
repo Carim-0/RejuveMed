@@ -4,6 +4,17 @@
     include("../connection.php");
     include("../functions.php");
 
+    function hasHistorialMedico($con, $id_paciente) {
+        $query = "SELECT COUNT(*) as count FROM `Historial Medico` WHERE IDpaciente = ?";
+        $stmt = $con->prepare($query);
+        $stmt->bind_param("i", $id_paciente);
+        $stmt->execute();
+        $result = $stmt->get_result();
+        $row = $result->fetch_assoc();
+        $stmt->close();
+        return $row['count'] > 0;
+    }
+
     $query = "select * from Pacientes";
     $result = mysqli_query($con, $query);
     
@@ -275,16 +286,23 @@
                         </thead>
                         <tbody>
                             <?php
-                                while($row = mysqli_fetch_assoc($result)) {
+                                while ($row = mysqli_fetch_assoc($result)) {
+                                    $id_paciente = $row['IDpaciente'];
+                                    $has_historial = hasHistorialMedico($con, $id_paciente);
+
                                     echo "<tr>";
-                                    echo "<td>".$row['IDpaciente']."</td>";
-                                    echo "<td>".$row['nombre']."</td>";
-                                    echo "<td>".$row['edad']."</td>";
-                                    echo "<td>".$row['telefono']."</td>";
+                                    echo "<td>" . $id_paciente . "</td>";
+                                    echo "<td>" . $row['nombre'] . "</td>";
+                                    echo "<td>" . $row['edad'] . "</td>";
+                                    echo "<td>" . $row['telefono'] . "</td>";
                                     echo "<td class='d-flex justify-content-center'>";
-                                    echo "<a href='editarPaciente.php?id=".$row['IDpaciente']."' class='action-link' title='Editar'><i class='fas fa-edit'></i>Editar</a>";
-                                    echo "<a href='editarHistorialMedico.php?id=".$row['IDpaciente']."' class='action-link' title='Ver Historial Médico'><i class='fas fa-notes-medical'></i> Editar Historial Medico</a>";
-                                    echo "<a href='eliminarPaciente.php?id=".$row['IDpaciente']."' class='action-link delete' title='Eliminar' onclick='return confirm(\"¿Eliminar este paciente?\")'><i class='fas fa-trash-alt'></i>Eliminar</a>";
+                                    echo "<a href='editarPaciente.php?id=" . $id_paciente . "' class='action-link' title='Editar'><i class='fas fa-edit'></i>Editar</a>";
+                                    if ($has_historial) {
+                                        echo "<a href='editarHistorialMedico.php?id=" . $id_paciente . "' class='action-link' title='Ver Historial Médico'><i class='fas fa-notes-medical'></i> Editar Historial Medico</a>";
+                                    } else {
+                                        echo "<a href='registrarHistorial.php?id=" . $id_paciente . "' class='action-link' title='Registrar Historial Médico'><i class='fas fa-notes-medical'></i> Registrar Historial Medico</a>";
+                                    }
+                                    echo "<a href='eliminarPaciente.php?id=" . $id_paciente . "' class='action-link delete' title='Eliminar' onclick='return confirm(\"¿Eliminar este paciente?\")'><i class='fas fa-trash-alt'></i>Eliminar</a>";
                                     echo "</td>";
                                     echo "</tr>";
                                 }
