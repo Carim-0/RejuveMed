@@ -7,21 +7,7 @@
     if (!isset($_SESSION['user_id']) || $_SESSION['user_type'] !== 'Paciente') {
         die("Acceso denegado. Por favor, inicie sesión como paciente.");
     }
-    echo "<script>
-    // Espera a que SweetAlert2 se cargue
-    function loadSwal() {
-        if (typeof Swal === 'undefined') {
-            setTimeout(loadSwal, 100);
-        } else {
-            Swal.fire({
-                title: 'Éxito',
-                text: 'Cita agendada',
-                icon: 'success'
-            });
-        }
-    }
-    loadSwal();
-</script>";
+
     $IDpaciente = $_SESSION['user_id']; // Get the current user's ID
 
     // Fetch available treatments
@@ -66,7 +52,20 @@
             $result = mysqli_query($con, $query);
 
             if (mysqli_num_rows($result) > 0) {
-                echo "<script>alert('Ya existe una cita en ese horario. Por favor, elija otro horario.');</script>";
+                echo "<script>
+                function loadSwal() {
+                    if (typeof Swal === 'undefined') {
+                        setTimeout(loadSwal, 100);
+                    } else {
+                        Swal.fire({
+                            icon: "error",
+                            title: "Oops...",
+                            text: "Ya existe una cita en ese horario. Por favor, elija otro horario.",
+                            });
+                    }
+                }
+                loadSwal();
+                </script>";
                 echo "<script>window.location.href = 'pacienteAgendarCita.php';</script>";
                 exit;
             } else {
@@ -76,16 +75,36 @@
 
                 if ($result) {
                     echo "<script>
-                        Swal.fire({
-                            title: 'Éxito',
-                            text: 'Cita agendada',
-                            icon: 'success'
-                        }).then(() => {
+                    function loadSwal() {
+                        if (typeof Swal === 'undefined') {
+                            setTimeout(loadSwal, 100);
+                        } else {
+                            Swal.fire({
+                                title: 'Éxito',
+                                text: 'Cita agendada',
+                                icon: 'success'
+                            }).then(() => {
                             window.location.href = 'verCitas_Paciente.php';
                         });
-                    </script>";
+                        }
+                    }
+                    loadSwal();
+                </script>";
                 } else {
-                    echo "<script>alert('Error al agendar la cita.');</script>";
+                    echo "<script>
+                    function loadSwal() {
+                        if (typeof Swal === 'undefined') {
+                            setTimeout(loadSwal, 100);
+                        } else {
+                            Swal.fire({
+                                icon: "error",
+                                title: "Oops...",
+                                text: "Ourrió un error al agendar la cita",
+                                });
+                        }
+                    }
+                    loadSwal();
+                </script>";
                 }
             }
         } else {
