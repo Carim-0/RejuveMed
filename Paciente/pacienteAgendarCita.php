@@ -61,7 +61,7 @@
                 $result = mysqli_query($con, $query);
 
                 if ($result) {
-                    echo "<script>alert('Cita agendada exitosamente.'); window.location.href='verCitas_Paciente.php';</script>";
+                    echo "<script>Swal.fire({title: 'Drag me!', icon: 'success', draggable: true});; window.location.href='verCitas_Paciente.php';</script>";
                 } else {
                     echo "<script>alert('Error al agendar la cita.');</script>";
                 }
@@ -79,6 +79,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Agendar Cita - RejuveMed</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <style>
         :root {
             --primary-color: #4a6fa5;
