@@ -23,7 +23,20 @@
     <title>Bienvenido</title>
     <link rel="stylesheet" href="tratamientos_style.css">
     <style>
-        /* Estilo general para el contenedor de tratamientos */
+        /* Estilos Generales */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Arial', sans-serif;
+            background-color: #f4f6f9;
+            color: #333;
+        }
+
+        /* Contenedor de tratamientos */
         .treatments {
             display: flex;
             flex-wrap: wrap;
@@ -32,61 +45,62 @@
             margin-top: 40px;
         }
 
-        /* Estilo para cada caja de tratamiento */
+        /* Estilo para las cajas de tratamiento */
         .treatment {
             text-align: center;
             border: 1px solid #ddd;
-            border-radius: 8px;
+            border-radius: 12px;
             padding: 15px;
             width: 250px;
             box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-            background-color: #f8f9fa; /* Fondo más suave */
-            transition: all 0.3s ease; /* Transición suave al hacer hover */
+            background-color: #ffffff;
+            transition: all 0.3s ease;
         }
 
         .treatment:hover {
-            transform: translateY(-10px); /* Efecto de elevarse al hacer hover */
-            box-shadow: 0 10px 15px rgba(0, 0, 0, 0.2); /* Sombra más fuerte */
+            transform: translateY(-10px);
+            box-shadow: 0 10px 15px rgba(0, 0, 0, 0.2);
         }
 
         .treatment img {
             width: 100%;
-            height: 100px; /* Ajusta la altura */
-            object-fit: cover; /* Mantiene la imagen recortada correctamente */
+            height: 150px;
+            object-fit: cover;
             border-radius: 8px;
             margin-bottom: 15px;
         }
 
         .treatment h3 {
-            font-size: 18px;
+            font-size: 20px;
             color: #333;
-            margin-bottom: 10px;
-            font-weight: 600;
+            font-weight: bold;
+            margin-bottom: 12px;
         }
 
+        /* Estilo para los botones de tratamiento */
         .treatment button {
-            background-color: #28a745; /* Verde */
+            background-color: #007bff;
             color: white;
             border: none;
-            padding: 12px 24px;
-            border-radius: 6px;
+            padding: 14px 28px;
+            border-radius: 8px;
             cursor: pointer;
             font-size: 16px;
             text-transform: uppercase;
             transition: all 0.3s ease;
-            margin-top: 10px;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Sombra suave */
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            margin-top: 15px;
         }
 
         .treatment button:hover {
-            background-color: #218838; /* Verde oscuro */
-            transform: translateY(-6px); /* Efecto de elevarse al hacer hover */
-            box-shadow: 0 8px 12px rgba(0, 0, 0, 0.2); /* Sombra más profunda */
+            background-color: #0056b3;
+            transform: translateY(-6px);
+            box-shadow: 0 8px 12px rgba(0, 0, 0, 0.2);
         }
 
-        /* Estilo para el mensaje de bienvenida */
+        /* Estilo del mensaje de bienvenida */
         h1 {
-            background-color: #007bff; /* Azul */
+            background-color: #28a745;
             color: white;
             padding: 20px;
             text-align: center;
@@ -96,53 +110,54 @@
             font-weight: bold;
         }
 
-        /* Estilo para los botones de la parte superior */
+        /* Estilo para los botones en el header */
         .header-buttons {
             position: absolute;
             top: 20px;
             right: 20px;
             display: flex;
-            gap: 10px;
+            gap: 15px;
         }
 
         .header-button {
-            padding: 12px 24px;
-            background-color: #007bff;
+            padding: 14px 26px;
+            background-color: #28a745;
             color: white;
             border: none;
-            border-radius: 6px;
+            border-radius: 8px;
             cursor: pointer;
-            font-size: 14px;
+            font-size: 16px;
             transition: all 0.3s ease;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Sombra suave */
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
         }
 
         .header-button:hover {
-            background-color: #0056b3; /* Azul oscuro */
-            transform: translateY(-6px); /* Elevar ligeramente */
-            box-shadow: 0 8px 12px rgba(0, 0, 0, 0.2); /* Sombra más profunda */
+            background-color: #218838;
+            transform: translateY(-6px);
+            box-shadow: 0 8px 12px rgba(0, 0, 0, 0.2);
         }
 
-        /* Botones específicos para "Ver citas" y "Agendar" */
+        /* Botón para agendar cita y ver citas */
         .btn {
-            background-color: #007bff; /* Azul */
+            background-color: #007bff;
             color: white;
-            padding: 12px 24px;
-            border-radius: 6px;
+            padding: 14px 28px;
+            border-radius: 8px;
             cursor: pointer;
-            font-size: 16px;
+            font-size: 18px;
             display: inline-block;
-            margin-top: 20px;
             transition: all 0.3s ease;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Sombra suave */
+            margin-top: 20px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
         }
 
         .btn:hover {
-            background-color: #0056b3; /* Azul oscuro */
-            transform: translateY(-6px); /* Elevar ligeramente */
-            box-shadow: 0 8px 12px rgba(0, 0, 0, 0.2); /* Sombra más profunda */
+            background-color: #0056b3;
+            transform: translateY(-6px);
+            box-shadow: 0 8px 12px rgba(0, 0, 0, 0.2);
         }
 
+        /* Sección calendario con íconos */
         .calendar-section {
             display: flex;
             align-items: center;
@@ -150,8 +165,8 @@
         }
 
         .calendar-icon img {
-            width: 30px;
-            height: 30px;
+            width: 35px;
+            height: 35px;
         }
     </style>
 </head>
@@ -177,7 +192,7 @@
         <!-- Calendario e Icono -->
         <div class="calendar-section">
             <div class="calendar-icon">
-                <img src="../IMG/calendar-icon.png" alt="Calendario" width="30" height="30">
+                <img src="../IMG/calendar-icon.png" alt="Calendario" width="35" height="35">
             </div>
             <button class="btn" onclick="window.location.href='verCitas_Paciente.php'">Ver citas agendadas</button>
         </div>
@@ -186,4 +201,18 @@
         <div class="treatments">
             <?php
                 // Loop through the fetched data and display each treatment
-                while ($row = mysqli
+                while ($row = mysqli_fetch_assoc($result)) {
+                    echo "<div class='treatment'>";
+                    echo "<h3>" . htmlspecialchars($row['nombre']) . "</h3>";
+                    echo "<img src='" . htmlspecialchars($row['imagenURL']) . "' alt='" . htmlspecialchars($row['nombre']) . "'>";
+                    echo "<form action='detalleTratamiento.php' method='GET'>";
+                    echo "<input type='hidden' name='IDtratamiento' value='" . htmlspecialchars($row['IDtratamiento']) . "'>";
+                    echo "<button type='submit'>Ver tratamiento</button>";
+                    echo "</form>";
+                    echo "</div>";
+                }
+            ?>
+        </div>
+    </div>
+</body>
+</html>
