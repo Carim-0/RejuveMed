@@ -60,11 +60,22 @@
                 $query = "INSERT INTO Citas (IDpaciente, IDtratamiento, fecha, fechaFin) VALUES ('$IDpaciente', '$IDtratamiento', '$datetime', '$fechaFin')";
                 $result = mysqli_query($con, $query);
 
-                if ($result) {
-                    echo "<script>alert('Cita agendada exitosamente.'); window.location.href='verCitas_Paciente.php';</script>";
-                } else {
-                    echo "<script>alert('Error al agendar la cita.');</script>";
-                }
+                // Dentro del bloque if ($result) { ... }
+if ($result) {
+    echo "<script>
+        document.addEventListener('DOMContentLoaded', function() {
+            var myModal = new bootstrap.Modal(document.getElementById('detalleModal'));
+            myModal.show();
+            
+            setTimeout(function() {
+                window.location.href = 'verCitas_Paciente.php';
+            }, 3000);
+        });
+    </script>";
+} else {
+    echo "<script>alert('Error al agendar la cita.');</script>";
+}
+
             }
         } else {
             echo "<script>alert('Por favor, complete todos los campos.');</script>";
@@ -272,6 +283,29 @@
             color: var(--color-primario);
         }
         
+        
+        /* Agregar en el bloque de estilos */
+.modal-success-icon {
+    color: #28a745;
+    font-size: 3rem;
+    margin-bottom: 1rem;
+}
+
+.modal-content {
+    border-radius: 15px;
+    border: none;
+    box-shadow: 0 8px 20px rgba(0,0,0,0.2);
+}
+
+.modal-header {
+    border-bottom: none;
+    padding: 1.5rem;
+}
+
+.modal-body {
+    padding: 2rem;
+    text-align: center;
+}
         }
     </style>
 </head>
@@ -325,28 +359,29 @@
                 <a href="catalogoTratamientos.php" class="btn btn-secondary">
                     <i class="fas fa-arrow-left"></i> Regresar
                 </a>
-                <a href="#" type="submit" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#detalleModal">
-                    <i class="fas fa-calendar-check"></i> Agendar Cita
-                </a>
+                <!-- Botón de submit correcto (reemplazar el anchor) -->
+<button type="submit" class="btn btn-primary">
+    <i class="fas fa-calendar-check"></i> Agendar Cita
+</button>
+
+<!-- Modal corregido -->
+<div class="modal fade" id="detalleModal" tabindex="-1" aria-labelledby="detalleModalLabel">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="detalleModalLabel"><i class="fas fa-check-circle"></i> Confirmación</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body text-center">
+                <i class="fas fa-check-circle fa-3x text-success mb-3"></i>
+                <h5>¡Cita Agendada Exitosamente!</h5>
+                <p>Serás redirigido a tus citas en breve.</p>
+            </div>
+        </div>
+    </div>
+</div>
+
                 
-                <div class="modal fade" id="detalleModal  "tabindex="-1" role="dialog" aria-labelledby='detalleModal'>
-                <div class="modal-dialog modal-dialog-centered" role = 'document'>
-                    <div class="modal-content">
-                        <div class="modal-header">
-                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close">
-                                <span aria-hidden="true">&times;</span>
-                            </button>
-                        </div>
-                        <div class="modal-body">
-                            <i class="fas fa-user"></i>Se ha agendado una cita
-                        </div>
-                        <div class="modal-footer">
-                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
-                                <i class="fas fa-times"></i> Regresar
-                            </button>
-                        </div>
-                    </div>
-                </div>
             </div>
             </div>
 
@@ -361,6 +396,7 @@
         document.addEventListener("DOMContentLoaded", function () {
             initializeEventListeners();
         });
+        
         
         <script src="sweetalert2.all.min.js"></script>
 
@@ -406,5 +442,8 @@
             }
         }
     </script>
+    
+<!-- Incluir Bootstrap JS al final del body -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>
