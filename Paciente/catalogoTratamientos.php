@@ -36,6 +36,72 @@
             color: #333;
         }
 
+        /* Mensaje de bienvenida */
+        h1 {
+            background-color: #28a745; /* Color verde suave */
+            color: white;
+            padding: 20px;
+            text-align: center;
+            border-radius: 12px;
+            margin-top: 40px;
+            font-size: 26px;
+            font-weight: bold;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            transition: all 0.3s ease;
+        }
+
+        h1:hover {
+            transform: translateY(-6px);
+            box-shadow: 0 8px 15px rgba(0, 0, 0, 0.15);
+        }
+
+        /* Estilo para los botones en el header */
+        .header-buttons {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            display: flex;
+            gap: 15px;
+        }
+
+        .header-button {
+            padding: 14px 28px;
+            background-color: #28a745; /* Color verde suave */
+            color: white;
+            border: none;
+            border-radius: 30px; /* Bordes redondeados */
+            cursor: pointer;
+            font-size: 16px;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .header-button:hover {
+            background-color: #218838; /* Verde más oscuro */
+            transform: translateY(-6px);
+            box-shadow: 0 8px 12px rgba(0, 0, 0, 0.2);
+        }
+
+        /* Botón para agendar cita y ver citas */
+        .btn {
+            background-color: #007bff; /* Color azul para destacar */
+            color: white;
+            padding: 14px 28px;
+            border-radius: 30px; /* Bordes redondeados */
+            cursor: pointer;
+            font-size: 18px;
+            display: inline-block;
+            transition: all 0.3s ease;
+            margin-top: 20px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .btn:hover {
+            background-color: #0056b3; /* Azul más oscuro al hacer hover */
+            transform: translateY(-6px);
+            box-shadow: 0 8px 12px rgba(0, 0, 0, 0.2);
+        }
+
         /* Contenedor de tratamientos */
         .treatments {
             display: flex;
@@ -50,11 +116,12 @@
             text-align: center;
             border: 1px solid #ddd;
             border-radius: 12px;
-            padding: 15px;
+            padding: 20px;
             width: 250px;
             box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
             background-color: #ffffff;
             transition: all 0.3s ease;
+            overflow: hidden;
         }
 
         .treatment:hover {
@@ -66,7 +133,7 @@
             width: 100%;
             height: 150px;
             object-fit: cover;
-            border-radius: 8px;
+            border-radius: 12px;
             margin-bottom: 15px;
         }
 
@@ -83,75 +150,15 @@
             color: white;
             border: none;
             padding: 14px 28px;
-            border-radius: 8px;
+            border-radius: 30px;
             cursor: pointer;
             font-size: 16px;
             text-transform: uppercase;
             transition: all 0.3s ease;
             box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-            margin-top: 15px;
         }
 
         .treatment button:hover {
-            background-color: #0056b3;
-            transform: translateY(-6px);
-            box-shadow: 0 8px 12px rgba(0, 0, 0, 0.2);
-        }
-
-        /* Estilo del mensaje de bienvenida */
-        h1 {
-            background-color: #28a745;
-            color: white;
-            padding: 20px;
-            text-align: center;
-            border-radius: 8px;
-            margin-top: 40px;
-            font-size: 24px;
-            font-weight: bold;
-        }
-
-        /* Estilo para los botones en el header */
-        .header-buttons {
-            position: absolute;
-            top: 20px;
-            right: 20px;
-            display: flex;
-            gap: 15px;
-        }
-
-        .header-button {
-            padding: 14px 26px;
-            background-color: #28a745;
-            color: white;
-            border: none;
-            border-radius: 8px;
-            cursor: pointer;
-            font-size: 16px;
-            transition: all 0.3s ease;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-        }
-
-        .header-button:hover {
-            background-color: #218838;
-            transform: translateY(-6px);
-            box-shadow: 0 8px 12px rgba(0, 0, 0, 0.2);
-        }
-
-        /* Botón para agendar cita y ver citas */
-        .btn {
-            background-color: #007bff;
-            color: white;
-            padding: 14px 28px;
-            border-radius: 8px;
-            cursor: pointer;
-            font-size: 18px;
-            display: inline-block;
-            transition: all 0.3s ease;
-            margin-top: 20px;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-        }
-
-        .btn:hover {
             background-color: #0056b3;
             transform: translateY(-6px);
             box-shadow: 0 8px 12px rgba(0, 0, 0, 0.2);
