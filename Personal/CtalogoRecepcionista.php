@@ -20,36 +20,15 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Bienvenido </title>
+    <title>Bienvenido</title>
     <link rel="stylesheet" href="tratamientos_style.css">
     <!-- Agregar los archivos CSS de Bootstrap -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
     <style>
-        .treatments {
-            display: flex;
-            flex-wrap: wrap;
-            justify-content: center;
-            gap: 20px;
-        }
-
-        .treatment {
-            text-align: center;
-            border: 1px solid #ddd;
-            border-radius: 8px;
-            padding: 10px;
-            width: 200px;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-        }
-
-        .treatment img {
-            width: 100%;
-            height: auto;
-            border-radius: 8px;
-        }
-
-        .treatment h3 {
-            font-size: 18px;
-            margin: 10px 0;
+        .carousel-inner img {
+            width: 100%; /* Asegura que las imágenes ocupen el 100% del ancho */
+            height: 300px; /* Limita la altura para que no sean tan grandes */
+            object-fit: cover; /* Asegura que las imágenes se recorten bien */
         }
 
         /* Estilo para el botón "Ver citas agendadas" */
@@ -81,37 +60,6 @@
             background-color: #218838; /* Verde oscuro */
         }
 
-        .header-buttons {
-            position: absolute;
-            top: 20px;
-            right: 20px;
-            display: flex;
-            gap: 10px;
-        }
-
-        .header-button {
-            padding: 10px 20px;
-            background-color: #007bff;
-            color: white;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-            text-decoration: none;
-            font-size: 14px;
-        }
-
-        .header-button:hover {
-            background-color: #0056b3;
-        }
-
-        .header-button.historial {
-            background-color: #007bff;
-        }
-
-        .header-button.historial:hover {
-            background-color: #007bff;
-        }
-
         /* Estilo para el saludo con cuadro azul y letras blancas */
         h1 {
             background-color: #007bff; /* Azul */
@@ -121,12 +69,6 @@
             border-radius: 8px;
             margin-top: 40px;
             font-size: 24px;
-        }
-
-        /* Carrusel de imágenes */
-        .carousel-inner img {
-            width: 100%;
-            height: auto;
         }
     </style>
 </head>
