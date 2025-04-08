@@ -50,29 +50,6 @@
             position: relative;
         }
 
-        .nav-buttons {
-            display: flex;
-            gap: 10px;
-            justify-content: center;
-            margin: 15px 0;
-            flex-wrap: wrap;
-        }
-
-        .nav-button {
-            background-color: var(--color-primario);
-            color: white;
-            border: none;
-            border-radius: 5px;
-            padding: 8px 15px;
-            font-size: 0.9rem;
-            transition: all 0.3s;
-        }
-
-        .nav-button:hover {
-            background-color: #142a8a;
-            transform: translateY(-2px);
-        }
-
         .profile-button {
             background-color: white;
             color: var(--color-primario);
@@ -90,27 +67,6 @@
         .profile-button:hover {
             background-color: #f0f0f0;
             transform: translateY(-2px);
-        }
-
-        .card {
-            border: none;
-            border-radius: 8px;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
-            margin: 0 auto;
-            max-width: 95%;
-        }
-
-        .card-header {
-            background-color: var(--color-primario);
-            color: white;
-            padding: 12px 15px;
-            border-bottom: none;
-        }
-
-        .card-header h2 {
-            font-size: 1.1rem;
-            margin: 0;
-            text-align: center;
         }
 
         /* Estilos para los tratamientos */
@@ -174,54 +130,9 @@
             box-shadow: 0 6px 10px rgba(0,0,0,0.15);
         }
 
-        /* Botones principales */
-        .main-buttons {
-            display: flex;
-            justify-content: center;
-            gap: 20px;
-            margin: 30px 0;
-            flex-wrap: wrap;
-        }
-
-        .main-button {
-            background-color: var(--color-primario);
-            color: white;
-            border: none;
-            border-radius: 30px;
-            padding: 12px 25px;
-            font-size: 1rem;
-            transition: all 0.3s;
-            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
-
-        .main-button:hover {
-            background-color: #142a8a;
-            transform: translateY(-3px);
-            box-shadow: 0 6px 12px rgba(0,0,0,0.15);
-        }
-
-        .calendar-icon {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-
-        .calendar-icon img {
-            width: 35px;
-            height: 35px;
-        }
-
         @media (max-width: 768px) {
             .treatment {
                 width: 200px;
-            }
-            
-            .main-button {
-                padding: 10px 20px;
-                font-size: 0.9rem;
             }
         }
 
@@ -239,11 +150,6 @@
                 margin: 10px auto;
                 width: fit-content;
             }
-            
-            .main-buttons {
-                flex-direction: column;
-                align-items: center;
-            }
         }
     </style>
 </head>
@@ -257,6 +163,7 @@
         </div>
     </div>
 
+    <!-- Botones principales -->
     <div class="main-buttons">
         <button class="main-button" onclick="window.location.href='pacienteAgendarCita.php'">
             <i class="fas fa-calendar-plus"></i> Agendar una cita
@@ -270,6 +177,7 @@
         </div>
     </div>
 
+    <!-- Tratamientos con imágenes -->
     <div class="treatments">
         <?php
             // Loop through the fetched data and display each treatment
