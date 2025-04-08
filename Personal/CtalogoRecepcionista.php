@@ -83,7 +83,6 @@
             transform: translateY(-2px);
         }
 
-        /* Estilos para los tratamientos */
         .treatments {
             display: flex;
             flex-wrap: wrap;
@@ -311,6 +310,10 @@
             <i class="fas fa-calendar-check"></i> Ver todas las citas
         </button>
 
+        <button class="main-button" onclick="window.location.href='verPacientes.php'">
+            <i class="fas fa-users"></i> Ver Pacientes
+        </button>
+        
         <!-- Botón de Ver Historial -->
         <button class="main-button" onclick="window.location.href='verHistorial.php'">
             <i class="fas fa-history"></i> Ver Historial Clínico
@@ -378,24 +381,24 @@
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script>
         // Mostrar/ocultar overlay de citas
-document.getElementById('verCitasHoyBtn').addEventListener('click', function() {
-    document.getElementById('citasOverlay').style.display = 'flex';
-    // Ocultar el badge cuando se abre el overlay
-    var badge = document.getElementById('citasBadge');
-    if(badge) {
-        badge.style.display = 'none';
-    }
-});
+        document.getElementById('verCitasHoyBtn').addEventListener('click', function() {
+            document.getElementById('citasOverlay').style.display = 'flex';
+            // Ocultar el badge cuando se abre el overlay
+            var badge = document.getElementById('citasBadge');
+            if(badge) {
+                badge.style.display = 'none';
+            }
+        });
 
-document.getElementById('closeCitasOverlay').addEventListener('click', function() {
-    document.getElementById('citasOverlay').style.display = 'none';
-});
+        document.getElementById('closeCitasOverlay').addEventListener('click', function() {
+            document.getElementById('citasOverlay').style.display = 'none';
+        });
 
-document.getElementById('citasOverlay').addEventListener('click', function(e) {
-    if(e.target === this) {
-        this.style.display = 'none';
-    }
-});
+        document.getElementById('citasOverlay').addEventListener('click', function(e) {
+            if(e.target === this) {
+                this.style.display = 'none';
+            }
+        });
     </script>
 </body>
 </html>
