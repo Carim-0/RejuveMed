@@ -22,49 +22,66 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Bienvenido</title>
     <link rel="stylesheet" href="tratamientos_style.css">
-    <!-- Agregar los archivos CSS de Bootstrap -->
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
     <style>
-        /* Estilo del carrusel */
-        .carousel-inner img {
-            width: 100%; /* Asegura que las imágenes ocupen el 100% del ancho */
-            height: 100px; /* Ajusta la altura de las imágenes a 100px */
-            object-fit: cover; /* Asegura que las imágenes se recorten bien */
+        /* Estilo general para el contenedor de tratamientos */
+        .treatments {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 20px;
+            margin-top: 40px;
         }
 
-        /* Estilo para los botones de acción */
-        .btn.ver-citas {
-            background-color: #007bff; /* Azul */
-            color: white;
-            border: none;
-            padding: 10px 20px;
-            border-radius: 5px;
-            font-size: 16px;
-            cursor: pointer;
-            display: inline-block;
+        /* Estilo para cada caja de tratamiento */
+        .treatment {
+            text-align: center;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            padding: 15px;
+            width: 250px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            background-color: #f8f9fa; /* Fondo más suave */
+            transition: all 0.3s ease; /* Transición suave al hacer hover */
         }
 
-        .btn.ver-citas:hover {
-            background-color: #0056b3; /* Azul oscuro */
+        .treatment:hover {
+            transform: translateY(-10px); /* Efecto de elevarse al hacer hover */
+            box-shadow: 0 10px 15px rgba(0, 0, 0, 0.2); /* Sombra más fuerte */
         }
 
-        .treatment button.ver-tratamiento {
+        .treatment img {
+            width: 100%;
+            height: 150px; /* Ajusta la altura */
+            object-fit: cover; /* Mantiene la imagen recortada correctamente */
+            border-radius: 8px;
+            margin-bottom: 15px;
+        }
+
+        .treatment h3 {
+            font-size: 18px;
+            color: #333;
+            margin-bottom: 10px;
+            font-weight: 600;
+        }
+
+        .treatment button {
             background-color: #28a745; /* Verde */
             color: white;
             border: none;
-            padding: 10px 20px;
+            padding: 12px 20px;
             border-radius: 5px;
             cursor: pointer;
-            display: block;
-            margin-top: 10px; /* Añadido un margen para separar del contenido */
-            width: 100%; /* Hacer que el botón ocupe todo el ancho de la caja */
+            font-size: 16px;
+            text-transform: uppercase;
+            transition: background-color 0.3s;
+            margin-top: 10px;
         }
 
-        .treatment button.ver-tratamiento:hover {
+        .treatment button:hover {
             background-color: #218838; /* Verde oscuro */
         }
 
-        /* Estilo para el saludo con cuadro azul y letras blancas */
+        /* Estilo para el mensaje de bienvenida */
         h1 {
             background-color: #007bff; /* Azul */
             color: white;
@@ -73,28 +90,58 @@
             border-radius: 8px;
             margin-top: 40px;
             font-size: 24px;
+            font-weight: bold;
         }
 
-        .treatments {
+        /* Estilo para los botones de la parte superior */
+        .header-buttons {
+            position: absolute;
+            top: 20px;
+            right: 20px;
             display: flex;
-            flex-wrap: wrap;
-            justify-content: center;
-            gap: 20px;
+            gap: 10px;
         }
 
-        .treatment {
-            text-align: center;
-            border: 1px solid #ddd;
-            border-radius: 8px;
-            padding: 10px;
-            width: 250px; /* Ajustado el tamaño de cada tratamiento */
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        .header-button {
+            padding: 10px 20px;
+            background-color: #007bff;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 14px;
         }
 
-        .treatment img {
-            width: 100%;
-            height: 100px; /* Imagen más pequeña (100px de altura) */
-            border-radius: 8px;
+        .header-button:hover {
+            background-color: #0056b3;
+        }
+
+        /* Botones específicos para "Ver citas" y "Agendar" */
+        .btn {
+            background-color: #007bff; /* Azul */
+            color: white;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+            display: inline-block;
+            margin-top: 20px;
+            transition: background-color 0.3s;
+        }
+
+        .btn:hover {
+            background-color: #0056b3;
+        }
+
+        .calendar-section {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .calendar-icon img {
+            width: 30px;
+            height: 30px;
         }
     </style>
 </head>
@@ -109,33 +156,8 @@
     </div>
 
     <div class="container">
-        <!-- Mensaje de bienvenida con estilo -->
+        <!-- Mensaje de bienvenida con diseño mejorado -->
         <h1>Hola, <?php echo $user_data['nombre']; ?></h1>
-
-        <!-- Carrusel de imágenes -->
-        <div id="carouselExample" class="carousel slide my-4" data-bs-ride="carousel">
-            <div class="carousel-inner">
-                <?php
-                    $first = true;
-                    // Loop through the fetched data and display each treatment image in the carousel
-                    while ($row = mysqli_fetch_assoc($result)) {
-                        $activeClass = $first ? " active" : "";
-                        echo "<div class='carousel-item$activeClass'>";
-                        echo "<img src='" . htmlspecialchars($row['imagenURL']) . "' class='d-block w-100' alt='" . htmlspecialchars($row['nombre']) . "'>";
-                        echo "</div>";
-                        $first = false;
-                    }
-                ?>
-            </div>
-            <button class="carousel-control-prev" type="button" data-bs-target="#carouselExample" data-bs-slide="prev">
-                <span class="carousel-control-prev-icon" aria-hidden="true"></span>
-                <span class="visually-hidden">Previous</span>
-            </button>
-            <button class="carousel-control-next" type="button" data-bs-target="#carouselExample" data-bs-slide="next">
-                <span class="carousel-control-next-icon" aria-hidden="true"></span>
-                <span class="visually-hidden">Next</span>
-            </button>
-        </div>
 
         <!-- Opciones Agendar cita o ver citas -->
         <div class="options">
@@ -147,10 +169,10 @@
             <div class="calendar-icon">
                 <img src="../IMG/calendar-icon.png" alt="Calendario" width="30" height="30">
             </div>
-            <button class="btn ver-citas" onclick="window.location.href='verCitas_Paciente.php'">Ver citas agendadas</button>
+            <button class="btn" onclick="window.location.href='verCitas_Paciente.php'">Ver citas agendadas</button>
         </div>
 
-        <!-- Tratamientos con imágenes -->
+        <!-- Tratamientos con imágenes y diseño mejorado -->
         <div class="treatments">
             <?php
                 // Loop through the fetched data and display each treatment
@@ -160,15 +182,12 @@
                     echo "<img src='" . htmlspecialchars($row['imagenURL']) . "' alt='" . htmlspecialchars($row['nombre']) . "'>";
                     echo "<form action='detalleTratamiento.php' method='GET'>";
                     echo "<input type='hidden' name='IDtratamiento' value='" . htmlspecialchars($row['IDtratamiento']) . "'>";
-                    echo "<button class='ver-tratamiento' type='submit'>Ver tratamiento</button>";
+                    echo "<button type='submit'>Ver tratamiento</button>";
                     echo "</form>";
                     echo "</div>";
                 }
             ?>
         </div>
     </div>
-
-    <!-- Agregar los archivos JS de Bootstrap -->
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>
