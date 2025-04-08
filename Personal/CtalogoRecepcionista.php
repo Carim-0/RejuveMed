@@ -20,9 +20,61 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Bienvenido </title>
+    <title>Bienvenido</title>
     <link rel="stylesheet" href="tratamientos_style.css">
+    <!-- Agregar los archivos CSS de Bootstrap -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
     <style>
+        /* Estilo del carrusel */
+        .carousel-inner img {
+            width: 100%; /* Asegura que las imágenes ocupen el 100% del ancho */
+            height: 250px; /* Ajusta la altura de las imágenes más pequeña */
+            object-fit: cover; /* Asegura que las imágenes se recorten bien */
+        }
+
+        /* Estilo para los botones de acción */
+        .btn.ver-citas {
+            background-color: #007bff; /* Azul */
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            font-size: 16px;
+            cursor: pointer;
+            display: inline-block;
+        }
+
+        .btn.ver-citas:hover {
+            background-color: #0056b3; /* Azul oscuro */
+        }
+
+        .treatment button.ver-tratamiento {
+            background-color: #28a745; /* Verde */
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            display: block;
+            margin-top: 10px; /* Añadido un margen para separar del contenido */
+            width: 100%; /* Hacer que el botón ocupe todo el ancho de la caja */
+        }
+
+        .treatment button.ver-tratamiento:hover {
+            background-color: #218838; /* Verde oscuro */
+        }
+
+        /* Estilo para el saludo con cuadro azul y letras blancas */
+        h1 {
+            background-color: #007bff; /* Azul */
+            color: white;
+            padding: 20px;
+            text-align: center;
+            border-radius: 8px;
+            margin-top: 40px;
+            font-size: 24px;
+        }
+
         .treatments {
             display: flex;
             flex-wrap: wrap;
@@ -35,7 +87,7 @@
             border: 1px solid #ddd;
             border-radius: 8px;
             padding: 10px;
-            width: 200px;
+            width: 250px; /* Ajustado el tamaño de cada tratamiento */
             box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
         }
 
@@ -43,82 +95,6 @@
             width: 100%;
             height: auto;
             border-radius: 8px;
-        }
-
-        .treatment h3 {
-            font-size: 18px;
-            margin: 10px 0;
-        }
-
-        /* Estilo para el botón "Ver citas agendadas" */
-        .btn.ver-citas {
-            background-color: #007bff; /* Azul */
-            color: white;
-            border: none;
-            padding: 10px 20px;
-            border-radius: 5px;
-            font-size: 16px;
-            cursor: pointer;
-        }
-
-        .btn.ver-citas:hover {
-            background-color: #0056b3; /* Azul oscuro */
-        }
-
-        /* Estilo para el botón "Ver tratamiento" */
-        .treatment button.ver-tratamiento {
-            background-color: #28a745; /* Verde */
-            color: white;
-            border: none;
-            padding: 10px 20px;
-            border-radius: 5px;
-            cursor: pointer;
-        }
-
-        .treatment button.ver-tratamiento:hover {
-            background-color: #218838; /* Verde oscuro */
-        }
-
-        .header-buttons {
-            position: absolute;
-            top: 20px;
-            right: 20px;
-            display: flex;
-            gap: 10px;
-        }
-
-        .header-button {
-            padding: 10px 20px;
-            background-color: #007bff;
-            color: white;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-            text-decoration: none;
-            font-size: 14px;
-        }
-
-        .header-button:hover {
-            background-color: #0056b3;
-        }
-
-        .header-button.historial {
-            background-color: #007bff;
-        }
-
-        .header-button.historial:hover {
-            background-color: #007bff;
-        }
-
-        /* Estilo para el saludo con cuadro azul y letras blancas */
-        h1 {
-            background-color: #007bff; /* Azul */
-            color: white;
-            padding: 20px;
-            text-align: center;
-            border-radius: 8px;
-            margin-top: 40px;
-            font-size: 24px;
         }
     </style>
 </head>
@@ -135,6 +111,31 @@
     <div class="container">
         <!-- Mensaje de bienvenida con estilo -->
         <h1>Hola, <?php echo $user_data['nombre']; ?></h1>
+
+        <!-- Carrusel de imágenes -->
+        <div id="carouselExample" class="carousel slide my-4" data-bs-ride="carousel">
+            <div class="carousel-inner">
+                <?php
+                    $first = true;
+                    // Loop through the fetched data and display each treatment image in the carousel
+                    while ($row = mysqli_fetch_assoc($result)) {
+                        $activeClass = $first ? " active" : "";
+                        echo "<div class='carousel-item$activeClass'>";
+                        echo "<img src='" . htmlspecialchars($row['imagenURL']) . "' class='d-block w-100' alt='" . htmlspecialchars($row['nombre']) . "'>";
+                        echo "</div>";
+                        $first = false;
+                    }
+                ?>
+            </div>
+            <button class="carousel-control-prev" type="button" data-bs-target="#carouselExample" data-bs-slide="prev">
+                <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                <span class="visually-hidden">Previous</span>
+            </button>
+            <button class="carousel-control-next" type="button" data-bs-target="#carouselExample" data-bs-slide="next">
+                <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                <span class="visually-hidden">Next</span>
+            </button>
+        </div>
 
         <!-- Opciones Agendar cita o ver citas -->
         <div class="options">
@@ -166,5 +167,8 @@
             ?>
         </div>
     </div>
+
+    <!-- Agregar los archivos JS de Bootstrap -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>
