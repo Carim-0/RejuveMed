@@ -222,14 +222,21 @@
                 <div class="form-group">
                     <label for="edad">Edad</label>
                     <input type="number" class="form-control" id="edad" name="edad" 
-                           value="<?php echo htmlspecialchars($patient['edad']); ?>" min="1" required>
+                           value="<?php echo htmlspecialchars($patient['edad']); ?>" 
+                           min="18" 
+                           oninvalid="this.setCustomValidity('Edad mínima 18 años')" 
+                           oninput="this.setCustomValidity('')" 
+                           required>
                 </div>
                 
                 <div class="form-group">
                     <label for="telefono">Teléfono</label>
                     <div class="input-icon">
                         <input type="text" class="form-control" id="telefono" name="telefono" 
-                               value="<?php echo htmlspecialchars($patient['telefono']); ?>" required>
+                               value="<?php echo htmlspecialchars($patient['telefono']); ?>" 
+                               pattern="^\d{10}$" 
+                               title="El teléfono debe contener exactamente 10 dígitos" 
+                               required>
                         <i class="fas fa-phone"></i>
                     </div>
                 </div>
@@ -238,6 +245,8 @@
                     <label for="new_password">Nueva contraseña (opcional)</label>
                     <div class="input-icon">
                         <input type="password" class="form-control" id="new_password" name="new_password" 
+                               pattern="^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{8,}$" 
+                               title="La contraseña debe de contener por lo menos 8 caracteres, 1 número y 1 letra" 
                                placeholder="Actualizar Contraseña">
                         <i class="fas fa-lock"></i>
                     </div>
@@ -263,5 +272,50 @@
             </form>
         </div>
     </div>
+
+    <script>
+        const edadInput = document.getElementById('edad');
+        const telefonoInput = document.getElementById('telefono');
+        const newPasswordInput = document.getElementById('new_password');
+        const confirmPasswordInput = document.getElementById('confirm_password');
+
+        // Edad validation
+        edadInput.addEventListener('input', function () {
+            if (edadInput.value < 1) {
+                edadInput.setCustomValidity('Edad mínima 1 año');
+            } else {
+                edadInput.setCustomValidity('');
+            }
+        });
+
+        // Teléfono validation
+        telefonoInput.addEventListener('input', function () {
+            const pattern = /^\d{10}$/;
+            if (!pattern.test(telefonoInput.value)) {
+                telefonoInput.setCustomValidity('El teléfono debe contener exactamente 10 dígitos');
+            } else {
+                telefonoInput.setCustomValidity('');
+            }
+        });
+
+        // Password validation
+        newPasswordInput.addEventListener('input', function () {
+            const pattern = /^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{8,}$/;
+            if (!pattern.test(newPasswordInput.value)) {
+                newPasswordInput.setCustomValidity('La contraseña debe de contener por lo menos 8 caracteres, 1 número y 1 letra');
+            } else {
+                newPasswordInput.setCustomValidity('');
+            }
+        });
+
+        // Confirm password validation
+        confirmPasswordInput.addEventListener('input', function () {
+            if (confirmPasswordInput.value !== newPasswordInput.value) {
+                confirmPasswordInput.setCustomValidity('Las contraseñas no coinciden');
+            } else {
+                confirmPasswordInput.setCustomValidity('');
+            }
+        });
+    </script>
 </body>
 </html>
