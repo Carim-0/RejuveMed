@@ -1,4 +1,90 @@
+<?php
+    session_start();
 
+    include("../connection.php");
+
+    // Ensure the user is logged in
+    if (!isset($_SESSION['user_id']) || $_SESSION['user_type'] !== 'Paciente') {
+        die("Acceso denegado. Por favor, inicie sesión como paciente.");
+    }
+    echo "<script>
+                        Swal.fire({
+                            title: 'Éxito',
+                            text: 'Cita agendada',
+                            icon: 'success'
+                        })
+                    </script>";
+    $IDpaciente = $_SESSION['user_id']; // Get the current user's ID
+
+    // Fetch available treatments
+    $query = "SELECT IDtratamiento, nombre, duracion FROM Tratamientos";
+    $result = mysqli_query($con, $query);
+
+    if ($_SERVER['REQUEST_METHOD'] == "POST") {
+        $fecha = $_POST['fecha'];
+        $hora = $_POST['hora'];
+        $IDtratamiento = $_POST['IDtratamiento'];
+        $duracion = (int)$_POST['duracion']; // Ensure duracion is cast to an integer
+
+        // Get the current date
+        $currentDate = date('Y-m-d');
+
+        // Validate that the selected date is not in the past and not the same as today
+        if ($fecha <= $currentDate) {
+            echo "<script>alert('La fecha tiene que ser después de mañana como mínimo.');</script>";
+            echo "<script>window.location.href = 'pacienteAgendarCita.php';</script>";
+            exit;
+        }
+
+        // Validate that the hour is within the allowed range
+        if ($hora < "10:00:00" || $hora > "18:00:00") {
+            echo "<script>alert('La hora debe estar entre las 10:00 AM y las 6:00 PM.');</script>";
+            echo "<script>window.location.href = 'pacienteAgendarCita.php';</script>";
+            exit;
+        }
+
+        if (!empty($fecha) && !empty($hora) && !empty($IDtratamiento) && !empty($duracion)) {
+            // Combine date and time into a single datetime value
+            $datetime = $fecha . ' ' . $hora;
+
+            // Calculate fechaFin by adding the duration to the start time
+            $startDateTime = new DateTime($datetime);
+            $startDateTime->modify("+$duracion hours"); // Add the duration as hours
+            $fechaFin = $startDateTime->format('Y-m-d H:i:s');
+
+            // Check for overlapping appointments
+            $query = "SELECT * FROM Citas WHERE 
+                      (fecha <= '$fechaFin' AND fechaFin >= '$datetime')";
+            $result = mysqli_query($con, $query);
+
+            if (mysqli_num_rows($result) > 0) {
+                echo "<script>alert('Ya existe una cita en ese horario. Por favor, elija otro horario.');</script>";
+                echo "<script>window.location.href = 'pacienteAgendarCita.php';</script>";
+                exit;
+            } else {
+                // Insert the new appointment into the Citas table
+                $query = "INSERT INTO Citas (IDpaciente, IDtratamiento, fecha, fechaFin) VALUES ('$IDpaciente', '$IDtratamiento', '$datetime', '$fechaFin')";
+                $result = mysqli_query($con, $query);
+
+                if ($result) {
+                    echo "<script>
+                        Swal.fire({
+                            title: 'Éxito',
+                            text: 'Cita agendada',
+                            icon: 'success'
+                        }).then(() => {
+                            window.location.href = 'verCitas_Paciente.php';
+                        });
+                    </script>";
+                } else {
+                    echo "<script>alert('Error al agendar la cita.');</script>";
+                }
+            }
+        } else {
+            echo "<script>alert('Por favor, complete todos los campos.');</script>";
+        }
+    }
+?>
 
 <!DOCTYPE html>
 <html lang="es">
@@ -315,91 +401,3 @@
     </script>
 </body>
 </html>
-
-<?php
-    session_start();
-
-    include("../connection.php");
-
-    // Ensure the user is logged in
-    if (!isset($_SESSION['user_id']) || $_SESSION['user_type'] !== 'Paciente') {
-        die("Acceso denegado. Por favor, inicie sesión como paciente.");
-    }
-    echo "<script>
-                        Swal.fire({
-                            title: 'Éxito',
-                            text: 'Cita agendada',
-                            icon: 'success'
-                        })
-                    </script>";
-    $IDpaciente = $_SESSION['user_id']; // Get the current user's ID
-
-    // Fetch available treatments
-    $query = "SELECT IDtratamiento, nombre, duracion FROM Tratamientos";
-    $result = mysqli_query($con, $query);
-
-    if ($_SERVER['REQUEST_METHOD'] == "POST") {
-        $fecha = $_POST['fecha'];
-        $hora = $_POST['hora'];
-        $IDtratamiento = $_POST['IDtratamiento'];
-        $duracion = (int)$_POST['duracion']; // Ensure duracion is cast to an integer
-
-        // Get the current date
-        $currentDate = date('Y-m-d');
-
-        // Validate that the selected date is not in the past and not the same as today
-        if ($fecha <= $currentDate) {
-            echo "<script>alert('La fecha tiene que ser después de mañana como mínimo.');</script>";
-            echo "<script>window.location.href = 'pacienteAgendarCita.php';</script>";
-            exit;
-        }
-
-        // Validate that the hour is within the allowed range
-        if ($hora < "10:00:00" || $hora > "18:00:00") {
-            echo "<script>alert('La hora debe estar entre las 10:00 AM y las 6:00 PM.');</script>";
-            echo "<script>window.location.href = 'pacienteAgendarCita.php';</script>";
-            exit;
-        }
-
-        if (!empty($fecha) && !empty($hora) && !empty($IDtratamiento) && !empty($duracion)) {
-            // Combine date and time into a single datetime value
-            $datetime = $fecha . ' ' . $hora;
-
-            // Calculate fechaFin by adding the duration to the start time
-            $startDateTime = new DateTime($datetime);
-            $startDateTime->modify("+$duracion hours"); // Add the duration as hours
-            $fechaFin = $startDateTime->format('Y-m-d H:i:s');
-
-            // Check for overlapping appointments
-            $query = "SELECT * FROM Citas WHERE 
-                      (fecha <= '$fechaFin' AND fechaFin >= '$datetime')";
-            $result = mysqli_query($con, $query);
-
-            if (mysqli_num_rows($result) > 0) {
-                echo "<script>alert('Ya existe una cita en ese horario. Por favor, elija otro horario.');</script>";
-                echo "<script>window.location.href = 'pacienteAgendarCita.php';</script>";
-                exit;
-            } else {
-                // Insert the new appointment into the Citas table
-                $query = "INSERT INTO Citas (IDpaciente, IDtratamiento, fecha, fechaFin) VALUES ('$IDpaciente', '$IDtratamiento', '$datetime', '$fechaFin')";
-                $result = mysqli_query($con, $query);
-
-                if ($result) {
-                    echo "<script>
-                        Swal.fire({
-                            title: 'Éxito',
-                            text: 'Cita agendada',
-                            icon: 'success'
-                        }).then(() => {
-                            window.location.href = 'verCitas_Paciente.php';
-                        });
-                    </script>";
-                } else {
-                    echo "<script>alert('Error al agendar la cita.');</script>";
-                }
-            }
-        } else {
-            echo "<script>alert('Por favor, complete todos los campos.');</script>";
-        }
-    }
-?>
