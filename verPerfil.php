@@ -151,6 +151,28 @@
             color: var(--primary-color);
         }
         
+        .btn-edit-password {
+            width: 100%;
+            padding: 12px;
+            background-color: var(--success-color);
+            color: white;
+            border: none;
+            border-radius: var(--border-radius);
+            font-size: 16px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: background-color 0.3s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            margin-bottom: 15px;
+        }
+        
+        .btn-edit-password:hover {
+            background-color: #218838;
+        }
+        
         .btn-salir {
             width: 100%;
             padding: 12px;
@@ -238,6 +260,10 @@
                 </div>
             </div>
         </div>
+        
+        <button class="btn-edit-password">
+            <i class="fas fa-key"></i> Editar Contraseña
+        </button>
         
         <button class="btn-salir" onclick="window.location.href='logout.php'">
             <i class="fas fa-sign-out-alt"></i> Cerrar Sesión
