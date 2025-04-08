@@ -105,6 +105,13 @@
             align-items: center;
             min-height: 100vh;
             padding: 20px;
+            font-family: "Open Sans", 
+            -apple-system, 
+            BlinkMacSystemFont, 
+            "Segoe UI", Roboto, 
+            Oxygen-Sans, Ubuntu, 
+            Cantarell, "Helvetica Neue", 
+            Helvetica, Arial, sans-serif; 
         }
         
         .appointment-container {
@@ -318,9 +325,10 @@
                 <a href="catalogoTratamientos.php" class="btn btn-secondary">
                     <i class="fas fa-arrow-left"></i> Regresar
                 </a>
-                <button type="submit" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#detalleModal">
+                <a href="#" type="submit" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#detalleModal">
                     <i class="fas fa-calendar-check"></i> Agendar Cita
-                </button>
+                </a>
+                
                 <div class="modal fade" id="detalleModal  "tabindex="-1" role="dialog" aria-labelledby='detalleModal'>
                 <div class="modal-dialog modal-dialog-centered" role = 'document'>
                     <div class="modal-content">
@@ -353,6 +361,16 @@
         document.addEventListener("DOMContentLoaded", function () {
             initializeEventListeners();
         });
+        
+        <script src="sweetalert2.all.min.js"></script>
+
+        function popSucc{
+        Swal.fire({
+         title: "Good job!",
+        text: "You clicked the button!",
+        icon: "success"
+        });
+        }
 
         function initializeEventListeners() {
             const tratamientoSelect = document.getElementById("IDtratamiento");
