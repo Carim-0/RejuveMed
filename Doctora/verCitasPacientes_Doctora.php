@@ -144,8 +144,8 @@ if ($_SERVER['REQUEST_METHOD'] == "POST" && isset($_POST['agendar_cita'])) {
             $stmt->close();
 
             if ($result->num_rows > 0) {
-              echo "<script>alert('Ya existe una cita en ese horario. Por favor, elija otro horario.');</script>";
-            echo "<script>window.location.href = 'verCitasPacientes_Doctora.php';</script>";
+              showSweetAlert('warning', 'Horario ocupado', 'Ya existe una cita en ese horario. Por favor, elija otro.', 'pacienteAgenverCitasPacientes_DoctoradarCita.php');
+           
                 
             } else {
                 // Insert the new appointment into the Citas table

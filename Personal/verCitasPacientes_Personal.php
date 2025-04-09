@@ -102,24 +102,24 @@ if ($_SERVER['REQUEST_METHOD'] == "POST" && isset($_POST['agendar_cita'])) {
            // Get the current date
         $currentDate = date('Y-m-d');
 
-      /*
-        // Validar fecha
+        // Validate that the selected date is not in the past and not the same as today
         if ($fecha <= $currentDate) {
             echo "<script>alert('La fecha tiene que ser después de mañana como mínimo.');</script>";
             echo "<script>window.location.href = 'verCitasPacientes_Personal.php';</script>";
             exit;
             }
-      */
-            //Validar horas
-            $hora = $hora . ':00'; 
-            $horaMin = '10:00:00';
-            $horaMax = '18:00:00';
-        
-            if ($hora < $horaMin || $hora > $horaMax) {
+
+            // Calculate fechaFin by adding the duration to the start time
+            $startDateTime = new DateTime($datetime);
+            $startDateTime->modify("+$duracion hours");
+            $fechaFin = $startDateTime->format('Y-m-d H:i:s');
+
+            // Validate that the hour is within the allowed range
+            if ($hora < "10:00:00" || $hora > "18:00:00" || $startDateTime->format('H:i') > "18:00") {
               echo "<script>alert('La hora debe estar entre las 10:00 AM y las 6:00 PM.');</script>";
-              echo "<script>window.location.href = 'verCitasPacientes_Personal.php';</script>";
-              exit;
-              } 
+            echo "<script>window.location.href = 'verCitasPacientes_Personal.php';</script>";
+            exit;
+            } 
 
             // Check for overlapping appointments
             $query = "SELECT * FROM Citas WHERE 
@@ -132,8 +132,8 @@ if ($_SERVER['REQUEST_METHOD'] == "POST" && isset($_POST['agendar_cita'])) {
 
 
             if ($result->num_rows > 0) {
-                showSweetAlert('warning', 'Horario ocupado', 'Ya existe una cita en ese horario.', 'verCitasPacientes_Personal.php');
-           
+              showSweetAlert('warning', 'Horario ocupado', 'Ya existe una cita en ese horario. Por favor, elija otro.', 'verCitasPacientes_Personal.php');
+                
             } else {
                 // Insert the new appointment into the Citas table
                 $query = "INSERT INTO Citas (fecha, fechaFin, IDpaciente, IDtratamiento, estado) VALUES (?, ?, ?, ?, ?)";
@@ -164,7 +164,7 @@ if ($_SERVER['REQUEST_METHOD'] == "POST" && isset($_POST['agendar_cita'])) {
   <title>Vista Recepcionista - RejuveMed</title>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
-    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
   <style>
     :root {
       --primary-color: #4a6fa5;
