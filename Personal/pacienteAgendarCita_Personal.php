@@ -68,10 +68,10 @@ if ($_SERVER['REQUEST_METHOD'] == "POST" && isset($_POST['agendar_cita'])) {
 
 
 
-            // Combine date and time into a single datetime value
-            $datetime = $fecha . ' ' . $hora;
+         // Combine date and time into a single datetime value
+        $datetime = $fecha . ' ' . $hora;
 
-           // Get the current date
+        // Get the current date
         $currentDate = date('Y-m-d');
 
         // Validate that the selected date is not in the past and not the same as today
@@ -113,7 +113,7 @@ if ($_SERVER['REQUEST_METHOD'] == "POST" && isset($_POST['agendar_cita'])) {
                 $stmt->bind_param("sssis", $datetime, $fechaFin, $paciente_id, $IDtratamiento, $estado);
 
                 if ($stmt->execute()) {
-                    showSweetAlert('success', '¡Éxito!', 'Cita agendada correctamente', 'verCitas_Paciente.php');
+                    showSweetAlert('success', '¡Éxito!', 'Cita agendada correctamente', 'pacienteAgendarCita_Personal.php');
                 } else {
                     showSweetAlert('error', 'Error', 'Ocurrió un error al agendar la cita');
                 }
