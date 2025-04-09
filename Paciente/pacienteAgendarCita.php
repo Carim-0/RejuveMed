@@ -18,7 +18,7 @@
                     icon: '$icon',
                     title: '$title',
                     text: '$text',
-                    confirmButtonColor: '#4a6fa5'
+                    confirmButtonColor: '#3085d6'
                 })";
         if ($redirect) {
             echo ".then(() => { window.location.href = '$redirect'; })";
@@ -45,13 +45,14 @@
 
         // Validate that the selected date is not in the past and not the same as today
         if ($fecha <= $currentDate) {
-            showSweetAlert('error', 'Uh oh', 'No puedes agendar un día u hora anterior.');
+            showSweetAlert('error', 'Uh oh', 'No puedes agendar un día pasado');
             exit;
         }
 
         // Validate that the hour is within the allowed range
         if ($hora < "10:00:00" || $hora > "18:00:00") {
-            showSweetAlert('error', 'No es posible', 'La hora debe estar entre las 10:00 AM y las 6:00 PM.');
+            echo "<script>alert('La hora debe estar entre las 10:00 AM y las 6:00 PM.');</script>";
+            echo "<script>window.location.href = 'pacienteAgendarCita.php';</script>";
             exit;
         }
 
@@ -77,13 +78,13 @@
                 $result = mysqli_query($con, $query);
 
                 if ($result) {
-                    showSweetAlert('success', '¡Éxito!', 'Cita agendada correctamente.', 'verCitas_Paciente.php');
+                    showSweetAlert('success', '¡Éxito!', 'Cita agendada correctamente', 'verCitas_Paciente.php');
                 } else {
-                    showSweetAlert('error', 'Uh oh', 'Ocurrió un error al agendar la cita.');
+                    showSweetAlert('error', 'Uh oh', 'Ocurrió un error al agendar la cita');
                 }
             }
         } else {
-            showSweetAlert('question', 'Olvidaste algo', 'Recuerda llenar todos los campos.');
+            echo "<script>alert('Por favor, complete todos los campos.');</script>";
         }
     }
 ?>
@@ -360,7 +361,7 @@
 
 
     <script>
-        console.log('Hola 3');
+        console.log('Hola 1');
         document.addEventListener("DOMContentLoaded", function () {
             initializeEventListeners();
         });
