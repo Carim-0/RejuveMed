@@ -74,7 +74,7 @@
         <p><strong>Detalles:</strong> <?php echo htmlspecialchars($treatment['detalles']); ?></p>
         <p><strong>Precio:</strong> $<?php echo htmlspecialchars($treatment['precio']); ?></p>
         <p><strong>Duración:</strong> <?php echo htmlspecialchars($treatment['duracion']); ?> horas/s</p>
-        <a href="catalogoTratamientos.php" class="btn">Regresar</a>
+        <a href="CtalogoRecepcionista.php" class="btn">Regresar</a>
     </div>
 </body>
 </html>
