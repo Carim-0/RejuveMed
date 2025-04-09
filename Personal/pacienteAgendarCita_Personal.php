@@ -50,19 +50,27 @@
 
         if (!empty($fecha) && !empty($hora) && !empty($IDtratamiento) && !empty($IDpaciente)) {
             // Combine date and time into a single datetime value
-$datetime = $fecha . ' ' . $hora;
-// Calculate end time (1 hour later)
-$datetimeFin = date('Y-m-d H:i:s', strtotime($datetime . ' +1 hour'));
+            $datetime = $fecha . ' ' . $hora;
+            // Calculate end time (1 hour later)
+            $fechaFin = $startDateTime->format('Y-m-d H:i:s');
 
-// Insert the new appointment into the Citas table
-$query = "INSERT INTO Citas (IDpaciente, IDtratamiento, fecha, fechaFin) 
-          VALUES ('$IDpaciente', '$IDtratamiento', '$datetime', '$datetimeFin')";
-$result = mysqli_query($con, $query);
+            // Check for overlapping appointments
+            $query = "SELECT * FROM Citas WHERE 
+                      (fecha <= '$fechaFin' AND fechaFin >= '$datetime')";
+            $result = mysqli_query($con, $query);
+
+            if (mysqli_num_rows($result) > 0) {
+                showSweetAlert('warning', 'Horario ocupado', 'Ya existe una cita en ese horario. Por favor, elija otro.', 'pacienteAgendarCita.php');
+            } else {
+                // Insert the new appointment into the Citas table
+                $query = "INSERT INTO Citas (IDpaciente, IDtratamiento, fecha, fechaFin) VALUES ('$IDpaciente', '$IDtratamiento', '$datetime', '$fechaFin')";
+                $result = mysqli_query($con, $query);
+
 
             if ($result) {
-                echo "<script>alert('Cita agendada exitosamente.'); window.location.href='verCitasPacientes_Personal.php';</script>";
+               showSweetAlert('success', '¡Éxito!', 'Cita agendada correctamente', 'verCitasPacientes_Personal.php');
             } else {
-                echo "<script>alert('Error al agendar la cita.');</script>";
+                showSweetAlert('error', 'Error', 'Ocurrió un error al agendar la cita');
             }
         } else {
             echo "<script>alert('Por favor, complete todos los campos.');</script>";
