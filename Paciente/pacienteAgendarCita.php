@@ -23,7 +23,7 @@
         echo ";});
         </script>";
         if ($redirect) {
-            exit; // Añade esto para detener la ejecución
+            exit; 
         }
     }
 
@@ -40,18 +40,20 @@
         $duracion = (int)$_POST['duracion']; // Ensure duracion is cast to an integer
 
         // Get the current date
-        $currentDate = date('Y-m-d');
+        $minDate = date('Y-m-d', strtotime('+2 days'));
 
         // Validate that the selected date is not in the past and not the same as today
         if ($fecha <= $currentDate) {
             showSweetAlert('error', 'Error', 'La fecha tiene que ser después de mañana como mínimo.','pacienteAgendarCita.php'); // mal
-            exit;
+            
         }
 
-        // Validate that the hour is within the allowed range
-        if ($hora < "10:00:00" || $hora > "18:00:00") {
-            showSweetAlert('error', 'Error', 'LLa hora debe estar entre las 10:00 AM y las 6:00 PM.','pacienteAgendarCita.php'); // mal
-            exit;
+        $hora = $hora . ':00'; // Si el input no incluye segundos
+        $horaMin = '10:00:00';
+        $horaMax = '18:00:00';
+    
+        if ($hora < $horaMin || $hora > $horaMax) {
+            showSweetAlert('error', 'Error', 'La hora debe estar entre las 10:00 AM y 6:00 PM.', 'pacienteAgendarCita.php');
         }
 
         if (!empty($fecha) && !empty($hora) && !empty($IDtratamiento) && !empty($duracion)) {
