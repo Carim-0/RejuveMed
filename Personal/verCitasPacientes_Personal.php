@@ -116,9 +116,10 @@ if ($_SERVER['REQUEST_METHOD'] == "POST" && isset($_POST['agendar_cita'])) {
             $horaMax = '18:00:00';
         
             if ($hora < $horaMin || $hora > $horaMax) {
-                showSweetAlert('error', 'Error', 'La hora debe estar entre las 10:00 AM y 6:00 PM.', 'verCitasPacientes_Personal.php');
-            }
-    
+              echo "<script>alert('La hora debe estar entre las 10:00 AM y las 6:00 PM.');</script>";
+              echo "<script>window.location.href = 'verCitasPacientes_Personal.php';</script>";
+              exit;
+              } 
 
             // Check for overlapping appointments
             $query = "SELECT * FROM Citas WHERE 
