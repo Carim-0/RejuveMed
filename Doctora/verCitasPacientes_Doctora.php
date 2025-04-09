@@ -108,24 +108,31 @@ if ($_SERVER['REQUEST_METHOD'] == "POST" && isset($_POST['agendar_cita'])) {
 
 
 
-        /  // Combine date and time into a single datetime value
-        $datetime = $fecha . ' ' . $hora . ':00';
-        
-        // Calculate end time
-        $endTime = strtotime($datetime) + ($duracion * 3600);
-        $fechaFin = date('Y-m-d H:i:s', $endTime);
+            // Combine date and time into a single datetime value
+            $datetime = $fecha . ' ' . $hora;
 
-        // Validate date and time
+           // Get the current date
         $currentDate = date('Y-m-d');
+
+        // Validate that the selected date is not in the past and not the same as today
         if ($fecha <= $currentDate) {
-            showSweetAlert('error', 'Error', 'La fecha debe ser posterior a hoy.', 'verCitasPacientes_Doctora.php');
+            echo "<script>alert('La fecha tiene que ser después de mañana como mínimo.');</script>";
+            echo "<script>window.location.href = 'verCitasPacientes_Doctora.php';</script>";
             exit;
-        }
-        
-            $horaInicio = date('H:i', strtotime($datetime));
-            if ($horaInicio < '10:00' || $horaInicio > '18:00') {
-            showSweetAlert('error', 'Error', 'Las citas deben ser entre 10:00 AM y 6:00 PM.', 'verCitasPacientes_Doctora.php');
             }
+
+            // Calculate fechaFin by adding the duration to the start time
+            $startDateTime = new DateTime($datetime);
+            $startDateTime->modify("+$duracion hours");
+            $fechaFin = $startDateTime->format('Y-m-d H:i:s');
+
+            // Validate that the hour is within the allowed range
+            if ($hora < "10:00:00" || $hora > "18:00:00" || $startDateTime->format('H:i') > "18:00") {
+              echo "<script>alert('La hora debe estar entre las 10:00 AM y las 6:00 PM.');</script>";
+            echo "<script>window.location.href = 'verCitasPacientes_Doctora.php';</script>";
+            exit;
+            } 
+
             
             // Check for overlapping appointments
             $query = "SELECT * FROM Citas WHERE 
@@ -137,7 +144,9 @@ if ($_SERVER['REQUEST_METHOD'] == "POST" && isset($_POST['agendar_cita'])) {
             $stmt->close();
 
             if ($result->num_rows > 0) {
-              showSweetAlert('warning', 'Horario ocupado', 'Ya existe una cita en ese horario.', 'verCitasPacientes_Doctora.php');
+              echo "<script>alert('Ya existe una cita en ese horario. Por favor, elija otro horario.');</script>";
+            echo "<script>window.location.href = 'verCitasPacientes_Doctora.php';</script>";
+                
             } else {
                 // Insert the new appointment into the Citas table
                 $query = "INSERT INTO Citas (fecha, fechaFin, IDpaciente, IDtratamiento, estado) VALUES (?, ?, ?, ?, ?)";
@@ -627,7 +636,7 @@ if ($_SERVER['REQUEST_METHOD'] == "POST" && isset($_POST['agendar_cita'])) {
           <div class="form-grid">
             <div class="form-group">
               <label for="fecha">Fecha</label>
-              <input type="date" id="fecha" name="fecha" required min="<?php echo date('Y-m-d', strtotime('+1 days')); ?>">
+              <input type="date" id="fecha" name="fecha"  required min="<?php echo date('Y-m-d', strtotime('+1 days')); ?>" >
             </div>
             <div class="form-group">
               <label for="hora">Hora</label>
