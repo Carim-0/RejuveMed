@@ -8,6 +8,26 @@
         die("Acceso denegado. Por favor, inicie sesión como paciente.");
     }
 
+    function showSweetAlert($icon, $title, $text, $redirect = null) {
+        echo "<script>
+        function showAlert() {
+            if (typeof Swal === 'undefined') {
+                setTimeout(showAlert, 100);
+            } else {
+                Swal.fire({
+                    icon: '$icon',
+                    title: '$title',
+                    text: '$text',
+                    confirmButtonColor: '#3085d6'
+                })";
+        if ($redirect) {
+            echo ".then(() => { window.location.href = '$redirect'; })";
+        }
+        echo ";}}
+        showAlert();
+        </script>";
+    }
+
     $IDpaciente = $_SESSION['user_id']; // Get the current user's ID
 
     // Fetch available treatments
@@ -52,20 +72,7 @@
             $result = mysqli_query($con, $query);
 
             if (mysqli_num_rows($result) > 0) {
-                echo "<script>
-                function loadSwal1() {
-                    if (typeof Swal === 'undefined') {
-                        setTimeout(loadSwal1, 100);
-                    } else {
-                        Swal.fire({
-                            icon: 'error',
-                            title: 'Oops...',
-                            text: 'Ya existe una cita en ese horario. Por favor, elija otro horario.',
-                            });
-                    }
-                }
-                loadSwal1();
-                </script>";
+                showSweetAlert('error', 'Horario ocupado', 'Ya existe una cita en ese horario. Por favor, elija otro.', 'pacienteAgendarCita.php');
                 echo "<script>window.location.href = 'pacienteAgendarCita.php';</script>";
                 exit;
             } else {
