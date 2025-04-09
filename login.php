@@ -1,26 +1,9 @@
+
 <?php
     session_start();
 
     include("connection.php");
     include("functions.php");
-
-
-    function showSweetAlert($icon, $title, $text, $redirect = null) {
-        echo "<script>
-        document.addEventListener('DOMContentLoaded', function() {
-            Swal.fire({
-                icon: '$icon',
-                title: '$title',
-                text: '$text',
-                confirmButtonColor: '#3085d6'
-            })";
-        if ($redirect) {
-            echo ".then((result) => { if (result.isConfirmed) { window.location.href = '$redirect'; } })";
-        }
-        echo ";});
-        </script>";
-    }
-
 
     if ($_SERVER['REQUEST_METHOD'] == "POST") {
         // Something was posted
@@ -65,10 +48,10 @@
             }
 
             // Show error message for incorrect username or password
-            showSweetAlert('error', 'Ocurrió un error', 'Usuario o contraseña incorrectos');
+            echo "<script>alert('Usuario o contraseña incorrectos');</script>";
         } else {
             // Show error message for invalid input
-            showSweetAlert('error', 'Ocurrió un error', 'Introducir información válida');
+            echo "<script>alert('Introducir información válida');</script>";
         }
     }
 ?>
@@ -79,8 +62,6 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="login_style.css">
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
-    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <title>Rejuvemet -> Login </title>
 </head>
 <body> 
@@ -88,16 +69,17 @@
         <main class="contenedor-main">
             <!--Inicializamos de cabezera-->
             <header class="cabezera-cliente">
+              <img src="IMG/imagenlogin.png" height="60px" width="60px" aling="center" >
               <h1 class="titulo-usuario">Iniciar sesión</h1>
             </header>
-            <!--Inicializamos parte de ingreso de datos-->
+            <!--Inicializacion de parte de ingreso de datos-->
           <section class="seccion-input">
             <div class="contenedor-login">
                       <div class="estilo-input">
                       <img src="IMG/logoRejuvemet.png" alt="Imagen representativa login" height="200px" width="200px" aling="center">
                       </div>
                       <div class="estilo-input">
-                      <h2 class="seccion-titulo">Iniciar sesion</h2>
+                      <h2 class="seccion-titulo">Ingresa tus datos</h2>
                       </div>
                       <form method="post">
                           <div class="estilo-input">
