@@ -119,19 +119,17 @@ if ($_SERVER['REQUEST_METHOD'] == "POST" && isset($_POST['agendar_cita'])) {
             echo "<script>alert('La fecha tiene que ser después de mañana como mínimo.');</script>";
             echo "<script>window.location.href = 'verCitasPacientes_Doctora.php';</script>";
             exit;
-            }
-
-            // Calculate fechaFin by adding the duration to the start time
-            $startDateTime = new DateTime($datetime);
-            $startDateTime->modify("+$duracion hours");
-            $fechaFin = $startDateTime->format('Y-m-d H:i:s');
-
-            // Validate that the hour is within the allowed range
-            if ($hora < "10:00:00" || $hora > "18:00:00" || $startDateTime->format('H:i') > "18:00") {
-              echo "<script>alert('La hora debe estar entre las 10:00 AM y las 6:00 PM.');</script>";
-            echo "<script>window.location.href = 'verCitasPacientes_Doctora.php';</script>";
-            exit;
             } 
+//commentario prueba
+            // Validar la hora
+            $hora = $hora . ':00'; 
+            $horaMin = '10:00:00';
+            $horaMax = '18:00:00';
+        
+            if ($hora < $horaMin || $hora > $horaMax) {
+                showSweetAlert('error', 'Error', 'La hora debe estar entre las 10:00 AM y 6:00 PM.', 'pacienteAgendarCita.php');
+            }
+    
 
             
             // Check for overlapping appointments

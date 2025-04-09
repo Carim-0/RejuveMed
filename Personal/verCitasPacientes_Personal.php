@@ -93,17 +93,15 @@ if ($_SERVER['REQUEST_METHOD'] == "POST" && isset($_POST['agendar_cita'])) {
             exit;
             }
 
-            // Calculate fechaFin by adding the duration to the start time
-            $startDateTime = new DateTime($datetime);
-            $startDateTime->modify("+$duracion hours");
-            $fechaFin = $startDateTime->format('Y-m-d H:i:s');
-
-            // Validate that the hour is within the allowed range
-            if ($hora < "10:00:00" || $hora > "18:00:00" || $startDateTime->format('H:i') > "18:00") {
-              echo "<script>alert('La hora debe estar entre las 10:00 AM y las 6:00 PM.');</script>";
-            echo "<script>window.location.href = 'verCitasPacientes_Personal.php';</script>";
-            exit;
-            } 
+            //Validar horas
+            $hora = $hora . ':00'; 
+            $horaMin = '10:00:00';
+            $horaMax = '18:00:00';
+        
+            if ($hora < $horaMin || $hora > $horaMax) {
+                showSweetAlert('error', 'Error', 'La hora debe estar entre las 10:00 AM y 6:00 PM.', 'pacienteAgendarCita.php');
+            }
+    
 
             // Check for overlapping appointments
             $query = "SELECT * FROM Citas WHERE 
@@ -600,11 +598,11 @@ if ($_SERVER['REQUEST_METHOD'] == "POST" && isset($_POST['agendar_cita'])) {
           <div class="form-grid">
             <div class="form-group">
               <label for="fecha">Fecha</label>
-              <input type="date" id="fecha" name="fecha" required>
+              <input type="date" id="fecha" name="fecha" required min="<?php echo date('Y-m-d', strtotime('+1 days')); ?>" >
             </div>
             <div class="form-group">
               <label for="hora">Hora</label>
-              <input type="time" id="hora" name="hora" required min="10:00" max="18:00">
+              <input type="time" id="hora" name="hora" required min="10:00" max="18:00"  step="3600">
             </div>
           </div>
          
