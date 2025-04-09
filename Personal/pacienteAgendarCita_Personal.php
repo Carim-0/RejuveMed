@@ -45,7 +45,6 @@
         $fecha = $_POST['fecha'];
         $hora = $_POST['hora'];
         $IDtratamiento = $_POST['IDtratamiento'];
-        $duracion = (int)$_POST['duracion']; // Ensure duracion is cast to an integer
 
         // Obtener la fecha actual minima
         $minDate = date('Y-m-d', strtotime('+1 days'));
@@ -58,14 +57,13 @@
             showSweetAlert('error', 'Error', 'La hora debe estar entre las 10:00 AM y 6:00 PM.', 'pacienteAgendarCita_Personal.php');
         }
 
-        if (!empty($fecha) && !empty($hora) && !empty($IDtratamiento) && !empty($duracion)) {
+        if (!empty($fecha) && !empty($hora) && !empty($IDtratamiento)) {
             
             // Combine date and time into a single datetime value
             $datetime = $fecha . ' ' . $hora;
 
             // Calculate fechaFin by adding the duration to the start time
             $startDateTime = new DateTime($datetime);
-            $startDateTime->modify("+$duracion hours"); // Add the duration as hours
             $fechaFin = $startDateTime->format('Y-m-d H:i:s');
 
             // Check for overlapping appointments
