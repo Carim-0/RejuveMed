@@ -40,41 +40,50 @@
             'nombre_completo' => $row['nombre']
         ];
     }
-
     if ($_SERVER['REQUEST_METHOD'] == "POST") {
         $fecha = $_POST['fecha'];
         $hora = $_POST['hora'];
         $IDtratamiento = $_POST['IDtratamiento'];
-        // Verifica ambos campos por si acaso
-        $IDpaciente = isset($_POST['IDpaciente']) ? $_POST['IDpaciente'] : (isset($_POST['paciente']) ? $_POST['paciente'] : '');
-
+        $IDpaciente = $_POST['IDpaciente']; // Simplificado, ya que el campo oculto existe
+    
         if (!empty($fecha) && !empty($hora) && !empty($IDtratamiento) && !empty($IDpaciente)) {
-            // Combine date and time into a single datetime value
+            // Combinar fecha y hora
             $datetime = $fecha . ' ' . $hora;
-            // Calculate end time (1 hour later)
-            $fechaFin = $startDateTime->format('Y-m-d H:i:s');
-
-            // Check for overlapping appointments
-            $query = "SELECT * FROM Citas WHERE 
-                      (fecha <= '$fechaFin' AND fechaFin >= '$datetime')";
-            $result = mysqli_query($con, $query);
-
-            if (mysqli_num_rows($result) > 0) {
-                showSweetAlert('warning', 'Horario ocupado', 'Ya existe una cita en ese horario. Por favor, elija otro.', 'pacienteAgendarCita.php');
-            } else {
-                // Insert the new appointment into the Citas table
-                $query = "INSERT INTO Citas (IDpaciente, IDtratamiento, fecha, fechaFin) VALUES ('$IDpaciente', '$IDtratamiento', '$datetime', '$fechaFin')";
+            
+            try {
+                // Crear objeto DateTime y calcular hora final
+                $startDateTime = new DateTime($datetime);
+                $endDateTime = clone $startDateTime;
+                $endDateTime->modify('+1 hour'); // Agregar 1 hora
+                
+                $fechaFin = $endDateTime->format('Y-m-d H:i:s');
+                $datetime = $startDateTime->format('Y-m-d H:i:s');
+    
+                // Verificar solapamiento de citas (corregir consulta SQL)
+                $query = "SELECT * FROM Citas WHERE 
+                          (fecha < '$fechaFin' AND fechaFin > '$datetime')";
                 $result = mysqli_query($con, $query);
-
-
-            if ($result) {
-               showSweetAlert('success', '¡Éxito!', 'Cita agendada correctamente', 'verCitasPacientes_Personal.php');
-            } else {
-                showSweetAlert('error', 'Error', 'Ocurrió un error al agendar la cita');
+    
+                if (mysqli_num_rows($result) > 0) {
+                    showSweetAlert('warning', 'Horario ocupado', 'Ya existe una cita en ese horario.', 'pacienteAgendarCita.php');
+                } else {
+                    // Insertar cita
+                    $query = "INSERT INTO Citas (IDpaciente, IDtratamiento, fecha, fechaFin) 
+                              VALUES ('$IDpaciente', '$IDtratamiento', '$datetime', '$fechaFin')";
+                    $result = mysqli_query($con, $query);
+    
+                    if ($result) {
+                        showSweetAlert('success', '¡Éxito!', 'Cita agendada correctamente', 'verCitasPacientes_Personal.php');
+                    } else {
+                        // Mostrar error de MySQL para depuración
+                        showSweetAlert('error', 'Error', 'Error al agendar: ' . mysqli_error($con));
+                    }
+                }
+            } catch (Exception $e) {
+                showSweetAlert('error', 'Error', 'Formato de fecha/hora inválido.');
             }
-        }
         } else {
-            echo "<script>alert('Por favor, complete todos los campos.');</script>";
+            echo "<script>alert('Complete todos los campos.');</script>";
         }
     }
 ?>
