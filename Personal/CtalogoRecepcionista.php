@@ -342,7 +342,8 @@
                 echo "<img src='" . htmlspecialchars($row['imagenURL']) . "' alt='" . htmlspecialchars($row['nombre']) . "'>";
                 echo "<form action='detalleTratamiento.php' method='GET'>";
                 echo "<input type='hidden' name='IDtratamiento' value='" . htmlspecialchars($row['IDtratamiento']) . "'>";
-                echo "<button type='submit'><i class='fas fa-eye'></i> Ver tratamiento</button>";
+               echo "<button type='submit'><i class='fas fa-eye'></i> Ver tratamiento (" . htmlspecialchars($row['duracion']) . " min)</button>";
+
                 echo "</form>";
                 echo "</div>";
             }
