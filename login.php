@@ -56,9 +56,10 @@
 
                     // Redirect based on the "nombre" value
                     if ($user_data['nombre'] === "Doctora") {
-                        showSweetAlert('info', 'Bienvenida!', 'Login exitoso como Doctora', 'tablaPersonal.php');
+                        echo "<script>alert('Login exitoso como Doctora'); window.location.href='Doctora/tablaPersonal.php';</script>";
                     } else {
-                        showSweetAlert('info', 'Bienvenida!', 'Login exitoso como Personal', 'CtalogoRecepcionista.php'); }
+                        echo "<script>alert('Login exitoso como Personal'); window.location.href='Personal/CtalogoRecepcionista.php';</script>";
+                    }
                     die;
                 }
             }
