@@ -22,6 +22,7 @@
         }
         echo ";});
         </script>";
+        
     }
 
     $IDpaciente = $_SESSION['user_id']; // Obtener el ID actual del usuario
@@ -40,9 +41,8 @@
         $minDate = date('Y-m-d', strtotime('+2 days'));
 
         // Validar si la fecha es menor
-        if ($fecha <= $minDate) {
+        if ($fecha < $minDate) {
             showSweetAlert('error', 'Error', 'La fecha tiene que ser después de mañana como mínimo.','pacienteAgendarCita.php'); // mal
-            
         }
 
         $hora = $hora . ':00'; 
