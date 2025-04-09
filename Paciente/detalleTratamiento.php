@@ -73,7 +73,7 @@
         <img src="<?php echo htmlspecialchars($treatment['imagenURL']); ?>" alt="<?php echo htmlspecialchars($treatment['nombre']); ?>">
         <p><strong>Detalles:</strong> <?php echo htmlspecialchars($treatment['detalles']); ?></p>
         <p><strong>Precio:</strong> $<?php echo htmlspecialchars($treatment['precio']); ?></p>
-        <p><strong>Duración:</strong> <?php echo htmlspecialchars($treatment['duracion']); ?> minutos</p>
+        <p><strong>Duración:</strong> <?php echo htmlspecialchars($treatment['duracion']); ?> minuto</p>
         <a href="catalogoTratamientos.php" class="btn">Regresar</a>
     </div>
 </body>
