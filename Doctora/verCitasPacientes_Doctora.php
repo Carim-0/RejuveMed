@@ -108,19 +108,20 @@ if ($_SERVER['REQUEST_METHOD'] == "POST" && isset($_POST['agendar_cita'])) {
 
 
 
-            // Combine date and time into a single datetime value
-            $datetime = $fecha . ' ' . $hora;
+        // Combine date and time into a single datetime value
+        $datetime = $fecha . ' ' . $hora;
 
-           // Get the current date
+        // Get the current date
         $currentDate = date('Y-m-d');
 
+        /*
         // Validate that the selected date is not in the past and not the same as today
         if ($fecha <= $currentDate) {
             echo "<script>alert('La fecha tiene que ser después de mañana como mínimo.');</script>";
             echo "<script>window.location.href = 'verCitasPacientes_Doctora.php';</script>";
             exit;
             } 
-//commentario prueba
+        */
             // Validar la hora
             $hora = $hora . ':00'; 
             $horaMin = '10:00:00';

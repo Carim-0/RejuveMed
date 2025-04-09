@@ -7,6 +7,22 @@ require_once('../functions.php');
 $personal_data = check_login($con);
 $personal_id = $_SESSION['user_id'];
 
+function showSweetAlert($icon, $title, $text, $redirect = null) {
+  echo "<script>
+  document.addEventListener('DOMContentLoaded', function() {
+      Swal.fire({
+          icon: '$icon',
+          title: '$title',
+          text: '$text',
+          confirmButtonColor: '#3085d6'
+      })";
+  if ($redirect) {
+      echo ".then((result) => { if (result.isConfirmed) { window.location.href = '$redirect'; } })";
+  }
+  echo ";});
+  </script>";
+}
+
 // Procesar búsqueda de pacientes
 $pacientes = [];
 if ($_SERVER['REQUEST_METHOD'] === 'GET' && isset($_GET['search'])) {
@@ -86,13 +102,14 @@ if ($_SERVER['REQUEST_METHOD'] == "POST" && isset($_POST['agendar_cita'])) {
            // Get the current date
         $currentDate = date('Y-m-d');
 
-        // Validate that the selected date is not in the past and not the same as today
+      /*
+        // Validar fecha
         if ($fecha <= $currentDate) {
             echo "<script>alert('La fecha tiene que ser después de mañana como mínimo.');</script>";
             echo "<script>window.location.href = 'verCitasPacientes_Personal.php';</script>";
             exit;
             }
-
+      */
             //Validar horas
             $hora = $hora . ':00'; 
             $horaMin = '10:00:00';
@@ -114,9 +131,8 @@ if ($_SERVER['REQUEST_METHOD'] == "POST" && isset($_POST['agendar_cita'])) {
 
 
             if ($result->num_rows > 0) {
-              echo "<script>alert('Ya existe una cita en ese horario. Por favor, elija otro horario.');</script>";
-            echo "<script>window.location.href = 'verCitasPacientes_Personal.php';</script>";
-                
+                showSweetAlert('warning', 'Horario ocupado', 'Ya existe una cita en ese horario.', 'verCitasPacientes_Doctora.php');
+           
             } else {
                 // Insert the new appointment into the Citas table
                 $query = "INSERT INTO Citas (fecha, fechaFin, IDpaciente, IDtratamiento, estado) VALUES (?, ?, ?, ?, ?)";
