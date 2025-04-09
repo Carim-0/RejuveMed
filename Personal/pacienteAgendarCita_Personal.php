@@ -65,7 +65,7 @@
                 $result = mysqli_query($con, $query);
     
                 if (mysqli_num_rows($result) > 0) {
-                    showSweetAlert('warning', 'Horario ocupado', 'Ya existe una cita en ese horario.', 'pacienteAgendarCita.php');
+                    showSweetAlert('warning', 'Horario ocupado', 'Ya existe una cita en ese horario.', 'verCitasPacientes_Personal.php');
                 } else {
                     // Insertar cita
                     $query = "INSERT INTO Citas (IDpaciente, IDtratamiento, fecha, fechaFin) 
