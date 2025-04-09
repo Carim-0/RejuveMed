@@ -364,7 +364,7 @@
 
 
     <script>
-        console.log('Hola 7');
+        console.log('Hola 8');
         document.addEventListener("DOMContentLoaded", function () {
             initializeEventListeners();
         });
