@@ -7,6 +7,22 @@ require_once('../functions.php');
 $doctor_data = check_login($con);
 $doctor_id = $_SESSION['user_id'];
 
+function showSweetAlert($icon, $title, $text, $redirect = null) {
+  echo "<script>
+  document.addEventListener('DOMContentLoaded', function() {
+      Swal.fire({
+          icon: '$icon',
+          title: '$title',
+          text: '$text',
+          confirmButtonColor: '#3085d6'
+      })";
+  if ($redirect) {
+      echo ".then((result) => { if (result.isConfirmed) { window.location.href = '$redirect'; } })";
+  }
+  echo ";});
+  </script>";
+}
+
 // Procesar búsqueda de pacientes
 $pacientes = [];
 if ($_SERVER['REQUEST_METHOD'] === 'GET' && isset($_GET['search'])) {
@@ -128,9 +144,7 @@ if ($_SERVER['REQUEST_METHOD'] == "POST" && isset($_POST['agendar_cita'])) {
             $stmt->close();
 
             if ($result->num_rows > 0) {
-              echo "<script>alert('Ya existe una cita en ese horario. Por favor, elija otro horario.');</script>";
-            echo "<script>window.location.href = 'verCitasPacientes_Doctora.php';</script>";
-                
+              showSweetAlert('warning', 'Horario ocupado', 'Ya existe una cita en ese horario.', 'verCitasPacientes_Doctora.php');
             } else {
                 // Insert the new appointment into the Citas table
                 $query = "INSERT INTO Citas (fecha, fechaFin, IDpaciente, IDtratamiento, estado) VALUES (?, ?, ?, ?, ?)";
@@ -160,6 +174,8 @@ if ($_SERVER['REQUEST_METHOD'] == "POST" && isset($_POST['agendar_cita'])) {
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Vista Doctor - RejuveMed</title>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
   <style>
     :root {
       --primary-color: #4a6fa5;
@@ -618,11 +634,11 @@ if ($_SERVER['REQUEST_METHOD'] == "POST" && isset($_POST['agendar_cita'])) {
           <div class="form-grid">
             <div class="form-group">
               <label for="fecha">Fecha</label>
-              <input type="date" id="fecha" name="fecha" required>
+              <input type="date" id="fecha" name="fecha" required min="<?php echo date('Y-m-d', strtotime('+1 days')); ?>">
             </div>
             <div class="form-group">
               <label for="hora">Hora</label>
-              <input type="time" id="hora" name="hora" required>
+              <input type="time" id="hora" name="hora" required min="10:00" max="18:00"  step="3600">
             </div>
           </div>
          
