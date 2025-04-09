@@ -96,23 +96,17 @@ if ($_SERVER['REQUEST_METHOD'] == "POST" && isset($_POST['agendar_cita'])) {
             
             // Check for overlapping appointments
             $query = "SELECT * FROM Citas WHERE 
-                      (fecha <= ? AND fechaFin >= ?)";
-            $stmt = $con->prepare($query);
-            $stmt->bind_param("ss", $fechaFin, $datetime); // Removed $paciente_id
-            $stmt->execute();
-            $result = $stmt->get_result();
-            $stmt->close();
+                      (fecha <= '$fechaFin' AND fechaFin >= '$datetime')";
+            $result = mysqli_query($con, $query);
 
-            if ($result->num_rows > 0) {
-              showSweetAlert('warning', 'Horario ocupado', 'Ya existe una cita en ese horario. Por favor, elija otro.', 'pacienteAgendarCita_Personal.php');
+            if (mysqli_num_rows($result) > 0) {
+                showSweetAlert('warning', 'Horario ocupado', 'Ya existe una cita en ese horario. Por favor, elija otro.', 'pacienteAgendarCita.php');
             } else {
                 // Insert the new appointment into the Citas table
-                $query = "INSERT INTO Citas (fecha, fechaFin, IDpaciente, IDtratamiento, estado) VALUES (?, ?, ?, ?, ?)";
-                $stmt = $con->prepare($query);
-                $estado = 'Pendiente'; // Set the default value for estado
-                $stmt->bind_param("sssis", $datetime, $fechaFin, $paciente_id, $IDtratamiento, $estado);
+                $query = "INSERT INTO Citas (IDpaciente, IDtratamiento, fecha, fechaFin) VALUES ('$IDpaciente', '$IDtratamiento', '$datetime', '$fechaFin')";
+                $result = mysqli_query($con, $query);
 
-                if ($stmt->execute()) {
+                if ($result()) {
                     showSweetAlert('success', '¡Éxito!', 'Cita agendada correctamente', 'pacienteAgendarCita_Personal.php');
                 } else {
                     showSweetAlert('error', 'Error', 'Ocurrió un error al agendar la cita');
