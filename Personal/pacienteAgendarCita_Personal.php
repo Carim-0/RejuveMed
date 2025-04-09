@@ -72,6 +72,7 @@
             } else {
                 showSweetAlert('error', 'Error', 'Ocurrió un error al agendar la cita');
             }
+        }
         } else {
             echo "<script>alert('Por favor, complete todos los campos.');</script>";
         }
