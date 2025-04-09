@@ -205,6 +205,97 @@
             top: -10px;
             right: -10px;
         }
+        /* Estilos para el overlay de citas */
+        .citas-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0,0,0,0.7);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+        }
+        
+        .citas-container {
+            background-color: white;
+            border-radius: 12px;
+            padding: 25px;
+            width: 90%;
+            max-width: 800px;
+            max-height: 80vh;
+            overflow-y: auto;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+        }
+        .citas-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+        
+        .citas-header h2 {
+            color: var(--color-primario);
+            margin: 0;
+        }
+        
+        .close-btn {
+            background: none;
+            border: none;
+            font-size: 24px;
+            cursor: pointer;
+            color: var(--color-error);
+        }
+        
+        .cita-item {
+            border-bottom: 1px solid var(--color-borde);
+            padding: 15px 0;
+        }
+        .cita-item:last-child {
+            border-bottom: none;
+        }
+        
+        .cita-hora {
+            font-weight: bold;
+            color: var(--color-primario);
+        }
+        
+        .cita-paciente {
+            font-weight: 500;
+            margin-top: 5px;
+        }
+        
+        .cita-tratamiento {
+            color: #666;
+            font-size: 0.9em;
+        }
+        
+        .no-citas {
+            text-align: center;
+            padding: 20px;
+            color: #666;
+        }
+        .citas-badge {
+            position: absolute;
+            top: -8px;
+            right: -8px;
+            background-color: var(--color-error);
+            color: white;
+            border-radius: 50%;
+            width: 20px;
+            height: 20px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 12px;
+        }
+        
+        .citas-btn-container {
+            position: relative;
+            display: inline-block;
+        }
     </style>
 </head>
 <body>
@@ -231,16 +322,13 @@
             <i class="fas fa-users"></i> Ver Pacientes
         </button>
         
-        <button class="main-button" onclick="location.href='verHistorial.php'">
-            <i class="fas fa-history"></i> Ver Historial Clínico
-        </button>
-        
-        <div class="citas-btn-container">
-            <button class="main-button" id="verCitasHoyBtn" onclick="location.href='citasHoy.php'">
+         <!-- Botón de Citas de Hoy con badge -->
+         <div class="citas-btn-container">
+            <button class="main-button" id="verCitasHoyBtn">
                 <i class="fas fa-calendar-day"></i> Citas de hoy
             </button>
             <?php if(count($citas_hoy) > 0): ?>
-                <span class="citas-badge" id="citasBadge"><?php echo count($citas_hoy); ?></span>
+                <span class="citas-badge"><?php echo count($citas_hoy); ?></span>
             <?php endif; ?>
         </div>
     </div>
@@ -260,7 +348,57 @@
             }
         ?>
     </div>
+    <!-- Overlay de citas de hoy -->
+    <div class="citas-overlay" id="citasOverlay">
+        <div class="citas-container">
+            <div class="citas-header">
+                <h2>Citas programadas para hoy (<?php echo date('d/m/Y'); ?>)</h2>
+                <button class="close-btn" id="closeCitasOverlay">&times;</button>
+            </div>
+            <?php if(count($citas_hoy) > 0): ?>
+                <?php foreach($citas_hoy as $cita): ?>
+                    <div class="cita-item">
+                        <div class="cita-hora">
+                            <?php echo date('H:i', strtotime($cita['fecha'])); ?>
+                        </div>
+                        <div class="cita-paciente">
+                            <?php echo htmlspecialchars($cita['paciente_nombre']); ?>
+                        </div>
+                        <div class="cita-tratamiento">
+                            <?php echo htmlspecialchars($cita['tratamiento_nombre']); ?>
+                        </div>
+                    </div>
+                <?php endforeach; ?>
+            <?php else: ?>
+                <div class="no-citas">
+                    <i class="fas fa-calendar-check fa-3x" style="color: #ccc; margin-bottom: 15px;"></i>
+                    <p>No hay citas programadas para hoy</p>
+                </div>
+            <?php endif; ?>
+            </div>
+        </div>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        // Mostrar/ocultar overlay de citas
+    document.getElementById('verCitasHoyBtn').addEventListener('click', function() {
+        document.getElementById('citasOverlay').style.display = 'flex';
+        // Ocultar el badge cuando se abre el overlay
+        var badge = document.getElementById('citasBadge');
+        if(badge) {
+            badge.style.display = 'none';
+        }
+    });
+
+    document.getElementById('closeCitasOverlay').addEventListener('click', function() {
+        document.getElementById('citasOverlay').style.display = 'none';
+    });
+
+    document.getElementById('citasOverlay').addEventListener('click', function(e) {
+        if(e.target === this) {
+            this.style.display = 'none';
+        }
+        });
+    </script>
 </body>
 </html>
