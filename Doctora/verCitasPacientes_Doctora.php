@@ -144,9 +144,7 @@ if ($_SERVER['REQUEST_METHOD'] == "POST" && isset($_POST['agendar_cita'])) {
             $stmt->close();
 
             if ($result->num_rows > 0) {
-              showSweetAlert('warning', 'Horario ocupado', 'Ya existe una cita en ese horario. Por favor, elija otro.', 'pacienteAgenverCitasPacientes_DoctoradarCita.php');
-           
-                
+              showSweetAlert('warning', 'Horario ocupado', 'Ya existe una cita en ese horario. Por favor, elija otro.', 'verCitasPacientes_Doctora.php');
             } else {
                 // Insert the new appointment into the Citas table
                 $query = "INSERT INTO Citas (fecha, fechaFin, IDpaciente, IDtratamiento, estado) VALUES (?, ?, ?, ?, ?)";
