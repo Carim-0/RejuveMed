@@ -8,21 +8,6 @@
         die("Acceso denegado. Por favor, inicie sesión como paciente.");
     }
 
-    echo "<script>
-                function loadSwal() {
-                    if (typeof Swal === 'undefined') {
-                        setTimeout(loadSwal, 100);
-                    } else {
-                        Swal.fire({
-                            icon: 'error',
-                            title: 'Oops...',
-                            text: 'Ya existe una cita en ese horario. Por favor, elija otro horario.',
-                            });
-                    }
-                }
-                loadSwal();
-                </script>";
-
     $IDpaciente = $_SESSION['user_id']; // Get the current user's ID
 
     // Fetch available treatments
@@ -68,9 +53,9 @@
 
             if (mysqli_num_rows($result) > 0) {
                 echo "<script>
-                function loadSwal() {
+                function loadSwal1() {
                     if (typeof Swal === 'undefined') {
-                        setTimeout(loadSwal, 100);
+                        setTimeout(loadSwal1, 100);
                     } else {
                         Swal.fire({
                             icon: 'error',
@@ -79,7 +64,7 @@
                             });
                     }
                 }
-                loadSwal();
+                loadSwal1();
                 </script>";
                 echo "<script>window.location.href = 'pacienteAgendarCita.php';</script>";
                 exit;
@@ -90,9 +75,9 @@
 
                 if ($result) {
                     echo "<script>
-                    function loadSwal() {
+                    function loadSwal2() {
                         if (typeof Swal === 'undefined') {
-                            setTimeout(loadSwal, 100);
+                            setTimeout(loadSwal2, 100);
                         } else {
                             Swal.fire({
                                 title: 'Éxito',
@@ -103,13 +88,13 @@
                         });
                         }
                     }
-                    loadSwal();
+                    loadSwal2();
                 </script>";
                 } else {
                     echo "<script>
-                    function loadSwal() {
+                    function loadSwal3() {
                         if (typeof Swal === 'undefined') {
-                            setTimeout(loadSwal, 100);
+                            setTimeout(loadSwal3, 100);
                         } else {
                             Swal.fire({
                                 icon: 'error',
@@ -118,7 +103,7 @@
                                 });
                         }
                     }
-                    loadSwal();
+                    loadSwal3();
                 </script>";
                 }
             }
@@ -400,7 +385,7 @@
 
 
     <script>
-        console.log('Hola 5');
+        console.log('Hola 6');
         document.addEventListener("DOMContentLoaded", function () {
             initializeEventListeners();
         });
