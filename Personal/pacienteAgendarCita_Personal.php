@@ -55,7 +55,7 @@
         $horaMax = '18:00:00';
     
         if ($hora < $horaMin || $hora > $horaMax) {
-            showSweetAlert('error', 'Error', 'La hora debe estar entre las 10:00 AM y 6:00 PM.', 'pacienteAgendarCita.php');
+            showSweetAlert('error', 'Error', 'La hora debe estar entre las 10:00 AM y 6:00 PM.', 'pacienteAgendarCita_Personal.php');
         }
 
         if (!empty($fecha) && !empty($hora) && !empty($IDtratamiento) && !empty($duracion)) {
@@ -74,14 +74,14 @@
             $result = mysqli_query($con, $query);
 
             if (mysqli_num_rows($result) > 0) {
-                showSweetAlert('warning', 'Horario ocupado', 'Ya existe una cita en ese horario. Por favor, elija otro.', 'pacienteAgendarCita.php');
+                showSweetAlert('warning', 'Horario ocupado', 'Ya existe una cita en ese horario. Por favor, elija otro.', 'pacienteAgendarCita_Personal.php');
             } else {
                 // Insert the new appointment into the Citas table
                 $query = "INSERT INTO Citas (IDpaciente, IDtratamiento, fecha, fechaFin) VALUES ('$IDpaciente', '$IDtratamiento', '$datetime', '$fechaFin')";
                 $result = mysqli_query($con, $query);
 
                 if ($result) {
-                    showSweetAlert('success', '¡Éxito!', 'Cita agendada correctamente', 'verCitas_Paciente.php');
+                    showSweetAlert('success', '¡Éxito!', 'Cita agendada correctamente', 'verCitasPacientes_Personal.php');
                 } else {
                     showSweetAlert('error', 'Error', 'Ocurrió un error al agendar la cita');
                 }
@@ -90,6 +90,7 @@
             echo "<script>alert('Por favor, complete todos los campos.');</script>";
         }
     }
+
 ?>
 
 <!DOCTYPE html>
