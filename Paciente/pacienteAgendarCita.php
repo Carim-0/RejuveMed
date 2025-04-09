@@ -45,9 +45,7 @@
 
         // Validate that the selected date is not in the past and not the same as today
         if ($fecha <= $currentDate) {
-            echo "<script>alert('La fecha tiene que ser después de mañana como mínimo.');</script>";
-            echo "<script>window.location.href = 'pacienteAgendarCita.php';</script>";
-            exit;
+            showSweetAlert('error', 'Error', 'La fecha tiene que ser después de mañana como mínimo.','pacienteAgendarCita.php');
         }
 
         // Validate that the hour is within the allowed range
