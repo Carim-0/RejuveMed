@@ -73,6 +73,7 @@
 
             if (mysqli_num_rows($result) > 0) {
                 showSweetAlert('error', 'Horario ocupado', 'Ya existe una cita en ese horario. Por favor, elija otro.', 'pacienteAgendarCita.php');
+                echo "<script>alert('Hola')</script>"
                 echo "<script>window.location.href = 'pacienteAgendarCita.php';</script>";
                 exit;
             } else {
@@ -364,7 +365,7 @@
 
 
     <script>
-        console.log('Hola 8');
+        console.log('Hola 9');
         document.addEventListener("DOMContentLoaded", function () {
             initializeEventListeners();
         });
