@@ -41,87 +41,138 @@
         ];
     }
 
-    if ($_SERVER['REQUEST_METHOD'] == "POST" && isset($_POST['agendar_cita'])) {
+    if ($_SERVER['REQUEST_METHOD'] == "POST") {
         $fecha = $_POST['fecha'];
         $hora = $_POST['hora'];
         $IDtratamiento = $_POST['IDtratamiento'];
-        $paciente_id = $_POST['paciente_id'];
-        $estado = 'Pendiente';
+
+        // Obtener la fecha actual minima
+        $minDate = date('Y-m-d', strtotime('+1 days'));
+
+        $hora = $hora . ':00'; 
+        $horaMin = '10:00:00';
+        $horaMax = '18:00:00';
     
-        // Fetch the treatment duration
-        $tratamiento_query = "SELECT duracion FROM Tratamientos WHERE IDtratamiento = ?";
-        $stmt = $con->prepare($tratamiento_query);
-        $stmt->bind_param("i", $IDtratamiento);
-        $stmt->execute();
-        $tratamiento_result = $stmt->get_result();
-        $tratamiento = $tratamiento_result->fetch_assoc();
-        $stmt->close();
-    
-        if (!$tratamiento) {
-            $error_message = "El tratamiento seleccionado no es válido.";
-        } else {
-            $duracion = (int)$tratamiento['duracion'];
-    
-    
-    
-    
-                // Combine date and time into a single datetime value
-                $datetime = $fecha . ' ' . $hora;
-    
-               // Get the current date
-            $currentDate = date('Y-m-d');
-    
-            // Validate that the selected date is not in the past and not the same as today
-            if ($fecha <= $currentDate) {
-                echo "<script>alert('La fecha tiene que ser después de mañana como mínimo.');</script>";
-                echo "<script>window.location.href = 'verCitasPacientes_Doctora.php';</script>";
-                exit;
-                }
-    
-                // Calculate fechaFin by adding the duration to the start time
-                $startDateTime = new DateTime($datetime);
-                $startDateTime->modify("+$duracion hours");
-                $fechaFin = $startDateTime->format('Y-m-d H:i:s');
-    
-                // Validate that the hour is within the allowed range
-                if ($hora < "10:00:00" || $hora > "18:00:00" || $startDateTime->format('H:i') > "18:00") {
-                  echo "<script>alert('La hora debe estar entre las 10:00 AM y las 6:00 PM.');</script>";
-                echo "<script>window.location.href = 'verCitasPacientes_Doctora.php';</script>";
-                exit;
-                } 
-    
-                
-                // Check for overlapping appointments
-                $query = "SELECT * FROM Citas WHERE 
-                          (fecha <= ? AND fechaFin >= ?)";
-                $stmt = $con->prepare($query);
-                $stmt->bind_param("ss", $fechaFin, $datetime); // Removed $paciente_id
-                $stmt->execute();
-                $result = $stmt->get_result();
-                $stmt->close();
-    
-                if ($result->num_rows > 0) {
-                  showSweetAlert('warning', 'Horario ocupado', 'Ya existe una cita en ese horario. Por favor, elija otro.', 'verCitasPacientes_Doctora.php');
-                } else {
-                    // Insert the new appointment into the Citas table
-                    $query = "INSERT INTO Citas (fecha, fechaFin, IDpaciente, IDtratamiento, estado) VALUES (?, ?, ?, ?, ?)";
-                    $stmt = $con->prepare($query);
-                    $estado = 'Pendiente'; // Set the default value for estado
-                    $stmt->bind_param("sssis", $datetime, $fechaFin, $paciente_id, $IDtratamiento, $estado);
-    
-                    if ($stmt->execute()) {
-                        // Redirect to refresh the page and display the updated list of citas
-                        header("Location: verCitasPacientes_Doctora.php?paciente_id=$paciente_id&success=1");
-                        exit;
-                    } else {
-                        $error_message = "Error al agendar la cita: " . $con->error;
-                    }
-                    $stmt->close();
-                    
-                }
+        if ($hora < $horaMin || $hora > $horaMax) {
+            showSweetAlert('error', 'Error', 'La hora debe estar entre las 10:00 AM y 6:00 PM.', 'pacienteAgendarCita_Personal.php');
+        }
+
+        if (!empty($fecha) && !empty($hora) && !empty($IDtratamiento)) {
             
+            // Combine date and time into a single datetime value
+            $datetime = $fecha . ' ' . $hora;
+
+            // Calculate fechaFin by adding the duration to the start time
+            $startDateTime = new DateTime($datetime);
+            $fechaFin = $startDateTime->format('Y-m-d H:i:s');
+
+            // Check for overlapping appointments
+            $query = "SELECT * FROM Citas WHERE 
+                      (fecha <= '$fechaFin' AND fechaFin >= '$datetime')";
+            $result = mysqli_query($con, $query);
+
+            if (mysqli_num_rows($result) > 0) {
+                showSweetAlert('warning', 'Horario ocupado', 'Ya existe una cita en ese horario. Por favor, elija otro.', 'pacienteAgendarCita_Personal.php');
+            } else {
+                // Insert the new appointment into the Citas table
+                $query = "INSERT INTO Citas (IDpaciente, IDtratamiento, fecha, fechaFin) VALUES ('$IDpaciente', '$IDtratamiento', '$datetime', '$fechaFin')";
+                $result = mysqli_query($con, $query);
+
+                if ($result) {
+                    showSweetAlert('success', '¡Éxito!', 'Cita agendada correctamente', 'pacienteAgendarCita_Personal.php');
+                } else {
+                    showSweetAlert('error', 'Error', 'Ocurrió un error al agendar la cita');
+                }
+            }
+        } else {
+            echo "<script>alert('Por favor, complete todos los campos.');</script>";
         }
     }
+
+
+
+    
+if ($_SERVER['REQUEST_METHOD'] == "POST" && isset($_POST['agendar_cita'])) {
+    $fecha = $_POST['fecha'];
+    $hora = $_POST['hora'];
+    $IDtratamiento = $_POST['IDtratamiento'];
+    $paciente_id = $_POST['paciente_id'];
+    $estado = 'Pendiente';
+
+    // Fetch the treatment duration
+    $tratamiento_query = "SELECT duracion FROM Tratamientos WHERE IDtratamiento = ?";
+    $stmt = $con->prepare($tratamiento_query);
+    $stmt->bind_param("i", $IDtratamiento);
+    $stmt->execute();
+    $tratamiento_result = $stmt->get_result();
+    $tratamiento = $tratamiento_result->fetch_assoc();
+    $stmt->close();
+
+    if (!$tratamiento) {
+        $error_message = "El tratamiento seleccionado no es válido.";
+    } else {
+        $duracion = (int)$tratamiento['duracion'];
+
+
+
+
+            // Combine date and time into a single datetime value
+            $datetime = $fecha . ' ' . $hora;
+
+           // Get the current date
+        $currentDate = date('Y-m-d');
+
+        // Validate that the selected date is not in the past and not the same as today
+        if ($fecha <= $currentDate) {
+            echo "<script>alert('La fecha tiene que ser después de mañana como mínimo.');</script>";
+            echo "<script>window.location.href = 'pacienteAgendarCita_Personal.php';</script>";
+            exit;
+            }
+
+            // Calculate fechaFin by adding the duration to the start time
+            $startDateTime = new DateTime($datetime);
+            $startDateTime->modify("+$duracion hours");
+            $fechaFin = $startDateTime->format('Y-m-d H:i:s');
+
+            // Validate that the hour is within the allowed range
+            if ($hora < "10:00:00" || $hora > "18:00:00" || $startDateTime->format('H:i') > "18:00") {
+              echo "<script>alert('La hora debe estar entre las 10:00 AM y las 6:00 PM.');</script>";
+            echo "<script>window.location.href = 'pacienteAgendarCita_Personal.php';</script>";
+            exit;
+            } 
+
+            
+            // Check for overlapping appointments
+            $query = "SELECT * FROM Citas WHERE 
+                      (fecha <= ? AND fechaFin >= ?)";
+            $stmt = $con->prepare($query);
+            $stmt->bind_param("ss", $fechaFin, $datetime); // Removed $paciente_id
+            $stmt->execute();
+            $result = $stmt->get_result();
+            $stmt->close();
+
+            if ($result->num_rows > 0) {
+              showSweetAlert('warning', 'Horario ocupado', 'Ya existe una cita en ese horario. Por favor, elija otro.', 'pacienteAgendarCita_Personal.php');
+            } else {
+                // Insert the new appointment into the Citas table
+                $query = "INSERT INTO Citas (fecha, fechaFin, IDpaciente, IDtratamiento, estado) VALUES (?, ?, ?, ?, ?)";
+                $stmt = $con->prepare($query);
+                $estado = 'Pendiente'; // Set the default value for estado
+                $stmt->bind_param("sssis", $datetime, $fechaFin, $paciente_id, $IDtratamiento, $estado);
+
+                if ($stmt->execute()) {
+                    // Redirect to refresh the page and display the updated list of citas
+                    header("Location: pacienteAgendarCita_Personal.php?paciente_id=$paciente_id&success=1");
+                    exit;
+                } else {
+                    $error_message = "Error al agendar la cita: " . $con->error;
+                }
+                $stmt->close();
+                
+            }
+        
+    }
+}
 
 ?>
 
