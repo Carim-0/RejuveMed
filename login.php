@@ -4,6 +4,24 @@
     include("connection.php");
     include("functions.php");
 
+
+    function showSweetAlert($icon, $title, $text, $redirect = null) {
+        echo "<script>
+        document.addEventListener('DOMContentLoaded', function() {
+            Swal.fire({
+                icon: '$icon',
+                title: '$title',
+                text: '$text',
+                confirmButtonColor: '#3085d6'
+            })";
+        if ($redirect) {
+            echo ".then((result) => { if (result.isConfirmed) { window.location.href = '$redirect'; } })";
+        }
+        echo ";});
+        </script>";
+    }
+
+
     if ($_SERVER['REQUEST_METHOD'] == "POST") {
         // Something was posted
         $username = $_POST['username'];
@@ -38,19 +56,18 @@
 
                     // Redirect based on the "nombre" value
                     if ($user_data['nombre'] === "Doctora") {
-                        echo "<script>alert('Login exitoso como Doctora'); window.location.href='Doctora/tablaPersonal.php';</script>";
+                        showSweetAlert('info', 'Bienvenida!', 'Login exitoso como Doctora', 'tablaPersonal.php');
                     } else {
-                        echo "<script>alert('Login exitoso como Personal'); window.location.href='Personal/CtalogoRecepcionista.php';</script>";
-                    }
+                        showSweetAlert('info', 'Bienvenida!', 'Login exitoso como Personal', 'CtalogoRecepcionista.php'); }
                     die;
                 }
             }
 
             // Show error message for incorrect username or password
-            echo "<script>alert('Usuario o contraseña incorrectos');</script>";
+            showSweetAlert('error', 'Ocurrió un error', 'Usuario o contraseña incorrectos');
         } else {
             // Show error message for invalid input
-            echo "<script>alert('Introducir información válida');</script>";
+            showSweetAlert('error', 'Ocurrió un error', 'Introducir información válida');
         }
     }
 ?>
@@ -61,6 +78,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="login_style.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <title>Rejuvemet -> Login </title>
 </head>
 <body> 
