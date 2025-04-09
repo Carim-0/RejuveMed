@@ -18,7 +18,7 @@
                     icon: '$icon',
                     title: '$title',
                     text: '$text',
-                    confirmButtonColor: '#3085d6'
+                    confirmButtonColor: '#4a6fa5'
                 })";
         if ($redirect) {
             echo ".then(() => { window.location.href = '$redirect'; })";
