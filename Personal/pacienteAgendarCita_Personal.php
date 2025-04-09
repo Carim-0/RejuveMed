@@ -10,6 +10,22 @@
 
     $IDpersonal = $_SESSION['user_id']; // Get the current user's ID
 
+    function showSweetAlert($icon, $title, $text, $redirect = null) {
+        echo "<script>
+        document.addEventListener('DOMContentLoaded', function() {
+            Swal.fire({
+                icon: '$icon',
+                title: '$title',
+                text: '$text',
+                confirmButtonColor: '#3085d6'
+            })";
+        if ($redirect) {
+            echo ".then((result) => { if (result.isConfirmed) { window.location.href = '$redirect'; } })";
+        }
+        echo ";});
+        </script>";
+    }
+
     // Fetch available treatments
     $query = "SELECT IDtratamiento, nombre FROM Tratamientos";
     $result = mysqli_query($con, $query);
@@ -58,6 +74,9 @@
     <title>Agendar Cita</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="https://code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
+    
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -240,10 +259,10 @@
             <input type="hidden" id="IDpaciente" name="IDpaciente">
 
             <label for="fecha">Fecha:</label>
-            <input type="date" id="fecha" name="fecha" required>
+            <input type="date" id="fecha" name="fecha" required min="<?php echo date('Y-m-d', strtotime('+1 days')); ?>">
 
             <label for="hora">Hora:</label>
-            <input type="time" id="hora" name="hora" required>
+            <input type="time" id="hora" name="hora" required min="10:00" max="18:00"  step="3600">
 
             <label for="IDtratamiento">Tratamiento:</label>
             <select id="IDtratamiento" name="IDtratamiento" required>
@@ -256,13 +275,9 @@
                 ?>
             </select>
             
-            <button onclick="document.querySelector('.overlay').classList.add('active')" 
-            type="submit" id='btnAgendarCita'>Agendar Cita</button>
-                <div class="overlay" onclick="this.classList.remove('active')">
-                    <div class ="popup">
-                        <p>Tu cita ha sido agendada.</p>
-                    </div>
-                </div>
+            <button type="submit" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#detalleModal">
+                    <i class="fas fa-calendar-check"></i> Agendar Cita
+                </button>
      
                 <a href="CtalogoRecepcionista.php" class="btn-link">
                 <i class="fas fa-arrow-left"></i> Regresar
