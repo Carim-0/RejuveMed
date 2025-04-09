@@ -1,11 +1,9 @@
 <?php
     include("../connection.php");
 
-    // Check if the ID is provided in the URL
     if (isset($_GET['IDtratamiento']) && is_numeric($_GET['IDtratamiento'])) {
         $id = $_GET['IDtratamiento'];
 
-        // Fetch the treatment details from the database (incluyendo duracion)
         $query = "SELECT nombre, detalles, precio, imagenURL, duracion FROM Tratamientos WHERE IDtratamiento = $id LIMIT 1";
         $result = mysqli_query($con, $query);
 
@@ -73,7 +71,15 @@
         <img src="<?php echo htmlspecialchars($treatment['imagenURL']); ?>" alt="<?php echo htmlspecialchars($treatment['nombre']); ?>">
         <p><strong>Detalles:</strong> <?php echo htmlspecialchars($treatment['detalles']); ?></p>
         <p><strong>Precio:</strong> $<?php echo htmlspecialchars($treatment['precio']); ?></p>
-        <p><strong>Duración:</strong> <?php echo htmlspecialchars($treatment['duracion']); ?> minutos</p>
+        <p><strong>Duración:</strong> 
+            <?php 
+                if (!empty($treatment['duracion'])) {
+                    echo htmlspecialchars($treatment['duracion']) . " minutos";
+                } else {
+                    echo "No especificada";
+                }
+            ?>
+        </p>
         <a href="catalogoTratamientos.php" class="btn">Regresar</a>
     </div>
 </body>
