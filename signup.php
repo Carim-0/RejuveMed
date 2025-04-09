@@ -46,8 +46,9 @@ session_start();
     <main class="contenedor-main">
       <!--Inicializamos de cabezera-->
       <header class="cabezera">
+        <img src="IMG/ImagenRegistrar.png" alt="Imagen representativa de agregar usuario" height="70px" width="70px" >
         <h1 class="titulo-main">Agregar usuario</h1>
-        <img src="IMG/IamgenLogin.png" alt="Imagen representativa de agregar usuario" height="100px" width="100px" >
+        
       </header>
       <!--Inicializamos parte de ingreso de datos-->
     <section class="seccion-input">
