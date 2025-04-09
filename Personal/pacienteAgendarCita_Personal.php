@@ -45,20 +45,46 @@
         $fecha = $_POST['fecha'];
         $hora = $_POST['hora'];
         $IDtratamiento = $_POST['IDtratamiento'];
-        $IDpaciente = $_POST['IDpaciente'];
+        $duracion = (int)$_POST['duracion']; // Ensure duracion is cast to an integer
 
-        if (!empty($fecha) && !empty($hora) && !empty($IDtratamiento) && !empty($IDpaciente)) {
+        // Obtener la fecha actual minima
+        $minDate = date('Y-m-d', strtotime('+1 days'));
+
+        $hora = $hora . ':00'; 
+        $horaMin = '10:00:00';
+        $horaMax = '18:00:00';
+    
+        if ($hora < $horaMin || $hora > $horaMax) {
+            showSweetAlert('error', 'Error', 'La hora debe estar entre las 10:00 AM y 6:00 PM.', 'pacienteAgendarCita.php');
+        }
+
+        if (!empty($fecha) && !empty($hora) && !empty($IDtratamiento) && !empty($duracion)) {
+            
             // Combine date and time into a single datetime value
             $datetime = $fecha . ' ' . $hora;
 
-            // Insert the new appointment into the Citas table
-            $query = "INSERT INTO Citas (IDpaciente, IDtratamiento, fecha) VALUES ('$IDpaciente', '$IDtratamiento', '$datetime')";
+            // Calculate fechaFin by adding the duration to the start time
+            $startDateTime = new DateTime($datetime);
+            $startDateTime->modify("+$duracion hours"); // Add the duration as hours
+            $fechaFin = $startDateTime->format('Y-m-d H:i:s');
+
+            // Check for overlapping appointments
+            $query = "SELECT * FROM Citas WHERE 
+                      (fecha <= '$fechaFin' AND fechaFin >= '$datetime')";
             $result = mysqli_query($con, $query);
 
-            if ($result) {
-                echo "<script>alert('Cita agendada exitosamente.'); window.location.href='verCitasPacientes_Personal.php';</script>";
+            if (mysqli_num_rows($result) > 0) {
+                showSweetAlert('warning', 'Horario ocupado', 'Ya existe una cita en ese horario. Por favor, elija otro.', 'pacienteAgendarCita.php');
             } else {
-                echo "<script>alert('Error al agendar la cita.');</script>";
+                // Insert the new appointment into the Citas table
+                $query = "INSERT INTO Citas (IDpaciente, IDtratamiento, fecha, fechaFin) VALUES ('$IDpaciente', '$IDtratamiento', '$datetime', '$fechaFin')";
+                $result = mysqli_query($con, $query);
+
+                if ($result) {
+                    showSweetAlert('success', '¡Éxito!', 'Cita agendada correctamente', 'verCitas_Paciente.php');
+                } else {
+                    showSweetAlert('error', 'Error', 'Ocurrió un error al agendar la cita');
+                }
             }
         } else {
             echo "<script>alert('Por favor, complete todos los campos.');</script>";
