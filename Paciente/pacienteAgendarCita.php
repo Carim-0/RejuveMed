@@ -8,14 +8,20 @@
         die("Acceso denegado. Por favor, inicie sesión como paciente.");
     }
 
-    function redirectWithAlert($icon, $title, $text, $redirectPage) {
-        $_SESSION['sweet_alert'] = [
-            'icon' => $icon,
-            'title' => $title,
-            'text' => $text
-        ];
-        header("Location: $redirectPage");
-        exit;
+    function showSweetAlert($icon, $title, $text, $redirect = null) {
+        echo "<script>
+        document.addEventListener('DOMContentLoaded', function() {
+            Swal.fire({
+                icon: '$icon',
+                title: '$title',
+                text: '$text',
+                confirmButtonColor: '#3085d6'
+            })";
+        if ($redirect) {
+            echo ".then((result) => { if (result.isConfirmed) { window.location.href = '$redirect'; } })";
+        }
+        echo ";});
+        </script>";
     }
 
     $IDpaciente = $_SESSION['user_id']; // Obtener el ID actual del usuario
@@ -287,18 +293,6 @@
     </style>
 </head>
 <body>
-<?php
-    if (!empty($_SESSION['sweet_alert'])) {
-        echo "<script>
-            Swal.fire({
-                icon: '" . $_SESSION['sweet_alert']['icon'] . "',
-                title: '" . $_SESSION['sweet_alert']['title'] . "',
-                text: '" . $_SESSION['sweet_alert']['text'] . "'
-            });
-        </script>";
-        unset($_SESSION['sweet_alert']);
-    }
-    ?>
     <div class="appointment-container">
         <div class="appointment-header">
             <h2><i class="fas fa-calendar-plus"></i> Agendar Nueva Cita</h2>
@@ -422,16 +416,6 @@ function validateForm() {
     }
     return true;
 }
-
-document.addEventListener('DOMContentLoaded', function() {
-    <?php if (!empty($_SESSION['sweet_alert'])): ?>
-    Swal.fire({
-        icon: '<?= $_SESSION['sweet_alert']['icon'] ?>',
-        title: '<?= $_SESSION['sweet_alert']['title'] ?>',
-        text: '<?= $_SESSION['sweet_alert']['text'] ?>'
-    });
-    <?php unset($_SESSION['sweet_alert']); endif; ?>
-});
 
     </script>
 </body>
