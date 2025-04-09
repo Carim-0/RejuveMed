@@ -202,11 +202,16 @@
             <i class="fas fa-calendar-check"></i> Ver citas agendadas
         </button>
 
-        <!-- Botón de Ver Historial -->
-        <button class="main-button" onclick="window.location.href='VerHistorial_Paciente.php'">
-            <i class="fas fa-history"></i> Ver Historial Clínico
-        </button>
-    </div>
+      <!-- Botón de Ver Historial -->
+<div style="text-align: right; margin: 10px;">
+    <button class="main-button" onclick="window.location.href='VerHistorial_Paciente.php'">
+        <i class="fas fa-history"></i> Ver Historial Clínico
+    </button>
+</div>
+
+<!-- Asegúrate de tener esto en tu <head> -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+
 
     <!-- Tratamientos con imágenes -->
     <div class="treatments">
