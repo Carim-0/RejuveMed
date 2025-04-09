@@ -303,7 +303,7 @@
             <div class="form-row">
                 <div class="form-group">
                     <label for="fecha"><i class="far fa-calendar-alt"></i> Fecha*</label>
-                    <input type="date" id="fecha" name="fecha" required min="<?php echo date('Y-m-d', strtotime('+2 days')); ?>" >
+                    <input type="date" id="fecha" name="fecha" required min="<?php echo date('Y-m-d', strtotime('+1 days')); ?>" >
                 </div>
                 
                 <div class="form-group">
