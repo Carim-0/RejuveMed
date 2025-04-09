@@ -45,7 +45,7 @@
 
         // Validate that the selected date is not in the past and not the same as today
         if ($fecha <= $currentDate) {
-            showSweetAlert('error', 'Uh oh', 'No puedes agendar un día pasado');
+            showSweetAlert('error', 'Uh oh', 'No puedes agendar un día u hora anterior.');
             exit;
         }
 
@@ -77,13 +77,13 @@
                 $result = mysqli_query($con, $query);
 
                 if ($result) {
-                    showSweetAlert('success', '¡Éxito!', 'Cita agendada correctamente', 'verCitas_Paciente.php');
+                    showSweetAlert('success', '¡Éxito!', 'Cita agendada correctamente.', 'verCitas_Paciente.php');
                 } else {
-                    showSweetAlert('error', 'Uh oh', 'Ocurrió un error al agendar la cita');
+                    showSweetAlert('error', 'Uh oh', 'Ocurrió un error al agendar la cita.');
                 }
             }
         } else {
-            showSweetAlert('question', 'Olvidaste algo', 'Recuerda llenar todos los campos');
+            showSweetAlert('question', 'Olvidaste algo', 'Recuerda llenar todos los campos.');
         }
     }
 ?>
@@ -360,7 +360,7 @@
 
 
     <script>
-        console.log('Hola 1');
+        console.log('Hola 3');
         document.addEventListener("DOMContentLoaded", function () {
             initializeEventListeners();
         });
