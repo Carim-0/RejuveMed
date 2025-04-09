@@ -3,7 +3,7 @@
 
     include("../connection.php");
 
-    // Ensure the user is logged in
+    // Asegurar que el usuario inició sesión
     if (!isset($_SESSION['user_id']) || $_SESSION['user_type'] !== 'Paciente') {
         die("Acceso denegado. Por favor, inicie sesión como paciente.");
     }
@@ -24,7 +24,7 @@
         </script>";
     }
 
-    $IDpaciente = $_SESSION['user_id']; // Get the current user's ID
+    $IDpaciente = $_SESSION['user_id']; // Obtener el ID actual del usuario
 
     // Fetch available treatments
     $query = "SELECT IDtratamiento, nombre, duracion FROM Tratamientos";
@@ -36,16 +36,16 @@
         $IDtratamiento = $_POST['IDtratamiento'];
         $duracion = (int)$_POST['duracion']; // Ensure duracion is cast to an integer
 
-        // Get the current date
+        // Obtener la fecha actual minima
         $minDate = date('Y-m-d', strtotime('+2 days'));
 
-        // Validate that the selected date is not in the past and not the same as today
-        if ($fecha <= $currentDate) {
+        // Validar si la fecha es menor
+        if ($fecha <= $minDate) {
             showSweetAlert('error', 'Error', 'La fecha tiene que ser después de mañana como mínimo.','pacienteAgendarCita.php'); // mal
             
         }
 
-        $hora = $hora . ':00'; // Si el input no incluye segundos
+        $hora = $hora . ':00'; 
         $horaMin = '10:00:00';
         $horaMax = '18:00:00';
     
@@ -54,6 +54,7 @@
         }
 
         if (!empty($fecha) && !empty($hora) && !empty($IDtratamiento) && !empty($duracion)) {
+            
             // Combine date and time into a single datetime value
             $datetime = $fecha . ' ' . $hora;
 
@@ -68,7 +69,7 @@
             $result = mysqli_query($con, $query);
 
             if (mysqli_num_rows($result) > 0) {
-                showSweetAlert('error', 'Horario ocupado', 'Ya existe una cita en ese horario. Por favor, elija otro.', 'pacienteAgendarCita.php');
+                showSweetAlert('warning', 'Horario ocupado', 'Ya existe una cita en ese horario. Por favor, elija otro.', 'pacienteAgendarCita.php');
             } else {
                 // Insert the new appointment into the Citas table
                 $query = "INSERT INTO Citas (IDpaciente, IDtratamiento, fecha, fechaFin) VALUES ('$IDpaciente', '$IDtratamiento', '$datetime', '$fechaFin')";
