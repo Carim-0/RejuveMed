@@ -45,15 +45,12 @@
 
         // Validate that the selected date is not in the past and not the same as today
         if ($fecha <= $currentDate) {
-            showSweetAlert('error', 'Uh oh', 'No puedes agendar un día pasado');
-            exit;
+            showSweetAlert('erroor', 'Error', 'No puedes agendar para un día u hora anterior.');
         }
 
         // Validate that the hour is within the allowed range
         if ($hora < "10:00:00" || $hora > "18:00:00") {
-            echo "<script>alert('La hora debe estar entre las 10:00 AM y las 6:00 PM.');</script>";
-            echo "<script>window.location.href = 'pacienteAgendarCita.php';</script>";
-            exit;
+            showSweetAlert('erroor', 'Error en la hora', 'La hora debe estar entre las 10:00 AM y las 6:00 PM.');
         }
 
         if (!empty($fecha) && !empty($hora) && !empty($IDtratamiento) && !empty($duracion)) {
@@ -80,11 +77,11 @@
                 if ($result) {
                     showSweetAlert('success', '¡Éxito!', 'Cita agendada correctamente', 'verCitas_Paciente.php');
                 } else {
-                    showSweetAlert('error', 'Uh oh', 'Ocurrió un error al agendar la cita');
+                    showSweetAlert('error', 'Error', 'Ocurrió un error al agendar la cita');
                 }
             }
         } else {
-            echo "<script>alert('Por favor, complete todos los campos.');</script>";
+            showSweetAlert('erroor', 'Olvidaste algo', 'Recuerda llenar los campos anteriores.');
         }
     }
 ?>
