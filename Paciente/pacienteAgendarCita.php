@@ -45,12 +45,12 @@
 
         // Validate that the selected date is not in the past and not the same as today
         if ($fecha <= $currentDate) {
-            showSweetAlert('erroor', 'Error', 'No puedes agendar para un día u hora anterior.');
+            showSweetAlert('erroor', 'Error', 'No puedes agendar para un día u hora anterior.','pacienteAgendarCita.php');
         }
 
         // Validate that the hour is within the allowed range
         if ($hora < "10:00:00" || $hora > "18:00:00") {
-            showSweetAlert('erroor', 'Error en la hora', 'La hora debe estar entre las 10:00 AM y las 6:00 PM.');
+            showSweetAlert('erroor', 'Error en la hora', 'La hora debe estar entre las 10:00 AM y las 6:00 PM.','pacienteAgendarCita.php');
         }
 
         if (!empty($fecha) && !empty($hora) && !empty($IDtratamiento) && !empty($duracion)) {
