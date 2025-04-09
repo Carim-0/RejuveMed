@@ -116,7 +116,7 @@ if ($_SERVER['REQUEST_METHOD'] == "POST" && isset($_POST['agendar_cita'])) {
             $horaMax = '18:00:00';
         
             if ($hora < $horaMin || $hora > $horaMax) {
-                showSweetAlert('error', 'Error', 'La hora debe estar entre las 10:00 AM y 6:00 PM.', 'pacienteAgendarCita.php');
+                showSweetAlert('error', 'Error', 'La hora debe estar entre las 10:00 AM y 6:00 PM.', 'verCitasPacientes_Personal.php');
             }
     
 
@@ -131,7 +131,7 @@ if ($_SERVER['REQUEST_METHOD'] == "POST" && isset($_POST['agendar_cita'])) {
 
 
             if ($result->num_rows > 0) {
-                showSweetAlert('warning', 'Horario ocupado', 'Ya existe una cita en ese horario.', 'verCitasPacientes_Doctora.php');
+                showSweetAlert('warning', 'Horario ocupado', 'Ya existe una cita en ese horario.', 'verCitasPacientes_Personal.php');
            
             } else {
                 // Insert the new appointment into the Citas table
@@ -162,6 +162,8 @@ if ($_SERVER['REQUEST_METHOD'] == "POST" && isset($_POST['agendar_cita'])) {
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Vista Recepcionista - RejuveMed</title>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
   <style>
     :root {
       --primary-color: #4a6fa5;
