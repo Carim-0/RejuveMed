@@ -22,9 +22,6 @@
         }
         echo ";});
         </script>";
-        if ($redirect) {
-            exit; 
-        }
     }
 
     $IDpaciente = $_SESSION['user_id']; // Get the current user's ID
