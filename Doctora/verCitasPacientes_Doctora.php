@@ -108,30 +108,24 @@ if ($_SERVER['REQUEST_METHOD'] == "POST" && isset($_POST['agendar_cita'])) {
 
 
 
-        // Combine date and time into a single datetime value
-        $datetime = $fecha . ' ' . $hora;
-
-        // Get the current date
-        $currentDate = date('Y-m-d');
-
-        /*
-        // Validate that the selected date is not in the past and not the same as today
-        if ($fecha <= $currentDate) {
-            echo "<script>alert('La fecha tiene que ser después de mañana como mínimo.');</script>";
-            echo "<script>window.location.href = 'verCitasPacientes_Doctora.php';</script>";
-            exit;
-            } 
-        */
-            // Validar la hora
-            $hora = $hora . ':00'; 
-            $horaMin = '10:00:00';
-            $horaMax = '18:00:00';
+        /  // Combine date and time into a single datetime value
+        $datetime = $fecha . ' ' . $hora . ':00';
         
-            if ($hora < $horaMin || $hora > $horaMax) {
-              echo "<script>alert('La hora debe estar entre las 10:00 AM y las 6:00 PM.');</script>";
-              echo "<script>window.location.href = 'verCitasPacientes_Doctora.php';</script>";
-              exit;
-              } 
+        // Calculate end time
+        $endTime = strtotime($datetime) + ($duracion * 3600);
+        $fechaFin = date('Y-m-d H:i:s', $endTime);
+
+        // Validate date and time
+        $currentDate = date('Y-m-d');
+        if ($fecha <= $currentDate) {
+            showSweetAlert('error', 'Error', 'La fecha debe ser posterior a hoy.', 'verCitasPacientes_Doctora.php');
+            exit;
+        }
+        
+            $horaInicio = date('H:i', strtotime($datetime));
+            if ($horaInicio < '10:00' || $horaInicio > '18:00') {
+            showSweetAlert('error', 'Error', 'Las citas deben ser entre 10:00 AM y 6:00 PM.', 'verCitasPacientes_Doctora.php');
+            }
             
             // Check for overlapping appointments
             $query = "SELECT * FROM Citas WHERE 
