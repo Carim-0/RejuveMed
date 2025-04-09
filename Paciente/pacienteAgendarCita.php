@@ -73,7 +73,6 @@
 
             if (mysqli_num_rows($result) > 0) {
                 showSweetAlert('error', 'Horario ocupado', 'Ya existe una cita en ese horario. Por favor, elija otro.', 'pacienteAgendarCita.php');
-                exit;
             } else {
                 // Insert the new appointment into the Citas table
                 $query = "INSERT INTO Citas (IDpaciente, IDtratamiento, fecha, fechaFin) VALUES ('$IDpaciente', '$IDtratamiento', '$datetime', '$fechaFin')";
@@ -363,7 +362,7 @@
 
 
     <script>
-        console.log('Hola 9');
+        console.log('Hola 1');
         document.addEventListener("DOMContentLoaded", function () {
             initializeEventListeners();
         });
