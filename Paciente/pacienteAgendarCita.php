@@ -38,7 +38,7 @@
         $duracion = (int)$_POST['duracion']; // Ensure duracion is cast to an integer
 
         // Obtener la fecha actual minima
-        $minDate = date('Y-m-d', strtotime('+2 days'));
+        $minDate = date('Y-m-d', strtotime('+1 days'));
 
         // Validar si la fecha es menor
         if ($fecha < $minDate) {
@@ -405,7 +405,7 @@ function validateForm() {
     // Validación de fecha en el cliente (adicional al servidor)
     const fechaInput = document.getElementById('fecha');
     const minDate = new Date();
-    minDate.setDate(minDate.getDate() + 2); // Mínimo pasado mañana
+    minDate.setDate(minDate.getDate() + 1); // Mínimo mañana
     
     if (new Date(fechaInput.value) < minDate) {
         Swal.fire({
