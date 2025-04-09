@@ -219,15 +219,15 @@
 
     <!-- Botones principales -->
     <div class="buttons-container">
-        <button class="main-button" onclick="location.href='agendarCitaRecepcionista.php'">
+        <button class="main-button" onclick="location.href='pacienteAgendarCita_Personal.php'">
             <i class="fas fa-calendar-plus"></i> Agendar una cita
         </button>
         
-        <button class="main-button" onclick="location.href='verCitasRecepcionista.php'">
+        <button class="main-button" onclick="location.href='verCitasPacientes_Personal.php'">
             <i class="fas fa-calendar-check"></i> Ver todas las citas
         </button>
 
-        <button class="main-button" onclick="location.href='verPacientes.php'">
+        <button class="main-button" onclick="location.href='tablaPacientes.php'">
             <i class="fas fa-users"></i> Ver Pacientes
         </button>
         
