@@ -39,11 +39,6 @@
         // Obtener la fecha actual minima
         $minDate = date('Y-m-d', strtotime('+1 days'));
 
-        // Validar si la fecha es menor
-        if ($fecha < $minDate) {
-            showSweetAlert('error', 'Error', 'La fecha tiene que ser después de mañana como mínimo.','pacienteAgendarCita.php'); // mal
-        }
-
         $hora = $hora . ':00'; 
         $horaMin = '10:00:00';
         $horaMax = '18:00:00';
