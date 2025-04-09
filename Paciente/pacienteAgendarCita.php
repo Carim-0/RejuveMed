@@ -22,7 +22,6 @@
         }
         echo ";});
         </script>";
-        exit;
     }
 
     $IDpaciente = $_SESSION['user_id']; // Obtener el ID actual del usuario
