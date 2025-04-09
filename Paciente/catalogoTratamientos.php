@@ -203,7 +203,6 @@
         </button>
 
       <!-- Botón de Ver Historial -->
-<div style="text-align: right; margin: 10px;">
     <button class="main-button" onclick="window.location.href='VerHistorial_Paciente.php'">
         <i class="fas fa-history"></i> Ver Historial Clínico
     </button>
