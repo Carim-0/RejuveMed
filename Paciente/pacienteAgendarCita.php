@@ -1,89 +1,86 @@
 <?php
-    session_start();
+session_start();
+include("../connection.php");
 
-    include("../connection.php");
+// Verificación de sesión mejorada
+if (!isset($_SESSION['user_id']) || $_SESSION['user_type'] !== 'Paciente') {
+    header("Location: ../login.php?error=session_expired");
+    exit;
+}
 
-    // Ensure the user is logged in
-    if (!isset($_SESSION['user_id']) || $_SESSION['user_type'] !== 'Paciente') {
-        die("Acceso denegado. Por favor, inicie sesión como paciente.");
-    }
-
-    function showSweetAlert($icon, $title, $text, $redirect = null) {
-        echo "<script>
-        function showAlert() {
-            if (typeof Swal === 'undefined') {
-                setTimeout(showAlert, 100);
-            } else {
+// Función mejorada de alertas
+function showAlertAndRedirect($type, $title, $message, $redirectUrl = null) {
+    echo "<script>
+        document.addEventListener('DOMContentLoaded', function() {
+            if (typeof Swal !== 'undefined') {
                 Swal.fire({
-                    icon: '$icon',
-                    title: '$title',
-                    text: '$text',
-                    confirmButtonColor: '#3085d6'
-                })";
-        if ($redirect) {
-            echo ".then(() => { window.location.href = '$redirect'; })";
+                    icon: '".addslashes($type)."',
+                    title: '".addslashes($title)."',
+                    text: '".addslashes($message)."'
+                })".($redirectUrl ? ".then(() => { window.location.href = '".addslashes($redirectUrl)."'; })" : "").";
+            } else {
+                alert('".addslashes($title).": ".addslashes($message)."');
+                ".($redirectUrl ? "window.location.href = '".addslashes($redirectUrl)."';" : "")."
+            }
+        });
+    </script>";
+    exit; // Esto evita la pantalla blanca
+}
+
+// Procesamiento del formulario
+if ($_SERVER['REQUEST_METHOD'] == "POST") {
+    try {
+        // Validación de campos
+        if (empty($_POST['fecha']) || empty($_POST['hora']) || empty($_POST['IDtratamiento']) || empty($_POST['duracion'])) {
+            showAlertAndRedirect('error', 'Error', 'Todos los campos son obligatorios', 'pacienteAgendarCita.php');
         }
-        echo ";}}
-        showAlert();
-        </script>";
-    }
 
-    $IDpaciente = $_SESSION['user_id']; // Get the current user's ID
-
-    // Fetch available treatments
-    $query = "SELECT IDtratamiento, nombre, duracion FROM Tratamientos";
-    $result = mysqli_query($con, $query);
-
-    if ($_SERVER['REQUEST_METHOD'] == "POST") {
         $fecha = $_POST['fecha'];
         $hora = $_POST['hora'];
-        $IDtratamiento = $_POST['IDtratamiento'];
-        $duracion = (int)$_POST['duracion']; // Ensure duracion is cast to an integer
-
-        // Get the current date
         $currentDate = date('Y-m-d');
 
-        // Validate that the selected date is not in the past and not the same as today
+        // Validación de fecha
         if ($fecha <= $currentDate) {
-            showSweetAlert('erroor', 'Error', 'No puedes agendar para un día u hora anterior.','pacienteAgendarCita.php');
+            showAlertAndRedirect('error', 'Fecha inválida', 'Debe seleccionar una fecha futura', 'pacienteAgendarCita.php');
         }
 
-        // Validate that the hour is within the allowed range
+        // Validación de horario
         if ($hora < "10:00:00" || $hora > "18:00:00") {
-            showSweetAlert('erroor', 'Error en la hora', 'La hora debe estar entre las 10:00 AM y las 6:00 PM.','pacienteAgendarCita.php');
+            showAlertAndRedirect('error', 'Horario inválido', 'El horario debe ser entre 10:00 AM y 6:00 PM', 'pacienteAgendarCita.php');
         }
 
-        if (!empty($fecha) && !empty($hora) && !empty($IDtratamiento) && !empty($duracion)) {
-            // Combine date and time into a single datetime value
-            $datetime = $fecha . ' ' . $hora;
+        // Procesamiento de la cita
+        $datetime = $fecha . ' ' . $hora;
+        $duracion = (int)$_POST['duracion'];
+        $startDateTime = new DateTime($datetime);
+        $startDateTime->modify("+$duracion hours");
+        $fechaFin = $startDateTime->format('Y-m-d H:i:s');
 
-            // Calculate fechaFin by adding the duration to the start time
-            $startDateTime = new DateTime($datetime);
-            $startDateTime->modify("+$duracion hours"); // Add the duration as hours
-            $fechaFin = $startDateTime->format('Y-m-d H:i:s');
+        // Verificación de solapamiento
+        $checkQuery = $con->prepare("SELECT IDcita FROM Citas WHERE 
+                                   (fecha <= ? AND fechaFin >= ?)");
+        $checkQuery->bind_param("ss", $fechaFin, $datetime);
+        $checkQuery->execute();
+        
+        if ($checkQuery->get_result()->num_rows > 0) {
+            showAlertAndRedirect('warning', 'Horario ocupado', 'Ya existe una cita en este horario', 'pacienteAgendarCita.php');
+        }
 
-            // Check for overlapping appointments
-            $query = "SELECT * FROM Citas WHERE 
-                      (fecha <= '$fechaFin' AND fechaFin >= '$datetime')";
-            $result = mysqli_query($con, $query);
-
-            if (mysqli_num_rows($result) > 0) {
-                showSweetAlert('error', 'Horario ocupado', 'Ya existe una cita en ese horario. Por favor, elija otro.', 'pacienteAgendarCita.php');
-            } else {
-                // Insert the new appointment into the Citas table
-                $query = "INSERT INTO Citas (IDpaciente, IDtratamiento, fecha, fechaFin) VALUES ('$IDpaciente', '$IDtratamiento', '$datetime', '$fechaFin')";
-                $result = mysqli_query($con, $query);
-
-                if ($result) {
-                    showSweetAlert('success', '¡Éxito!', 'Cita agendada correctamente', 'verCitas_Paciente.php');
-                } else {
-                    showSweetAlert('error', 'Error', 'Ocurrió un error al agendar la cita');
-                }
-            }
+        // Inserción de la cita
+        $insertQuery = $con->prepare("INSERT INTO Citas (IDpaciente, IDtratamiento, fecha, fechaFin) VALUES (?, ?, ?, ?)");
+        $insertQuery->bind_param("iiss", $_SESSION['user_id'], $_POST['IDtratamiento'], $datetime, $fechaFin);
+        
+        if ($insertQuery->execute()) {
+            showAlertAndRedirect('success', '¡Éxito!', 'Cita agendada correctamente', 'verCitas_Paciente.php');
         } else {
-            showSweetAlert('erroor', 'Olvidaste algo', 'Recuerda llenar los campos anteriores.');
+            throw new Exception("Error al insertar cita: " . $con->error);
         }
+
+    } catch (Exception $e) {
+        error_log($e->getMessage());
+        showAlertAndRedirect('error', 'Error', 'Ocurrió un error al procesar tu solicitud', 'pacienteAgendarCita.php');
     }
+}
 ?>
 
 <!DOCTYPE html>
