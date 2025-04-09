@@ -303,12 +303,12 @@
             <div class="form-row">
                 <div class="form-group">
                     <label for="fecha"><i class="far fa-calendar-alt"></i> Fecha*</label>
-                    <input type="date" id="fecha" name="fecha" required>
+                    <input type="date" id="fecha" name="fecha" required min="<?php echo date('Y-m-d', strtotime('+2 days')); ?>" >
                 </div>
                 
                 <div class="form-group">
                     <label for="hora"><i class="far fa-clock"></i> Hora*</label>
-                    <input type="time" id="hora" name="hora" required min="10:00" max="18:00">
+                    <input type="time" id="hora" name="hora" required min="10:00" max="18:00"  step="3600">
                 </div>
             </div>
             
@@ -364,7 +364,7 @@
             initializeEventListeners();
         });
 
-
+        
                 
         function initializeEventListeners() {
             const tratamientoSelect = document.getElementById("IDtratamiento");
@@ -399,6 +399,25 @@
                 fechaFinInput.value = "";
             }
         }
+
+        
+function validateForm() {
+    // Validación de fecha en el cliente (adicional al servidor)
+    const fechaInput = document.getElementById('fecha');
+    const minDate = new Date();
+    minDate.setDate(minDate.getDate() + 2); // Mínimo pasado mañana
+    
+    if (new Date(fechaInput.value) < minDate) {
+        Swal.fire({
+            icon: 'error',
+            title: 'Fecha inválida',
+            text: 'La fecha debe ser al menos pasado mañana.'
+        });
+        return false;
+    }
+    return true;
+}
+
     </script>
 </body>
 </html>
