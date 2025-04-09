@@ -203,7 +203,7 @@
         </button>
 
         <!-- Botón de Ver Historial -->
-        <button class="main-button" onclick="window.location.href='verHistorial.php'">
+        <button class="main-button" onclick="window.location.href='Paciente/VerHistorial_Paciente.php'">
             <i class="fas fa-history"></i> Ver Historial Clínico
         </button>
     </div>
