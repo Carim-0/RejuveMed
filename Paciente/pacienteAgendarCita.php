@@ -45,13 +45,12 @@
 
         // Validate that the selected date is not in the past and not the same as today
         if ($fecha <= $currentDate) {
-            showSweetAlert('error', 'Error', 'La fecha tiene que ser después de mañana como mínimo.','pacienteAgendarCita.php');
+            showSweetAlert('error', 'Error', 'La fecha tiene que ser después de mañana como mínimo.','pacienteAgendarCita.php'); // mal
         }
 
         // Validate that the hour is within the allowed range
         if ($hora < "10:00:00" || $hora > "18:00:00") {
-            echo "<script>alert('La hora debe estar entre las 10:00 AM y las 6:00 PM.');</script>";
-            echo "<script>window.location.href = 'pacienteAgendarCita.php';</script>";
+            showSweetAlert('error', 'Error', 'LLa hora debe estar entre las 10:00 AM y las 6:00 PM.','pacienteAgendarCita.php'); // mal
             exit;
         }
 
