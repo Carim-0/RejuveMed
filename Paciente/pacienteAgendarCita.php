@@ -81,37 +81,9 @@
                 $result = mysqli_query($con, $query);
 
                 if ($result) {
-                    echo "<script>
-                    function loadSwal2() {
-                        if (typeof Swal === 'undefined') {
-                            setTimeout(loadSwal2, 100);
-                        } else {
-                            Swal.fire({
-                                title: 'Éxito',
-                                text: 'Cita agendada',
-                                icon: 'success'
-                            }).then(() => {
-                            window.location.href = 'verCitas_Paciente.php';
-                        });
-                        }
-                    }
-                    loadSwal2();
-                </script>";
+                    showSweetAlert('success', '¡Éxito!', 'Cita agendada correctamente', 'verCitas_Paciente.php');
                 } else {
-                    echo "<script>
-                    function loadSwal3() {
-                        if (typeof Swal === 'undefined') {
-                            setTimeout(loadSwal3, 100);
-                        } else {
-                            Swal.fire({
-                                icon: 'error',
-                                title: 'Oops',
-                                text: 'Ourrió un error al agendar la cita',
-                                });
-                        }
-                    }
-                    loadSwal3();
-                </script>";
+                    showSweetAlert('error', 'Error', 'Ocurrió un error al agendar la cita');
                 }
             }
         } else {
