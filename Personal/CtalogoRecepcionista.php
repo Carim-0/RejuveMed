@@ -7,7 +7,7 @@
     $user_data = check_login($con);
 
     // Fetch data from the "Tratamientos" table
-    $query = "SELECT IDtratamiento, nombre, imagenURL FROM Tratamientos";
+    $query = "SELECT IDtratamiento, nombre, imagenURL  ,duracion FROM Tratamientos";
     $result = mysqli_query($con, $query);
 
     if (!$result) {
