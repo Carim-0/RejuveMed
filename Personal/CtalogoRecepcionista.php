@@ -7,7 +7,7 @@
     $user_data = check_login($con);
 
     // Fetch data from the "Tratamientos" table
-    $query = "SELECT IDtratamiento, nombre, imagenURL  ,duracion FROM Tratamientos";
+    $query = "SELECT IDtratamiento, nombre, imagenURL FROM Tratamientos";
     $result = mysqli_query($con, $query);
 
     if (!$result) {
@@ -336,18 +336,16 @@
     <!-- Tratamientos con imágenes -->
     <div class="treatments">
         <?php
-           while ($row = mysqli_fetch_assoc($result)) {
-    echo "<div class='treatment'>";
-    echo "<h3>" . htmlspecialchars($row['nombre']) . "</h3>";
-    echo "<img src='" . htmlspecialchars($row['imagenURL']) . "' alt='" . htmlspecialchars($row['nombre']) . "'>";
-    echo "<form action='detalleTratamiento.php' method='GET'>";
-    echo "<input type='hidden' name='IDtratamiento' value='" . htmlspecialchars($row['IDtratamiento']) . "'>";
-    echo "<button type='submit'><i class='fas fa-eye'></i> Ver tratamiento (" . htmlspecialchars($row['duracion']) . " min)</button>";
-    echo "</form>";
-    echo "</div>";
-}
-
-            
+            while ($row = mysqli_fetch_assoc($result)) {
+                echo "<div class='treatment'>";
+                echo "<h3>" . htmlspecialchars($row['nombre']) . "</h3>";
+                echo "<img src='" . htmlspecialchars($row['imagenURL']) . "' alt='" . htmlspecialchars($row['nombre']) . "'>";
+                echo "<form action='detalleTratamiento.php' method='GET'>";
+                echo "<input type='hidden' name='IDtratamiento' value='" . htmlspecialchars($row['IDtratamiento']) . "'>";
+                echo "<button type='submit'><i class='fas fa-eye'></i> Ver tratamiento</button>";
+                echo "</form>";
+                echo "</div>";
+            }
         ?>
     </div>
     <!-- Overlay de citas de hoy -->
