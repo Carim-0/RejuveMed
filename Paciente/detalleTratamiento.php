@@ -5,8 +5,8 @@
     if (isset($_GET['IDtratamiento']) && is_numeric($_GET['IDtratamiento'])) {
         $id = $_GET['IDtratamiento'];
 
-        // Fetch the treatment details from the database
-        $query = "SELECT nombre, detalles, precio, imagenURL FROM Tratamientos WHERE IDtratamiento = $id LIMIT 1";
+        // Fetch the treatment details from the database (incluyendo duracion)
+        $query = "SELECT nombre, detalles, precio, imagenURL, duracion FROM Tratamientos WHERE IDtratamiento = $id LIMIT 1";
         $result = mysqli_query($con, $query);
 
         if ($result && mysqli_num_rows($result) > 0) {
@@ -73,6 +73,7 @@
         <img src="<?php echo htmlspecialchars($treatment['imagenURL']); ?>" alt="<?php echo htmlspecialchars($treatment['nombre']); ?>">
         <p><strong>Detalles:</strong> <?php echo htmlspecialchars($treatment['detalles']); ?></p>
         <p><strong>Precio:</strong> $<?php echo htmlspecialchars($treatment['precio']); ?></p>
+        <p><strong>Duración:</strong> <?php echo htmlspecialchars($treatment['duracion']); ?> minutos</p>
         <a href="catalogoTratamientos.php" class="btn">Regresar</a>
     </div>
 </body>
