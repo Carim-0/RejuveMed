@@ -31,6 +31,7 @@
     if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['update_profile'])) {
         $new_password = $_POST['password'];
         $new_telefono = $_POST['telefono'];
+        $new_detalles = $_POST['detalles'];
 
         // Validate inputs
         if (empty($new_password) || empty($new_telefono)) {
@@ -38,14 +39,14 @@
         } else {
             // Determine the table to update based on user type
             if ($user_type === 'Paciente') {
-                $query_update = "UPDATE Pacientes SET password = ?, telefono = ? WHERE IDpaciente = ?";
+                $query_update = "UPDATE Pacientes SET password = ?, telefono = ?, detalles = ? WHERE IDpaciente = ?";
             } elseif ($user_type === 'Personal') {
-                $query_update = "UPDATE Personal SET password = ?, telefono = ? WHERE IDpersonal = ?";
+                $query_update = "UPDATE Personal SET password = ?, telefono = ?, detalles = ? WHERE IDpersonal = ?";
             }
 
             // Execute the update query
             $stmt = $con->prepare($query_update);
-            $stmt->bind_param("ssi", $new_password, $new_telefono, $user_id);
+            $stmt->bind_param("sssi", $new_password, $new_telefono, $new_detalles, $user_id);
 
             if ($stmt->execute()) {
                 echo "<script>alert('Perfil actualizado exitosamente.'); window.location.href='verPerfil.php';</script>";
@@ -132,13 +133,23 @@
             display: grid;
             grid-template-columns: 1fr 1fr;
             gap: 20px;
-            margin-bottom: 30px;
         }
-        
+
+        .left-column {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .right-column {
+            display: flex;
+            flex-direction: column;
+        }
+
         .detail-item {
             margin-bottom: 15px;
         }
-        
+
         .detail-label {
             display: block;
             color: var(--secondary-color);
@@ -146,16 +157,18 @@
             margin-bottom: 5px;
             font-weight: 500;
         }
-        
+
         .detail-value {
-            display: flex;
-            align-items: center;
-            padding: 10px 15px;
-            background-color: var(--light-color);
-            border-radius: var(--border-radius);
-            min-height: 40px;
+            width: 100%;
+            padding: 10px;
             font-size: 15px;
-            color: var(--dark-color);
+            border: 1px solid var(--color-borde);
+            border-radius: var(--border-radius);
+            background-color: var(--light-color);
+        }
+
+        textarea.detail-value {
+            resize: none;
         }
         
         .password-container {
@@ -241,10 +254,8 @@
                 <?php echo $user_type === 'Paciente' ? 'Paciente' : 'Personal'; ?>
             </span>
         </div>
-        
-        <form method="POST" action="">
-            <div class="profile-details">
-                <div class="detail-item">
+
+        <div class="detail-item">
                     <span class="detail-label">Nombre</span>
                     <div class="detail-value">
                         <?php echo htmlspecialchars($user_data['nombre']); ?>
@@ -257,23 +268,35 @@
                         <?php echo htmlspecialchars($user_data['edad']); ?>
                     </div>
                 </div>
-                
-                <div class="detail-item password-container">
-                    <span class="detail-label">Contraseña</span>
-                    <input type="password" class="detail-value" id="password" name="password" 
-                           value="<?php echo htmlspecialchars($user_data['password']); ?>" 
-                           pattern="^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{8,}$" 
-                           title="La contraseña debe de contener por lo menos 8 caracteres, 1 número y 1 letra" 
-                           required>
+
+        <form method="POST" action="">
+            <div class="profile-details">
+                <div class="left-column">
+                    <div class="detail-item password-container">
+                        <span class="detail-label">Contraseña</span>
+                        <input type="password" class="detail-value" id="password" name="password" 
+                               value="<?php echo htmlspecialchars($user_data['password']); ?>" 
+                               pattern="^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{8,}$" 
+                               title="La contraseña debe de contener por lo menos 8 caracteres, 1 número y 1 letra" 
+                               required>
+                    </div>
+
+                    <div class="detail-item">
+                        <span class="detail-label">Teléfono</span>
+                        <input type="text" class="detail-value" id="telefono" name="telefono" 
+                               value="<?php echo htmlspecialchars($user_data['telefono']); ?>" 
+                               pattern="^\d{10}$" 
+                               title="El teléfono debe contener exactamente 10 dígitos" 
+                               required>
+                    </div>
                 </div>
 
-                <div class="detail-item">
-                    <span class="detail-label">Teléfono</span>
-                    <input type="text" class="detail-value" id="telefono" name="telefono" 
-                           value="<?php echo htmlspecialchars($user_data['telefono']); ?>" 
-                           pattern="^\d{10}$" 
-                           title="El teléfono debe contener exactamente 10 dígitos" 
-                           required>
+                <div class="right-column">
+                    <div class="detail-item">
+                        <span class="detail-label">Detalles</span>
+                        <textarea class="detail-value" id="detalles" name="detalles" rows="8" 
+                                  placeholder="Ingrese detalles adicionales"><?php echo htmlspecialchars($user_data['detalles']); ?></textarea>
+                    </div>
                 </div>
             </div>
             
