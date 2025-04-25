@@ -71,11 +71,12 @@ if (isset($_GET['paciente_id'])) {
     $stmt->close();
 
     // Obtener citas del paciente
-    $query_citas = "SELECT c.IDcita, c.fecha, t.nombre as tratamiento, c.estado, t.duracion 
-                    FROM Citas c
-                    JOIN Tratamientos t ON c.IDtratamiento = t.IDtratamiento
-                    WHERE c.IDpaciente = ?
-                    ORDER BY c.fecha ASC";
+    $query_citas = "SELECT c.IDcita, c.fecha, t.nombre as tratamiento, c.estado, 
+                TIMESTAMPDIFF(HOUR, c.fecha, c.fechaFin) as duracion_real 
+                FROM Citas c
+                JOIN Tratamientos t ON c.IDtratamiento = t.IDtratamiento
+                WHERE c.IDpaciente = ?
+                ORDER BY c.fecha ASC";
     $stmt = $con->prepare($query_citas);
     $stmt->bind_param("i", $paciente_id);
     $stmt->execute();
@@ -88,81 +89,48 @@ if ($_SERVER['REQUEST_METHOD'] == "POST" && isset($_POST['agendar_cita'])) {
     $fecha = $_POST['fecha'];
     $hora = $_POST['hora'];
     $IDtratamiento = $_POST['IDtratamiento'];
+    $duracion = (int)$_POST['duracion']; // Use the selected duration
     $paciente_id = $_POST['paciente_id'];
     $estado = 'Pendiente';
 
-    // Fetch the treatment duration
-    $tratamiento_query = "SELECT duracion FROM Tratamientos WHERE IDtratamiento = ?";
-    $stmt = $con->prepare($tratamiento_query);
-    $stmt->bind_param("i", $IDtratamiento);
+    // Combine date and time into a single datetime value
+    $datetime = $fecha . ' ' . $hora;
+
+    // Calculate fechaFin by adding the selected duration to the start time
+    $startDateTime = new DateTime($datetime);
+    $startDateTime->modify("+$duracion hours");
+    $fechaFin = $startDateTime->format('Y-m-d H:i:s');
+
+    // Validate that the hour is within the allowed range
+    if ($hora < "10:00:00" || $hora > "18:00:00" || $startDateTime->format('H:i') > "18:00") {
+        echo "<script>alert('La hora debe estar entre las 10:00 AM y las 6:00 PM.');</script>";
+        echo "<script>window.location.href = 'verCitasPacientes_Doctora.php';</script>";
+        exit;
+    }
+
+    // Check for overlapping appointments
+    $query = "SELECT * FROM Citas WHERE (fecha <= ? AND fechaFin >= ?)";
+    $stmt = $con->prepare($query);
+    $stmt->bind_param("ss", $fechaFin, $datetime);
     $stmt->execute();
-    $tratamiento_result = $stmt->get_result();
-    $tratamiento = $tratamiento_result->fetch_assoc();
+    $result = $stmt->get_result();
     $stmt->close();
 
-    if (!$tratamiento) {
-        $error_message = "El tratamiento seleccionado no es válido.";
+    if ($result->num_rows > 0) {
+        showSweetAlert('warning', 'Horario ocupado', 'Ya existe una cita en ese horario. Por favor, elija otro.', 'verCitasPacientes_Doctora.php');
     } else {
-        $duracion = (int)$tratamiento['duracion'];
+        // Insert the new appointment into the Citas table
+        $query = "INSERT INTO Citas (fecha, fechaFin, IDpaciente, IDtratamiento, estado) VALUES (?, ?, ?, ?, ?)";
+        $stmt = $con->prepare($query);
+        $stmt->bind_param("sssis", $datetime, $fechaFin, $paciente_id, $IDtratamiento, $estado);
 
-
-
-
-            // Combine date and time into a single datetime value
-            $datetime = $fecha . ' ' . $hora;
-
-           // Get the current date
-        $currentDate = date('Y-m-d');
-
-        // Validate that the selected date is not in the past and not the same as today
-        if ($fecha <= $currentDate) {
-            echo "<script>alert('La fecha tiene que ser después de mañana como mínimo.');</script>";
-            echo "<script>window.location.href = 'verCitasPacientes_Doctora.php';</script>";
+        if ($stmt->execute()) {
+            header("Location: verCitasPacientes_Doctora.php?paciente_id=$paciente_id&success=1");
             exit;
-            }
-
-            // Calculate fechaFin by adding the duration to the start time
-            $startDateTime = new DateTime($datetime);
-            $startDateTime->modify("+$duracion hours");
-            $fechaFin = $startDateTime->format('Y-m-d H:i:s');
-
-            // Validate that the hour is within the allowed range
-            if ($hora < "10:00:00" || $hora > "18:00:00" || $startDateTime->format('H:i') > "18:00") {
-              echo "<script>alert('La hora debe estar entre las 10:00 AM y las 6:00 PM.');</script>";
-            echo "<script>window.location.href = 'verCitasPacientes_Doctora.php';</script>";
-            exit;
-            } 
-
-            
-            // Check for overlapping appointments
-            $query = "SELECT * FROM Citas WHERE 
-                      (fecha <= ? AND fechaFin >= ?)";
-            $stmt = $con->prepare($query);
-            $stmt->bind_param("ss", $fechaFin, $datetime); // Removed $paciente_id
-            $stmt->execute();
-            $result = $stmt->get_result();
-            $stmt->close();
-
-            if ($result->num_rows > 0) {
-              showSweetAlert('warning', 'Horario ocupado', 'Ya existe una cita en ese horario. Por favor, elija otro.', 'verCitasPacientes_Doctora.php');
-            } else {
-                // Insert the new appointment into the Citas table
-                $query = "INSERT INTO Citas (fecha, fechaFin, IDpaciente, IDtratamiento, estado) VALUES (?, ?, ?, ?, ?)";
-                $stmt = $con->prepare($query);
-                $estado = 'Pendiente'; // Set the default value for estado
-                $stmt->bind_param("sssis", $datetime, $fechaFin, $paciente_id, $IDtratamiento, $estado);
-
-                if ($stmt->execute()) {
-                    // Redirect to refresh the page and display the updated list of citas
-                    header("Location: verCitasPacientes_Doctora.php?paciente_id=$paciente_id&success=1");
-                    exit;
-                } else {
-                    $error_message = "Error al agendar la cita: " . $con->error;
-                }
-                $stmt->close();
-                
-            }
-        
+        } else {
+            $error_message = "Error al agendar la cita: " . $con->error;
+        }
+        $stmt->close();
     }
 }
 ?>
@@ -596,9 +564,9 @@ if ($_SERVER['REQUEST_METHOD'] == "POST" && isset($_POST['agendar_cita'])) {
 
         <h3 class="section-title"><i class="fas fa-calendar-check"></i> Citas Agendadas</h3>
         <ul class="appointments-list">
-          <?php if (!empty($citas)): ?>
-            <?php foreach ($citas as $cita): ?>
-              <li class="appointment-item">
+    <?php if (!empty($citas)): ?>
+        <?php foreach ($citas as $cita): ?>
+            <li class="appointment-item">
                 <div class="appointment-field">Fecha y Hora</div>
                 <div class="appointment-value"><?= htmlspecialchars($cita['fecha']) ?></div>
                 
@@ -609,22 +577,22 @@ if ($_SERVER['REQUEST_METHOD'] == "POST" && isset($_POST['agendar_cita'])) {
                 <div class="appointment-value"><?= htmlspecialchars($cita['estado']) ?></div>
                 
                 <div class="appointment-field">Duración</div>
-                <div class="appointment-value"><?= htmlspecialchars($cita['duracion']) ?> horas</div>
+                <div class="appointment-value"><?= htmlspecialchars($cita['duracion_real']) ?> hora<?= $cita['duracion_real'] > 1 ? 's' : '' ?></div>
                 
                 <div class="appointment-actions">
-                  <a href="EditarCita.php?id=<?= $cita['IDcita'] ?>" class="edit-link">
-                    <i class="fas fa-edit"></i> Editar Cita
-                  </a>
+                    <a href="EditarCita.php?id=<?= $cita['IDcita'] ?>" class="edit-link">
+                        <i class="fas fa-edit"></i> Editar Cita
+                    </a>
                 </div>
-              </li>
-            <?php endforeach; ?>
-          <?php else: ?>
-            <div class="empty-state">
-              <i class="far fa-calendar-times"></i>
-              <p>No hay citas agendadas</p>
-            </div>
-          <?php endif; ?>
-        </ul>
+            </li>
+        <?php endforeach; ?>
+    <?php else: ?>
+        <div class="empty-state">
+            <i class="far fa-calendar-times"></i>
+            <p>No hay citas agendadas</p>
+        </div>
+    <?php endif; ?>
+</ul>
 
         <!-- Formulario de Nueva Cita -->
         <h3 class="section-title"><i class="fas fa-plus-circle"></i> Nueva Cita</h3>
@@ -661,7 +629,9 @@ if ($_SERVER['REQUEST_METHOD'] == "POST" && isset($_POST['agendar_cita'])) {
           <div class="form-grid">
             <div class="form-group">
               <label for="duracion">Duración</label>
-              <input type="text" id="duracion" name="duracion" readonly>
+              <select id="duracion" name="duracion" required>
+                <option value="">Seleccione la duración</option>
+              </select>
             </div>
             <div class="form-group">
               <label for="horaFin">Hora de Fin</label>
@@ -699,25 +669,41 @@ if ($_SERVER['REQUEST_METHOD'] == "POST" && isset($_POST['agendar_cita'])) {
   <script>
     document.addEventListener("DOMContentLoaded", function () {
         const tratamientoSelect = document.getElementById("IDtratamiento");
+        const duracionSelect = document.getElementById("duracion");
         const horaInput = document.getElementById("hora");
-        const duracionInput = document.getElementById("duracion");
         const horaFinInput = document.getElementById("horaFin");
 
-        // Update duration and horaFin when the treatment or hora changes
-        function updateFields() {
+        // Populate the duracion combo box based on the selected treatment
+        function updateDuracionOptions() {
             const selectedOption = tratamientoSelect.options[tratamientoSelect.selectedIndex];
-            const duracion = selectedOption.getAttribute("data-duracion");
+            const maxDuracion = selectedOption.getAttribute("data-duracion");
+
+            // Clear existing options
+            duracionSelect.innerHTML = '<option value="">Seleccione la duración</option>';
+
+            // Populate the combo box with values from 1 to maxDuracion
+            if (maxDuracion) {
+                for (let i = 1; i <= parseInt(maxDuracion, 10); i++) {
+                    const option = document.createElement("option");
+                    option.value = i;
+                    option.textContent = `${i} hora${i > 1 ? 's' : ''}`;
+                    duracionSelect.appendChild(option);
+                }
+            }
+
+            // Clear hora de fin when treatment changes
+            horaFinInput.value = "";
+        }
+
+        // Calculate and update hora de fin based on selected duration
+        function updateHoraFin() {
+            const selectedDuracion = parseInt(duracionSelect.value, 10);
             const horaInicio = horaInput.value;
 
-            // Update duracion field
-            duracionInput.value = duracion ? `${duracion} horas` : "";
-
-            // Calculate and update horaFin field
-            if (duracion && horaInicio) {
+            if (selectedDuracion && horaInicio) {
                 const [hours, minutes] = horaInicio.split(":").map(Number);
-                const duracionHoras = parseInt(duracion, 10);
                 const horaFin = new Date();
-                horaFin.setHours(hours + duracionHoras, minutes);
+                horaFin.setHours(hours + selectedDuracion, minutes);
                 horaFinInput.value = `${horaFin.getHours().toString().padStart(2, '0')}:${horaFin.getMinutes().toString().padStart(2, '0')}`;
             } else {
                 horaFinInput.value = "";
@@ -725,27 +711,11 @@ if ($_SERVER['REQUEST_METHOD'] == "POST" && isset($_POST['agendar_cita'])) {
         }
 
         // Attach event listeners
-        if (tratamientoSelect) {
-            tratamientoSelect.addEventListener("change", updateFields);
-        }
-        if (horaInput) {
-            horaInput.addEventListener("input", updateFields);
-        }
-
-        // Form validation
-        document.getElementById('citaForm')?.addEventListener('submit', function(e) {
-          const fecha = document.getElementById('fecha').value;
-          const hora = document.getElementById('hora').value;
-          const tratamiento = document.getElementById('IDtratamiento').value;
-          
-          if (!fecha || !hora || !tratamiento) {
-            e.preventDefault();
-            alert('Por favor complete todos los campos requeridos');
-            return;
-          }
-        });
+        tratamientoSelect.addEventListener("change", updateDuracionOptions);
+        duracionSelect.addEventListener("change", updateHoraFin);
+        horaInput.addEventListener("input", updateHoraFin);
     });
-  </script>
+</script>
 </body>
 </html>
 <?php $con->close(); ?>
