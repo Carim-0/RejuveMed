@@ -324,7 +324,9 @@
             <div class="form-row">
                 <div class="form-group">
                     <label for="duracion"><i class="fas fa-hourglass-half"></i> Duración</label>
-                    <input type="text" id="duracion" name="duracion" readonly>
+                    <select id="duracion" name="duracion" required>
+                        <option value="">Seleccione la duración</option>
+                    </select>
                 </div>
                 
                 <div class="form-group">
@@ -353,47 +355,65 @@
 
 
     <script>
-        console.log('Hola 1');
         document.addEventListener("DOMContentLoaded", function () {
             initializeEventListeners();
         });
 
-        
-                
         function initializeEventListeners() {
             const tratamientoSelect = document.getElementById("IDtratamiento");
             const horaInput = document.getElementById("hora");
             const fechaInput = document.getElementById("fecha");
 
             tratamientoSelect.addEventListener("change", updateDuration);
-            horaInput.addEventListener("input", updateDuration);
-            fechaInput.addEventListener("change", updateDuration);
+            horaInput.addEventListener("input", updateHoraFin);
+            fechaInput.addEventListener("change", updateHoraFin);
         }
 
         function updateDuration() {
             const tratamientoSelect = document.getElementById("IDtratamiento");
-            const duracionInput = document.getElementById("duracion");
+            const duracionSelect = document.getElementById("duracion");
             const fechaFinInput = document.getElementById("fechaFin");
 
             const selectedOption = tratamientoSelect.options[tratamientoSelect.selectedIndex];
-            const duracion = selectedOption.getAttribute("data-duracion");
+            const maxDuracion = selectedOption.getAttribute("data-duracion");
 
-            duracionInput.value = duracion ? `${duracion} horas` : "";
+            // Clear existing options in the duracion combo box
+            duracionSelect.innerHTML = '<option value="">Seleccione la duración</option>';
 
-            const horaInicio = document.getElementById("hora").value;
-            const fechaInicio = document.getElementById("fecha").value;
+            // Populate the combo box with values from 1 to the maxDuracion value
+            if (maxDuracion) {
+                for (let i = 1; i <= parseInt(maxDuracion, 10); i++) {
+                    const option = document.createElement("option");
+                    option.value = i;
+                    option.textContent = `${i} hora${i > 1 ? 's' : ''}`;
+                    duracionSelect.appendChild(option);
+                }
+            }
 
-            if (duracion && horaInicio && fechaInicio) {
+            // Update the hora de fin when a duration is selected
+            duracionSelect.addEventListener("change", updateHoraFin);
+        }
+
+        function updateHoraFin() {
+            const duracionSelect = document.getElementById("duracion");
+            const fechaFinInput = document.getElementById("fechaFin");
+            const horaInicioInput = document.getElementById("hora");
+            const fechaInicioInput = document.getElementById("fecha");
+
+            const selectedDuracion = parseInt(duracionSelect.value, 10);
+            const horaInicio = horaInicioInput.value;
+            const fechaInicio = fechaInicioInput.value;
+
+            if (selectedDuracion && horaInicio && fechaInicio) {
                 const [hours, minutes] = horaInicio.split(":").map(Number);
-                const duracionHoras = parseInt(duracion, 10);
                 const fechaFin = new Date(`${fechaInicio}T${horaInicio}`);
-                fechaFin.setHours(fechaFin.getHours() + duracionHoras);
+                fechaFin.setHours(fechaFin.getHours() + selectedDuracion);
+
                 fechaFinInput.value = `${fechaFin.getHours().toString().padStart(2, '0')}:${fechaFin.getMinutes().toString().padStart(2, '0')}`;
             } else {
                 fechaFinInput.value = "";
             }
         }
-
         
 function validateForm() {
     // Validación de fecha en el cliente (adicional al servidor)
