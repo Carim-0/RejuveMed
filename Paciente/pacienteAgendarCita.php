@@ -1,84 +1,174 @@
 <?php
-    session_start();
+session_start();
 
-    include("../connection.php");
+date_default_timezone_set('America/Mexico_City');
 
-    // Asegurar que el usuario inició sesión
-    if (!isset($_SESSION['user_id']) || $_SESSION['user_type'] !== 'Paciente') {
-        die("Acceso denegado. Por favor, inicie sesión como paciente.");
+include("../connection.php");
+
+// Asegurar que el usuario inició sesión
+if (!isset($_SESSION['user_id']) || $_SESSION['user_type'] !== 'Paciente') {
+    die("Acceso denegado. Por favor, inicie sesión como paciente.");
+}
+
+// Función para mostrar alertas
+function showSweetAlert($icon, $title, $text, $redirect = null, $preserveFormData = false) {
+    echo "<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        Swal.fire({
+            icon: '$icon',
+            title: '$title',
+            text: '$text',
+            confirmButtonColor: '#3085d6'
+        })";
+    if ($redirect) {
+        echo ".then((result) => { if (result.isConfirmed) { window.location.href = '$redirect'; } })";
+    } elseif ($preserveFormData) {
+        // No redirigir, mantener los datos del formulario
+        echo ".then((result) => { if (result.isConfirmed) { 
+            // Restaurar valores seleccionados
+            document.getElementById('fecha').value = localStorage.getItem('tempFecha');
+            document.getElementById('hora').value = localStorage.getItem('tempHora');
+            document.getElementById('IDtratamiento').value = localStorage.getItem('tempTratamiento');
+            updateDuration();
+        } })";
     }
+    echo ";});
+    </script>";
+}
 
-    function showSweetAlert($icon, $title, $text, $redirect = null) {
-        echo "<script>
-        document.addEventListener('DOMContentLoaded', function() {
-            Swal.fire({
-                icon: '$icon',
-                title: '$title',
-                text: '$text',
-                confirmButtonColor: '#3085d6'
-            })";
-        if ($redirect) {
-            echo ".then((result) => { if (result.isConfirmed) { window.location.href = '$redirect'; } })";
-        }
-        echo ";});
-        </script>";
-    }
+$IDpaciente = $_SESSION['user_id'];
 
-    $IDpaciente = $_SESSION['user_id']; // Obtener el ID actual del usuario
+// Obtener tratamientos disponibles
+$query = "SELECT IDtratamiento, nombre, duracion FROM Tratamientos";
+$result = mysqli_query($con, $query);
 
-    // Fetch available treatments
-    $query = "SELECT IDtratamiento, nombre, duracion FROM Tratamientos";
-    $result = mysqli_query($con, $query);
-
-    if ($_SERVER['REQUEST_METHOD'] == "POST") {
-        $fecha = $_POST['fecha'];
-        $hora = $_POST['hora'];
-        $IDtratamiento = $_POST['IDtratamiento'];
-        $duracion = (int)$_POST['duracion']; // Ensure duracion is cast to an integer
-
-        // Obtener la fecha actual minima
-        $minDate = date('Y-m-d', strtotime('+1 days'));
-
-        $hora = $hora . ':00'; 
-        $horaMin = '10:00:00';
-        $horaMax = '18:00:00';
+// Obtener horarios ocupados si se solicita via AJAX
+if (isset($_GET['get_occupied_hours'])) {
+    $fecha = $_GET['fecha'];
+    $occupiedHours = [];
     
-        if ($hora < $horaMin || $hora > $horaMax) {
-            showSweetAlert('error', 'Error', 'La hora debe estar entre las 10:00 AM y 6:00 PM.', 'pacienteAgendarCita.php');
+    // Ajustar la fecha a UTC para consulta en BD
+    $fechaLocal = new DateTime($fecha, new DateTimeZone('America/Mexico_City'));
+    $fechaUTC = clone $fechaLocal;
+    $fechaUTC->setTimezone(new DateTimeZone('UTC'));
+    
+    $query = "SELECT TIME(CONVERT_TZ(fecha, '+00:00', '-06:00')) as hora, 
+                     TIME(CONVERT_TZ(fechaFin, '+00:00', '-06:00')) as horaFin 
+              FROM Citas 
+              WHERE DATE(CONVERT_TZ(fecha, '+00:00', '-06:00')) = '" . $fechaLocal->format('Y-m-d') . "'";
+    
+    $result = mysqli_query($con, $query);
+    
+    while ($row = mysqli_fetch_assoc($result)) {
+        $occupiedHours[] = [
+            'start' => $row['hora'],
+            'end' => $row['horaFin']
+        ];
+    }
+    
+    header('Content-Type: application/json');
+    echo json_encode($occupiedHours);
+    exit();
+}
+
+// Procesar el formulario de cita
+if ($_SERVER['REQUEST_METHOD'] == "POST") {
+    $fecha = $_POST['fecha'];
+    $hora = $_POST['hora'];
+    $IDtratamiento = $_POST['IDtratamiento'];
+    
+    // Guardar temporalmente los datos del formulario
+    echo "<script>
+        localStorage.setItem('tempFecha', '" . $fecha . "');
+        localStorage.setItem('tempHora', '" . $hora . "');
+        localStorage.setItem('tempTratamiento', '" . $IDtratamiento . "');
+    </script>";
+    
+    // Obtener la duración del tratamiento seleccionado
+    $query = "SELECT duracion FROM Tratamientos WHERE IDtratamiento = '$IDtratamiento'";
+    $result = mysqli_query($con, $query);
+    $row = mysqli_fetch_assoc($result);
+    $duracion = $row['duracion'];
+
+    $horaCompleta = $hora . ':00'; 
+    $horaMin = '10:00:00';
+    $horaMax = '18:00:00';
+
+    // Validar hora dentro del horario laboral
+    if ($horaCompleta < $horaMin || $horaCompleta > $horaMax) {
+        showSweetAlert('error', 'Error', 'La hora debe estar entre las 10:00 AM y 6:00 PM.', 'pacienteAgendarCita.php', true);
+        exit();
+    }
+
+    if (!empty($fecha) && !empty($hora) && !empty($IDtratamiento)) {
+        // Crear objetos DateTime con zona horaria explícita
+        $timezone = new DateTimeZone('America/Mexico_City');
+        $now = new DateTime('now', $timezone);
+        $now->setTime(0, 0, 0); // Considerar el día completo
+        
+        $datetimeLocal = new DateTime($fecha . ' ' . $horaCompleta, $timezone);
+        
+        // Verificar anticipación mínima de 1 día completo
+        $diferencia = $now->diff($datetimeLocal);
+        if ($diferencia->days < 1 || $datetimeLocal <= $now) {
+            $minAvailableDate = clone $now;
+            $minAvailableDate->modify('+1 day');
+            showSweetAlert('error', 'Error', 'Debes agendar con al menos 1 día completo de anticipación. La primera fecha disponible es ' . $minAvailableDate->format('d/m/Y'), 'pacienteAgendarCita.php', true);
+            exit();
         }
+        
+        // Calcular fecha de fin
+        $datetimeFinLocal = clone $datetimeLocal;
+        $datetimeFinLocal->modify("+$duracion hours");
+        
+        // Validar que no pase de las 18:00 horas (permitir exactamente 18:00)
+        $horaFin = $datetimeFinLocal->format('H:i:s');
+        if ($horaFin > $horaMax) {
+            showSweetAlert('error', 'Error', 'El tratamiento no puede terminar después de las 18:00. Por favor, elija una hora más temprana.', null, true);
+            exit();
+        }
+        
+        // Convertir a UTC para la base de datos
+        $datetimeUTC = clone $datetimeLocal;
+        $datetimeUTC->setTimezone(new DateTimeZone('UTC'));
+        
+        $datetimeFinUTC = clone $datetimeFinLocal;
+        $datetimeFinUTC->setTimezone(new DateTimeZone('UTC'));
+        
+        // Formatear para consulta SQL
+        $fechaBD = $datetimeUTC->format('Y-m-d H:i:s');
+        $fechaFinBD = $datetimeFinUTC->format('Y-m-d H:i:s');
+        
+        // Verificar solapamiento de citas (en zona horaria local)
+        $query = "SELECT * FROM Citas WHERE 
+                 (CONVERT_TZ(fecha, '+00:00', '-06:00') <= '" . $datetimeFinLocal->format('Y-m-d H:i:s') . "' 
+                 AND CONVERT_TZ(fechaFin, '+00:00', '-06:00') >= '" . $datetimeLocal->format('Y-m-d H:i:s') . "')";
+        $result = mysqli_query($con, $query);
 
-        if (!empty($fecha) && !empty($hora) && !empty($IDtratamiento) && !empty($duracion)) {
-            
-            // Combine date and time into a single datetime value
-            $datetime = $fecha . ' ' . $hora;
-
-            // Calculate fechaFin by adding the duration to the start time
-            $startDateTime = new DateTime($datetime);
-            $startDateTime->modify("+$duracion hours"); // Add the duration as hours
-            $fechaFin = $startDateTime->format('Y-m-d H:i:s');
-
-            // Check for overlapping appointments
-            $query = "SELECT * FROM Citas WHERE 
-                      (fecha <= '$fechaFin' AND fechaFin >= '$datetime')";
+        if (mysqli_num_rows($result) > 0) {
+            showSweetAlert('warning', 'Horario ocupado', 'Ya existe una cita en ese horario. Por favor, elija otro.', null, true);
+        } else {
+            $query = "INSERT INTO Citas (IDpaciente, IDtratamiento, fecha, fechaFin) 
+                     VALUES ('$IDpaciente', '$IDtratamiento', '$fechaBD', '$fechaFinBD')";
             $result = mysqli_query($con, $query);
 
-            if (mysqli_num_rows($result) > 0) {
-                showSweetAlert('warning', 'Horario ocupado', 'Ya existe una cita en ese horario. Por favor, elija otro.', 'pacienteAgendarCita.php');
+            if ($result) {
+                // Limpiar datos temporales
+                echo "<script>
+                    localStorage.removeItem('tempFecha');
+                    localStorage.removeItem('tempHora');
+                    localStorage.removeItem('tempTratamiento');
+                </script>";
+                showSweetAlert('success', '¡Éxito!', 'Cita agendada correctamente', 'verCitas_Paciente.php');
             } else {
-                // Insert the new appointment into the Citas table
-                $query = "INSERT INTO Citas (IDpaciente, IDtratamiento, fecha, fechaFin) VALUES ('$IDpaciente', '$IDtratamiento', '$datetime', '$fechaFin')";
-                $result = mysqli_query($con, $query);
-
-                if ($result) {
-                    showSweetAlert('success', '¡Éxito!', 'Cita agendada correctamente', 'verCitas_Paciente.php');
-                } else {
-                    showSweetAlert('error', 'Error', 'Ocurrió un error al agendar la cita');
-                }
+                error_log("Error al agendar cita: " . mysqli_error($con));
+                showSweetAlert('error', 'Error', 'Ocurrió un error al agendar la cita: ' . mysqli_error($con), null, true);
             }
-        } else {
-            echo "<script>alert('Por favor, complete todos los campos.');</script>";
         }
+    } else {
+        echo "<script>alert('Por favor, complete todos los campos.');</script>";
     }
+}
 ?>
 
 <!DOCTYPE html>
@@ -92,7 +182,7 @@
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     
     <style>
-        :root {
+         :root {
             --primary-color: #4a6fa5;
             --secondary-color: #6b8cae;
             --accent-color: #4a6fa5;
@@ -117,13 +207,6 @@
             align-items: center;
             min-height: 100vh;
             padding: 20px;
-            font-family: "Open Sans", 
-            -apple-system, 
-            BlinkMacSystemFont, 
-            "Segoe UI", Roboto, 
-            Oxygen-Sans, Ubuntu, 
-            Cantarell, "Helvetica Neue", 
-            Helvetica, Arial, sans-serif; 
         }
         
         .appointment-container {
@@ -237,6 +320,11 @@
             background-color: rgba(74, 111, 165, 0.1);
         }
         
+        option:disabled {
+            color: #999 !important;
+            background-color: #f5f5f5;
+        }
+        
         @media (max-width: 768px) {
             .form-row {
                 grid-template-columns: 1fr;
@@ -255,35 +343,13 @@
             .btn {
                 width: 100%;
             }
-
-            
-        .action-link {
-            color: var(--color-primario);
-            text-decoration: none;
-            transition: color 0.3s;
-        }
-        
-        .action-link:hover {
-            color: #0d6efd;
-            text-decoration: underline;
-        }
-        
-        .historial-content {
-            padding: 15px;
-            max-height: 400px;
-            overflow-y: auto;
-            white-space: pre-line;
-        }
-        
-        .pagination .page-item.active .page-link {
-            background-color: var(--color-primario);
-            border-color: var(--color-primario);
-        }
-        
-        .pagination .page-link {
-            color: var(--color-primario);
-        }
-        
+            .duration-display {
+            background-color: #f5f5f5;
+            padding: 12px 15px;
+            border-radius: 8px;
+            border: 1px solid #ddd;
+            font-size: 15px;
+            }
         }
     </style>
 </head>
@@ -293,16 +359,28 @@
             <h2><i class="fas fa-calendar-plus"></i> Agendar Nueva Cita</h2>
         </div>
         
-        <form method="POST" class="appointment-form">
+        <form method="POST" class="appointment-form" onsubmit="return validateForm()">
             <div class="form-row">
                 <div class="form-group">
                     <label for="fecha"><i class="far fa-calendar-alt"></i> Fecha*</label>
-                    <input type="date" id="fecha" name="fecha" required min="<?php echo date('Y-m-d', strtotime('+1 days')); ?>" >
+                    <input type="date" id="fecha" name="fecha" required min="<?php 
+                        $minDate = new DateTime('now', new DateTimeZone('America/Mexico_City'));
+                        $minDate->modify('+1 day'); // +1 día completo
+                        echo $minDate->format('Y-m-d'); 
+                    ?>">
                 </div>
                 
                 <div class="form-group">
                     <label for="hora"><i class="far fa-clock"></i> Hora*</label>
-                    <input type="time" id="hora" name="hora" required min="10:00" max="18:00"  step="3600">
+                    <select id="hora" name="hora" required>
+                        <option value="">Seleccione una hora</option>
+                        <?php 
+                        // Generar opciones de hora de 10:00 a 17:00 (última hora disponible para tratamientos de 1 hora)
+                        for ($h = 10; $h <= 17; $h++) {
+                            echo "<option value='".str_pad($h, 2, '0', STR_PAD_LEFT).":00'>".str_pad($h, 2, '0', STR_PAD_LEFT).":00</option>";
+                        }
+                        ?>
+                    </select>
                 </div>
             </div>
             
@@ -311,11 +389,11 @@
                 <select id="IDtratamiento" name="IDtratamiento" required onchange="updateDuration()">
                     <option value="">Seleccione un tratamiento</option>
                     <?php
-                        mysqli_data_seek($result, 0); // Reset pointer to beginning
+                        mysqli_data_seek($result, 0);
                         while ($row = mysqli_fetch_assoc($result)) {
                             echo "<option value='" . htmlspecialchars($row['IDtratamiento']) . "' 
                                   data-duracion='" . htmlspecialchars($row['duracion']) . "'>" . 
-                                  htmlspecialchars($row['nombre']) . "</option>";
+                                  htmlspecialchars($row['nombre']) . " (Duración: " . htmlspecialchars($row['duracion']) . " hora" . ($row['duracion'] > 1 ? 's' : '') . ")</option>";
                         }
                     ?>
                 </select>
@@ -323,10 +401,9 @@
             
             <div class="form-row">
                 <div class="form-group">
-                    <label for="duracion"><i class="fas fa-hourglass-half"></i> Duración</label>
-                    <select id="duracion" name="duracion" required>
-                        <option value="">Seleccione la duración</option>
-                    </select>
+                    <label><i class="fas fa-hourglass-half"></i> Duración</label>
+                    <div class="duration-display" id="duracion-display">Seleccione un tratamiento</div>
+                    <input type="hidden" id="duracion" name="duracion">
                 </div>
                 
                 <div class="form-group">
@@ -339,99 +416,180 @@
                 <a href="catalogoTratamientos.php" class="btn btn-secondary">
                     <i class="fas fa-arrow-left"></i> Regresar
                 </a>
-                <button type="submit" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#detalleModal">
+                <button type="submit" class="btn btn-primary">
                     <i class="fas fa-calendar-check"></i> Agendar Cita
                 </button>
-                
-                
             </div>
-            </div>
-
-            
         </form>
     </div>
-    
-    
-
 
     <script>
-        document.addEventListener("DOMContentLoaded", function () {
-            initializeEventListeners();
+        // Restaurar valores del formulario si existen
+        document.addEventListener("DOMContentLoaded", function() {
+            if (localStorage.getItem('tempFecha')) {
+                document.getElementById('fecha').value = localStorage.getItem('tempFecha');
+                document.getElementById('hora').value = localStorage.getItem('tempHora');
+                document.getElementById('IDtratamiento').value = localStorage.getItem('tempTratamiento');
+                updateDuration();
+                
+                // Volver a cargar horarios ocupados si hay fecha seleccionada
+                if (localStorage.getItem('tempFecha')) {
+                    fetch(`pacienteAgendarCita.php?get_occupied_hours=1&fecha=${localStorage.getItem('tempFecha')}`)
+                        .then(response => response.json())
+                        .then(occupiedHours => updateTimePicker(occupiedHours));
+                }
+            }
         });
 
         function initializeEventListeners() {
             const tratamientoSelect = document.getElementById("IDtratamiento");
-            const horaInput = document.getElementById("hora");
-            const fechaInput = document.getElementById("fecha");
-
             tratamientoSelect.addEventListener("change", updateDuration);
-            horaInput.addEventListener("input", updateHoraFin);
-            fechaInput.addEventListener("change", updateHoraFin);
+            
+            document.getElementById("fecha").addEventListener("change", function() {
+                const fecha = this.value;
+                if (!fecha) return;
+                
+                fetch(`pacienteAgendarCita.php?get_occupied_hours=1&fecha=${fecha}`)
+                    .then(response => response.json())
+                    .then(occupiedHours => updateTimePicker(occupiedHours));
+            });
         }
 
         function updateDuration() {
             const tratamientoSelect = document.getElementById("IDtratamiento");
-            const duracionSelect = document.getElementById("duracion");
-            const fechaFinInput = document.getElementById("fechaFin");
-
+            const duracionDisplay = document.getElementById("duracion-display");
+            const duracionInput = document.getElementById("duracion");
             const selectedOption = tratamientoSelect.options[tratamientoSelect.selectedIndex];
-            const maxDuracion = selectedOption.getAttribute("data-duracion");
+            const duracion = selectedOption.getAttribute("data-duracion");
 
-            // Clear existing options in the duracion combo box
-            duracionSelect.innerHTML = '<option value="">Seleccione la duración</option>';
-
-            // Populate the combo box with values from 1 to the maxDuracion value
-            if (maxDuracion) {
-                for (let i = 1; i <= parseInt(maxDuracion, 10); i++) {
-                    const option = document.createElement("option");
-                    option.value = i;
-                    option.textContent = `${i} hora${i > 1 ? 's' : ''}`;
-                    duracionSelect.appendChild(option);
-                }
+            if (duracion) {
+                duracionDisplay.textContent = `${duracion} hora${duracion > 1 ? 's' : ''}`;
+                duracionInput.value = duracion;
+                updateHoraFin();
+            } else {
+                duracionDisplay.textContent = "Seleccione un tratamiento";
+                duracionInput.value = "";
             }
-
-            // Update the hora de fin when a duration is selected
-            duracionSelect.addEventListener("change", updateHoraFin);
         }
 
         function updateHoraFin() {
-            const duracionSelect = document.getElementById("duracion");
+            const duracionInput = document.getElementById("duracion");
             const fechaFinInput = document.getElementById("fechaFin");
-            const horaInicioInput = document.getElementById("hora");
+            const horaInicioSelect = document.getElementById("hora");
             const fechaInicioInput = document.getElementById("fecha");
 
-            const selectedDuracion = parseInt(duracionSelect.value, 10);
-            const horaInicio = horaInicioInput.value;
+            const duracion = parseInt(duracionInput.value, 10);
+            const horaInicio = horaInicioSelect.value;
             const fechaInicio = fechaInicioInput.value;
 
-            if (selectedDuracion && horaInicio && fechaInicio) {
+            if (duracion && horaInicio && fechaInicio) {
                 const [hours, minutes] = horaInicio.split(":").map(Number);
                 const fechaFin = new Date(`${fechaInicio}T${horaInicio}`);
-                fechaFin.setHours(fechaFin.getHours() + selectedDuracion);
+                fechaFin.setHours(fechaFin.getHours() + duracion);
 
-                fechaFinInput.value = `${fechaFin.getHours().toString().padStart(2, '0')}:${fechaFin.getMinutes().toString().padStart(2, '0')}`;
+                const horaFin = fechaFin.getHours();
+                const minutoFin = fechaFin.getMinutes();
+                
+                // Permitir hasta exactamente las 18:00
+                if (horaFin > 18 || (horaFin === 18 && minutoFin > 0)) {
+                    fechaFinInput.value = `${fechaFin.getHours().toString().padStart(2, '0')}:${fechaFin.getMinutes().toString().padStart(2, '0')} (Fuera de horario)`;
+                    fechaFinInput.style.color = 'red';
+                } else {
+                    fechaFinInput.value = `${fechaFin.getHours().toString().padStart(2, '0')}:${fechaFin.getMinutes().toString().padStart(2, '0')}`;
+                    fechaFinInput.style.color = '';
+                }
             } else {
                 fechaFinInput.value = "";
             }
         }
         
-function validateForm() {
-    // Validación de fecha en el cliente (adicional al servidor)
-    const fechaInput = document.getElementById('fecha');
-    const minDate = new Date();
-    minDate.setDate(minDate.getDate() + 1); // Mínimo mañana
-    
-    if (new Date(fechaInput.value) < minDate) {
-        Swal.fire({
-            icon: 'error',
-            title: 'Fecha inválida',
-            text: 'La fecha debe ser al menos pasado mañana.'
-        });
-        return false;
-    }
-    return true;
-}
+        function updateTimePicker(occupiedHours) {
+            const timeSelect = document.getElementById("hora");
+            const options = timeSelect.querySelectorAll("option");
+            
+            options.forEach(option => {
+                if (option.value !== "") {
+                    option.disabled = false;
+                    option.style.color = '';
+                }
+            });
+            
+            occupiedHours.forEach(range => {
+                const startHour = range.start.substring(0, 5);
+                const endHour = range.end.substring(0, 5);
+                
+                options.forEach(option => {
+                    if (option.value >= startHour && option.value < endHour) {
+                        option.disabled = true;
+                        option.style.color = '#999';
+                    }
+                });
+            });
+        }
+        
+        function validateForm() {
+            const fechaInput = document.getElementById('fecha');
+            const horaSelect = document.getElementById('hora');
+            const tratamientoSelect = document.getElementById('IDtratamiento');
+            const duracionInput = document.getElementById('duracion');
+            const fechaFinInput = document.getElementById('fechaFin');
+            
+            // Validar anticipación mínima de 1 día completo
+            const hoy = new Date();
+            hoy.setHours(0, 0, 0, 0);
+            
+            const fechaCita = new Date(fechaInput.value);
+            const diferenciaDias = Math.floor((fechaCita - hoy) / (1000 * 60 * 60 * 24));
+            
+            if (diferenciaDias < 1) {
+                const minAvailableDate = new Date(hoy);
+                minAvailableDate.setDate(hoy.getDate() + 1);
+                
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Anticipación requerida',
+                    text: `Debes agendar con al menos 1 día completo de anticipación. La primera fecha disponible es ${minAvailableDate.toLocaleDateString()}`
+                });
+                return false;
+            }
+            
+            // Validar campos requeridos
+            if (!horaSelect.value || !tratamientoSelect.value || !duracionInput.value) {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Campos incompletos',
+                    text: 'Por favor complete todos los campos requeridos.'
+                });
+                return false;
+            }
+            
+            // Validar si la hora seleccionada está ocupada
+            if (horaSelect.options[horaSelect.selectedIndex].disabled) {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Horario ocupado',
+                    text: 'La hora seleccionada no está disponible. Por favor elija otra.'
+                });
+                return false;
+            }
+            
+            // Validar que no se pase de las 18:00 horas (18:00:01 no permitido)
+            if (fechaFinInput.value.includes("(Fuera de horario)")) {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Horario no válido',
+                    text: 'El tratamiento debe terminar a las 18:00 como máximo. Por favor, elija una hora más temprana o un tratamiento más corto.'
+                });
+                return false;
+            }
+            
+            return true;
+        }
 
+        // Inicializar event listeners cuando el DOM esté listo
+        document.addEventListener("DOMContentLoaded", function() {
+            initializeEventListeners();
+        });
     </script>
 </body>
 </html>
