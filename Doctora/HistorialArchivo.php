@@ -44,12 +44,13 @@ if(isset($_POST['restaurar'])) {
             }
         } else {
             // Paciente no existe - crear nuevo
-            $query_insert_paciente = "INSERT INTO Pacientes (nombre, telefono, edad) 
-                                    VALUES (
-                                        '".mysqli_real_escape_string($con, $archivo['nombre'])."',
-                                        '".mysqli_real_escape_string($con, $archivo['telefono'])."',
-                                        ".(int)$archivo['edad']."
-                                    )";
+            $query_insert_paciente = "INSERT INTO Pacientes (nombre, telefono, edad, password) 
+                        VALUES (
+                            '".mysqli_real_escape_string($con, $archivo['nombre'])."',
+                            '".mysqli_real_escape_string($con, $archivo['telefono'])."',
+                            ".(int)$archivo['edad'].",
+                            'contra123'
+                        )";
             mysqli_query($con, $query_insert_paciente);
             $id_paciente = mysqli_insert_id($con);
             
@@ -71,7 +72,7 @@ if(isset($_POST['restaurar'])) {
         $_SESSION['tipo_mensaje'] = "success";
         
         // Redirigir para evitar reenvío del formulario
-        header("Location: historiales_archivados.php");
+        header("Location: HistorialArchivo.php");
         exit();
     }
 }
@@ -220,7 +221,7 @@ $total_paginas = ceil($total_registros / $por_pagina);
                         <i class="fas fa-search"></i> Buscar
                     </button>
                     <?php if(!empty($busqueda)): ?>
-                        <a href="historiales_archivados.php" class="btn btn-secondary">
+                        <a href="HistorialArchivo.php.php" class="btn btn-secondary">
                             <i class="fas fa-times"></i> Limpiar
                         </a>
                     <?php endif; ?>
