@@ -10,6 +10,72 @@ if($_SESSION['user_type'] !== 'Personal') {
     exit();
 }
 
+// Procesar restauración si se envió el formulario
+if(isset($_POST['restaurar'])) {
+    $id_paciente_archivado = $_POST['id_paciente'];
+    
+    // 1. Obtener todos los datos del archivo
+    $query_archivo = "SELECT * FROM Archivo WHERE IDpaciente = $id_paciente_archivado";
+    $result_archivo = mysqli_query($con, $query_archivo);
+    $archivo = mysqli_fetch_assoc($result_archivo);
+    
+    if($archivo) {
+        // Verificar si el paciente existe por nombre y teléfono
+        $query_check = "SELECT IDpaciente FROM Pacientes 
+                       WHERE nombre = '".mysqli_real_escape_string($con, $archivo['nombre'])."' 
+                       AND telefono = '".mysqli_real_escape_string($con, $archivo['telefono'])."'";
+        $result_check = mysqli_query($con, $query_check);
+        $paciente_existente = mysqli_fetch_assoc($result_check);
+        
+        if($paciente_existente) {
+            // Paciente existe - actualizar historial médico
+            $id_paciente = $paciente_existente['IDpaciente'] ?? $paciente_existente['IDPaciente'] ?? null;
+            
+            if($id_paciente) {
+                // Insertar en Historial Medico
+                $detalles = mysqli_real_escape_string($con, $archivo['detalles']);
+                $query_insert = "INSERT INTO `Historial Medico` (IDpaciente, detalles) 
+                                VALUES ($id_paciente, '$detalles')";
+                mysqli_query($con, $query_insert);
+                
+                $mensaje = "Historial médico restaurado y agregado al paciente existente";
+            } else {
+                $mensaje = "Error: No se pudo obtener el ID del paciente";
+            }
+        } else {
+            // Paciente no existe - crear nuevo
+            $query_insert_paciente = "INSERT INTO Pacientes (nombre, telefono, edad) 
+                                    VALUES (
+                                        '".mysqli_real_escape_string($con, $archivo['nombre'])."',
+                                        '".mysqli_real_escape_string($con, $archivo['telefono'])."',
+                                        ".(int)$archivo['edad']."
+                                    )";
+            mysqli_query($con, $query_insert_paciente);
+            $id_paciente = mysqli_insert_id($con);
+            
+            // Insertar en Historial Medico
+            $detalles = mysqli_real_escape_string($con, $archivo['detalles']);
+            $query_insert = "INSERT INTO `Historial Medico` (IDpaciente, detalles) 
+                            VALUES ($id_paciente, '$detalles')";
+            mysqli_query($con, $query_insert);
+            
+            $mensaje = "Paciente recreado con su historial médico";
+        }
+        
+        // Eliminar de Archivo
+        $query_delete = "DELETE FROM Archivo WHERE IDpaciente = $id_paciente_archivado";
+        mysqli_query($con, $query_delete);
+        
+        // Mensaje de éxito
+        $_SESSION['mensaje'] = $mensaje;
+        $_SESSION['tipo_mensaje'] = "success";
+        
+        // Redirigir para evitar reenvío del formulario
+        header("Location: historiales_archivados.php");
+        exit();
+    }
+}
+
 // Configuración de paginación
 $por_pagina = 10;
 $pagina = isset($_GET['pagina']) ? (int)$_GET['pagina'] : 1;
@@ -19,14 +85,14 @@ $inicio = ($pagina - 1) * $por_pagina;
 $busqueda = isset($_GET['busqueda']) ? trim($_GET['busqueda']) : '';
 $condicion_busqueda = '';
 if(!empty($busqueda)) {
-    $condicion_busqueda = "AND (p.nombre LIKE '%".mysqli_real_escape_string($con, $busqueda)."%' 
+    $condicion_busqueda = "AND (a.nombre LIKE '%".mysqli_real_escape_string($con, $busqueda)."%' 
+                          OR a.telefono LIKE '%".mysqli_real_escape_string($con, $busqueda)."%'
                           OR a.detalles LIKE '%".mysqli_real_escape_string($con, $busqueda)."%')";
 }
 
 // Consulta principal con paginación
-$query = "SELECT a.IDpaciente, a.detalles, p.nombre as nombre_paciente 
+$query = "SELECT a.* 
           FROM Archivo a
-          JOIN Pacientes p ON a.IDpaciente = p.IDpaciente
           WHERE 1=1 $condicion_busqueda
           ORDER BY a.IDpaciente
           LIMIT $inicio, $por_pagina";
@@ -35,7 +101,6 @@ $result = mysqli_query($con, $query);
 // Total de registros para paginación
 $query_total = "SELECT COUNT(*) as total 
                 FROM Archivo a
-                JOIN Pacientes p ON a.IDpaciente = p.IDpaciente
                 WHERE 1=1 $condicion_busqueda";
 $result_total = mysqli_query($con, $query_total);
 $total_registros = mysqli_fetch_assoc($result_total)['total'];
@@ -89,6 +154,16 @@ $total_paginas = ceil($total_registros / $por_pagina);
             text-decoration: underline;
         }
         
+        .btn-restore {
+            color: var(--color-exito);
+            border-color: var(--color-exito);
+        }
+        
+        .btn-restore:hover {
+            background-color: var(--color-exito);
+            color: white;
+        }
+        
         .historial-content {
             padding: 15px;
             max-height: 400px;
@@ -108,6 +183,14 @@ $total_paginas = ceil($total_registros / $por_pagina);
         .search-box {
             margin-bottom: 20px;
         }
+        
+        .actions-column {
+            white-space: nowrap;
+        }
+        
+        .table-responsive {
+            overflow-x: auto;
+        }
     </style>
 </head>
 <body>
@@ -118,17 +201,26 @@ $total_paginas = ceil($total_registros / $por_pagina);
     </div>
 
     <div class="container">
+        <!-- Mostrar mensajes -->
+        <?php if(isset($_SESSION['mensaje'])): ?>
+            <div class="alert alert-<?= $_SESSION['tipo_mensaje'] ?> alert-dismissible fade show" role="alert">
+                <?= $_SESSION['mensaje'] ?>
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+            <?php unset($_SESSION['mensaje']); unset($_SESSION['tipo_mensaje']); ?>
+        <?php endif; ?>
+        
         <!-- Barra de búsqueda -->
         <div class="row search-box">
             <div class="col-md-6">
                 <form method="GET" class="input-group">
                     <input type="text" class="form-control" name="busqueda" value="<?= htmlspecialchars($busqueda) ?>" 
-                           placeholder="Buscar por nombre o detalles...">
+                           placeholder="Buscar por nombre, teléfono o detalles...">
                     <button class="btn btn-primary" type="submit">
                         <i class="fas fa-search"></i> Buscar
                     </button>
                     <?php if(!empty($busqueda)): ?>
-                        <a href="HistorialArchivo.php" class="btn btn-secondary">
+                        <a href="historiales_archivados.php" class="btn btn-secondary">
                             <i class="fas fa-times"></i> Limpiar
                         </a>
                     <?php endif; ?>
@@ -141,40 +233,47 @@ $total_paginas = ceil($total_registros / $por_pagina);
                 <table class="table table-hover">
                     <thead>
                         <tr>
-                            <th>ID Paciente</th>
-                            <th>Nombre del Paciente</th>
-                            <th>Detalles del Historial</th>
+                            <th>ID</th>
+                            <th>Nombre</th>
+                            <th>Teléfono</th>
+                            <th>Edad</th>
+                            <th>Detalles</th>
                             <th>Acciones</th>
                         </tr>
                     </thead>
                     <tbody>
                         <?php while($row = mysqli_fetch_assoc($result)): ?>
                             <tr>
-                                <td><?= htmlspecialchars($row['IDpaciente']) ?></td>
-                                <td><?= htmlspecialchars($row['nombre_paciente']) ?></td>
+                                <td><?= htmlspecialchars($row['IDpaciente'] ?? $row['IDPaciente'] ?? '') ?></td>
+                                <td><?= htmlspecialchars($row['nombre']) ?></td>
+                                <td><?= htmlspecialchars($row['telefono']) ?></td>
+                                <td><?= htmlspecialchars($row['edad']) ?></td>
                                 <td>
                                     <div style="max-height: 100px; overflow-y: auto;">
                                         <?= nl2br(htmlspecialchars(substr($row['detalles'], 0, 200))) ?>
                                         <?= strlen($row['detalles']) > 200 ? '...' : '' ?>
                                     </div>
                                 </td>
-                                <td>
-                                    <a href="#" class="action-link" data-bs-toggle="modal" data-bs-target="#detalleModal<?= $row['IDpaciente'] ?>">
+                                <td class="actions-column">
+                                    <a href="#" class="action-link me-3" data-bs-toggle="modal" data-bs-target="#detalleModal<?= $row['IDpaciente'] ?? $row['IDPaciente'] ?? '' ?>">
                                         <i class="fas fa-eye"></i> Ver completo
                                     </a>
-                                    | <a href="restaurar_paciente.php?id=<?= $row['IDpaciente'] ?>" class="action-link text-success">
-                                        <i class="fas fa-undo"></i> Restaurar
-                                    </a>
+                                    <form method="POST" style="display: inline-block;">
+                                        <input type="hidden" name="id_paciente" value="<?= $row['IDpaciente'] ?? $row['IDPaciente'] ?? '' ?>">
+                                        <button type="submit" name="restaurar" class="btn btn-outline-success btn-sm btn-restore">
+                                            <i class="fas fa-undo"></i> Restaurar
+                                        </button>
+                                    </form>
                                 </td>
                             </tr>
                             
                             <!-- Modal para ver el historial completo -->
-                            <div class="modal fade" id="detalleModal<?= $row['IDpaciente'] ?>" tabindex="-1" aria-hidden="true">
+                            <div class="modal fade" id="detalleModal<?= $row['IDpaciente'] ?? $row['IDPaciente'] ?? '' ?>" tabindex="-1" aria-hidden="true">
                                 <div class="modal-dialog modal-lg">
                                     <div class="modal-content">
                                         <div class="modal-header">
                                             <h5 class="modal-title">
-                                                Historial archivado de <?= htmlspecialchars($row['nombre_paciente']) ?>
+                                                Historial archivado de <?= htmlspecialchars($row['nombre']) ?>
                                             </h5>
                                             <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                                         </div>
@@ -182,9 +281,13 @@ $total_paginas = ceil($total_registros / $por_pagina);
                                             <div class="card">
                                                 <div class="card-header">
                                                     <h6 class="mb-0">
-                                                        <i class="fas fa-user"></i> Paciente: <?= htmlspecialchars($row['nombre_paciente']) ?>
+                                                        <i class="fas fa-user"></i> Paciente: <?= htmlspecialchars($row['nombre']) ?>
                                                         <span class="badge bg-warning text-dark ms-2">Archivado</span>
                                                     </h6>
+                                                    <p class="mb-0">
+                                                        <i class="fas fa-phone"></i> Teléfono: <?= htmlspecialchars($row['telefono']) ?> | 
+                                                        <i class="fas fa-birthday-cake"></i> Edad: <?= htmlspecialchars($row['edad']) ?>
+                                                    </p>
                                                 </div>
                                                 <div class="historial-content">
                                                     <?= nl2br(htmlspecialchars($row['detalles'])) ?>
@@ -192,12 +295,15 @@ $total_paginas = ceil($total_registros / $por_pagina);
                                             </div>
                                         </div>
                                         <div class="modal-footer">
+                                            <form method="POST">
+                                                <input type="hidden" name="id_paciente" value="<?= $row['IDpaciente'] ?? $row['IDPaciente'] ?? '' ?>">
+                                                <button type="submit" name="restaurar" class="btn btn-success">
+                                                    <i class="fas fa-undo"></i> Restaurar historial
+                                                </button>
+                                            </form>
                                             <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
                                                 <i class="fas fa-times"></i> Cerrar
                                             </button>
-                                            <a href="restaurar_paciente.php?id=<?= $row['IDpaciente'] ?>" class="btn btn-success">
-                                                <i class="fas fa-undo"></i> Restaurar Historial
-                                            </a>
                                         </div>
                                     </div>
                                 </div>
