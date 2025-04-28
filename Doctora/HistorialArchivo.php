@@ -128,7 +128,7 @@ $total_paginas = ceil($total_registros / $por_pagina);
                         <i class="fas fa-search"></i> Buscar
                     </button>
                     <?php if(!empty($busqueda)): ?>
-                        <a href="historiales_archivados.php" class="btn btn-secondary">
+                        <a href="HistorialArchivo.php" class="btn btn-secondary">
                             <i class="fas fa-times"></i> Limpiar
                         </a>
                     <?php endif; ?>
@@ -162,6 +162,9 @@ $total_paginas = ceil($total_registros / $por_pagina);
                                     <a href="#" class="action-link" data-bs-toggle="modal" data-bs-target="#detalleModal<?= $row['IDpaciente'] ?>">
                                         <i class="fas fa-eye"></i> Ver completo
                                     </a>
+                                    | <a href="restaurar_paciente.php?id=<?= $row['IDpaciente'] ?>" class="action-link text-success">
+                                        <i class="fas fa-undo"></i> Restaurar
+                                    </a>
                                 </td>
                             </tr>
                             
@@ -192,6 +195,9 @@ $total_paginas = ceil($total_registros / $por_pagina);
                                             <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
                                                 <i class="fas fa-times"></i> Cerrar
                                             </button>
+                                            <a href="restaurar_paciente.php?id=<?= $row['IDpaciente'] ?>" class="btn btn-success">
+                                                <i class="fas fa-undo"></i> Restaurar Historial
+                                            </a>
                                         </div>
                                     </div>
                                 </div>
