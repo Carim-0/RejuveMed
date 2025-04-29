@@ -80,11 +80,11 @@
                               <input type="password" name="password" class="input-medio" placeholder="Contraseña: " required><br><br>
                           </div>
                           <div class="input">
-                              <button type="submit" class="buton-añadir-login" aling="center">Iniciar sesión</button>
+                              <button type="submit" class="buton" aling="center">Iniciar sesión</button>
                           </div>
                       </form>
                       <div class="button">
-                          <button class="buton-añadir-login" onclick="window.location.href='signup.php'">Registrate</button>
+                          <button class="buton" onclick="window.location.href='signup.php'">Registrate</button>
                       </div>
                 </div>
           </section><!--fin de sección ingreso de datos-->

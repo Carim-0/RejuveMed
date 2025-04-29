@@ -14,6 +14,7 @@ body {
     padding: 0;
     justify-content: center;
     align-items: center;
+    display: flex;
     min-height: 100vh;
     font-family: 'Jost',sans-serif;
     background: linear-gradient(to bottom, #303d79,#4a6fa5, #6b8cae);
