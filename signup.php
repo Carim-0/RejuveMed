@@ -57,26 +57,25 @@ session_start();
         <h2 class="seccion-titulo">Ingrese los respectivos datos </h2>
                
                 
-                                <div id="box">
-                        <form method="post">
-                        <div class="estilo-input">
-                <p class="input-texto">Nombre: </p><input type="text" name="username" class="input" placeholder="Escribe tus nombres"><br><br>
+        <div id="box">
+        <form method="post">
+          <div class="main">
+                <p class="input">Nombre: </p><input type="text" name="username" class="input" placeholder="Escribe tus nombres"><br><br>
                 </div>
-                <div class="estilo-input">
-                <p class="input-texto">Edad:</p><input type="text" name="edad" class="input-pequeño" placeholder="Escribe tu edad"><br><br>
-                <p class="input-texto">Telefono:</p><input type="text" name="telefono" class="input-medio" placeholder="Escribe tu telefono"><br><br>
+                <div class="input">
+                <p class="input">Edad:</p><input type="text" name="edad" class="input-pequeño" placeholder="Escribe tu edad"><br><br>
+                <p class="input">Telefono:</p><input type="text" name="telefono" class="input-medio" placeholder="Escribe tu telefono"><br><br>
                 </div>
-                <div class="estilo-input">
+                <div class="input">
                 <p class="input-texto">Contraseña:</p><input type="password" name="password" class="input" placeholder="Elige una Contraseña"><br><br>
                 </div>
-                <p class="input-texto">Detalles:</p>
-                <div class="estilo-input">
+                <p class="label">Detalles:</p>
+                <div class="input">
                 <input type="text" name="detalles" class="input-ancho" placeholder=""><br><br>
                 </div>
-                <div class="estilo-input">
+                <div class="button">
                 <input id="button" type="submit" value="Registrarse"><br><br>
                 </div>
-                            
                             <a href="login.php">Iniciar Sesión</a><br><br>`
                         </form>
                     </div>

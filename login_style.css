@@ -17,7 +17,7 @@ body {
     display: flex;
     min-height: 100vh;
     font-family: 'Jost', sans-serif;
-    background: linear-gradient(to bottom, #eaeaeb,#535455, #262627);
+    background: linear-gradient(to bottom, #c1c1c2,#33353b, #1a1a1f);
 }
 
 .main{
