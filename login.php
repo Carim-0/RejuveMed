@@ -67,7 +67,7 @@
 <body> 
 
 <div class="main">
-        <label class="login-title" aria-hidden="true">Login</label>
+        <label class="login-title" aria-hidden="true">RejuveMed</label>
         <div class="login">
             <form method="post">
                 
