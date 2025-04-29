@@ -24,7 +24,7 @@ body {
     height: 550px;
     background: red;
     overflow: hidden;
-    background: src("IMG/fondologin.jpg") no-repeat center / cover;
+    background image: ("IMG/fondologin.jpg") no-repeat center / cover;
     border-radius: 10px;
     box-shadow: 5px 20px 5px #000;
 }
