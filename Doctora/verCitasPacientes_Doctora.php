@@ -600,10 +600,8 @@ if ($_SERVER['REQUEST_METHOD'] == "POST" && isset($_POST['agendar_cita'])) {
 </ul>
 
         <!-- Formulario de Nueva Cita -->
-        <div class="appointment-container">
-        <div class="appointment-header">
-            <h2><i class="fas fa-calendar-plus"></i> Agendar Nueva Cita</h2>
-        </div>  
+        <h3 class="section-title"><i class="fas fa-plus-circle"></i> Nueva Cita</h3>
+        
         <form method="POST" id="citaForm" class="appointment-form">
           <input type="hidden" name="paciente_id" value="<?= $paciente_actual['IDpaciente'] ?>">
           
