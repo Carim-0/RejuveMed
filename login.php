@@ -81,11 +81,10 @@
                 </div>
 
                 <button type="submit" class="buton">Iniciar sesión</button>
-                
+                </form>
                 <div class="button-container">
                     <button class="button" onclick="window.location.href='signup.php'">Registrate</button>
                 </div>
-            </form>
         </div>
     </div>
           </section><!--fin de sección ingreso de datos-->
