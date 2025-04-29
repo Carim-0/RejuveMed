@@ -32,58 +32,39 @@ session_start();
 
 ?>
 
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="login_style.css">
-    <title>Rejuvemet -> Agregar usuarios </title>
+    <link href="https://fonts.googleapis.com/css2?family=Jost:wght@500&display=swap" rel="stylesheet">
+    <title>Rejuvemet -> Agregar usuarios</title>
 </head>
 <body>
-    <!--Inicializamos con el contenedor main-->
-    <main class="contenedor-main">
-      <!--Inicializamos de cabezera-->
-      <header class="cabezera">
-        <img src="IMG/ImagenRegistrar.png" alt="Imagen representativa de agregar usuario" height="70px" width="70px" >
-        <h1 class="titulo-main">Agregar usuario</h1>
-        
-      </header>
-      <!--Inicializamos parte de ingreso de datos-->
-    <section class="seccion-input">
-      <div class="contenedor">
-        
-        <h2 class="seccion-titulo">Ingrese los respectivos datos </h2>
-               
+    <div class="main">
+        <div class="login">
+            <form method="post">
+                <label aria-hidden="true">Registro</label>
                 
-        <div id="box">
-        <form method="post">
-          <div class="main">
-                <p class="input">Nombre: </p><input type="text" name="username" class="input" placeholder="Escribe tus nombres"><br><br>
-                </div>
-                <div class="input">
-                <p class="input">Edad:</p><input type="text" name="edad" class="input-pequeño" placeholder="Escribe tu edad"><br><br>
-                <p class="input">Telefono:</p><input type="text" name="telefono" class="input-medio" placeholder="Escribe tu telefono"><br><br>
-                </div>
-                <div class="input">
-                <p class="input-texto">Contraseña:</p><input type="password" name="password" class="input" placeholder="Elige una Contraseña"><br><br>
-                </div>
-                <p class="label">Detalles:</p>
-                <div class="input">
-                <input type="text" name="detalles" class="input-ancho" placeholder=""><br><br>
-                </div>
+                <input type="text" name="username" class="input-medio" placeholder="Nombre completo" required>
+                
+                <input type="text" name="edad" class="input-medio" placeholder="Edad" required>
+                
+                <input type="tel" name="telefono" class="input-medio" placeholder="Teléfono" required>
+                
+                <input type="password" name="password" class="input-medio" placeholder="Contraseña" required>
+                
+                <textarea name="detalles" class="input-medio" placeholder="Detalles adicionales" rows="3"></textarea>
+
+                <button type="submit" class="buton">Registrarse</button>
+                
                 <div class="button">
-                <input id="button" type="submit" value="Registrarse"><br><br>
+                    <button class="buton" onclick="window.location.href='login.php'">Volver a Login</button>
                 </div>
-                            <a href="login.php">Iniciar Sesión</a><br><br>`
-                        </form>
-                    </div>
-      </div>
-    </section><!--fin de sección ingreso de datos-->
+            </form>
+        </div>
+    </div>
     <script src="JS/app.js" defer></script>
-    </main><!--cierre contenedor main-->
- 
-    
 </body>
 </html>
