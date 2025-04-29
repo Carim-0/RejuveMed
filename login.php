@@ -81,9 +81,9 @@
                 </div>
                 <button type="submit" class="buton">Iniciar sesión</button>
                 </form>
-
-                <div class="secondary-actions">
-                <a href="signup.php" class="secondary-btn">Registrarse</a>
+                
+                <div class="button-container">
+                    <button class="button" onclick="window.location.href='signup.php'">Registrate</button>
                 </div>
         </div>
     </div>
