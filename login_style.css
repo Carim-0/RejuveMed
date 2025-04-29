@@ -29,3 +29,59 @@ body {
     box-shadow: 5px 20px 5px #000;
 }
 
+#ckk{
+    display: none;
+}
+
+.signun{
+    position: relative;
+    width: 100px;
+    height: 100px;  
+}
+
+label{
+    color: #FFFFFF;
+    font-size: 2.3em;
+    justify-content: center;
+    display: flex;
+    margin: 60px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: .5s ease-in-out;
+}
+
+input{
+    width: 60%;
+    height: 20px;
+    background: #e2dfdf;
+    justify-content: center;
+    display: flex;
+    margin: 20px auto;
+    padding:10px;
+    border:none;
+    outline: none;
+    border-radius: 5px;
+}
+
+button{
+    width: 60%;
+    height: 40px;
+    margin: 10px auto;
+    justify-content: center;
+    display: black ;
+    color: #FFFFFF;
+    background: #1a37b5;
+    font-size: 1em;
+    font-weight: bold;
+    margin-top: 20px;
+    border:none;
+    outline: none;
+    border-radius: 5px;
+    transition: 2s ease-in;
+    cursor: pointer;
+}
+
+button:hover{
+    background:#1a37b5;
+}
+

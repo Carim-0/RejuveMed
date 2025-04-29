@@ -72,17 +72,17 @@
 
                 <div class="login">
                       <form method="post">
-                          <div class="estilo-input">
+                          <div class="input">
                               <input type="text" name="username" class="input-medio" placeholder="Usuario: " required><br><br>
                           </div>
-                          <div class="estilo-input">
+                          <div class="input">
                               <input type="password" name="password" class="input-medio" placeholder="Contraseña: " required><br><br>
                           </div>
-                          <div class="estilo-input">
+                          <div class="input">
                               <button type="submit" class="buton-añadir-login" aling="center">Iniciar sesión</button>
                           </div>
                       </form>
-                      <div class="btnSign-input">
+                      <div class="button">
                           <button class="buton-añadir-login" onclick="window.location.href='signup.php'">Registrate</button>
                       </div>
                 </div>
