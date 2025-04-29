@@ -2,14 +2,6 @@
 
 /*Definimos los colores predertminados */
 body {
-    --color-primario: #1a37b5;
-    --color-secundario: #FFF9EB;
-    --color-terciario: #C4C4C4;
-    --color-button: #fe652b;
-    --color-button-hover: #501801;
-    --color-text: #444444;
-    --color-fondo: #e2dfdf;
-    --color-white: #FFFFFF;
     margin: 0;
     padding: 0;
     justify-content: center;
@@ -53,7 +45,7 @@ label{
 input{
     width: 60%;
     height: 20px;
-    background: #e2dfdf;
+    background: #FFFFFF;
     justify-content: center;
     display: flex;
     margin: 20px auto;
