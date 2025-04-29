@@ -27,7 +27,7 @@ body {
     overflow: hidden;
     background: url("IMG/fondologin.jpg") no-repeat center / cover;
     border-radius: 10px;
-    box-shadow: 5px 15px 10px #000;
+    box-shadow: 10px 12px 10px #000;
 }
 
 #ckk{
@@ -86,12 +86,12 @@ button:hover{
     background:#1a37b5;
 }
 
-.estilo-input {
-    display: flex;
-    justify-content: center;
-    width: 100%;
-    max-width: 800px;
-    margin-top: 20px;
+.login{
+    height: 460px;
+    background:#eee;
+    border-radius: 40% / 10%;
+    transform: translateY(180px);
+    transition: .8s ease-in-out;
 }
     
 .login label{
