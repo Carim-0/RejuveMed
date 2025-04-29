@@ -622,6 +622,7 @@ if ($_SERVER['REQUEST_METHOD'] == "POST" && isset($_POST['agendar_cita'])) {
                             echo '<option value="'.str_pad($h, 2, '0', STR_PAD_LEFT).':00">'.str_pad($h, 2, '0', STR_PAD_LEFT).':00</option>';
                         }
                         ?>
+                    </select>
             </div>
           </div>
          
