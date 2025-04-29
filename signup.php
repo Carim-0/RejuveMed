@@ -55,8 +55,9 @@ session_start();
                 
                 <input type="password" name="password" class="input-medio" placeholder="Contraseña" required>
                 
-                <textarea aling="center" name="detalles" class="input-medio" placeholder="Detalles adicionales" rows="3"></textarea>
-
+                <div class="justified">
+                <textarea name="detalles" class="input-medio" placeholder="Detalles adicionales" rows="3"></textarea>
+                </div>
                 <button type="submit" class="buton">Registrarse</button>
                 
                 <div class="button">

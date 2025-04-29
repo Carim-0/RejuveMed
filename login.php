@@ -79,9 +79,9 @@
                 <div class="input-group">
                     <input type="password" name="password" class="input-medio" placeholder="Contraseña" required>
                 </div>
-
                 <button type="submit" class="buton">Iniciar sesión</button>
                 </form>
+                
                 <div class="button-container">
                     <button class="button" onclick="window.location.href='signup.php'">Registrate</button>
                 </div>
