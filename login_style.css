@@ -2,6 +2,14 @@
 
 /*Definimos los colores predertminados */
 body {
+    --color-primario: #1a37b5;
+    --color-secundario: #FFF9EB;
+    --color-terciario: #C4C4C4;
+    --color-button: #fe652b;
+    --color-button-hover: #501801;
+    --color-text: #444444;
+    --color-fondo: #e2dfdf;
+    --color-white: #FFFFFF;
     margin: 0;
     padding: 0;
     justify-content: center;
@@ -16,7 +24,7 @@ body {
     height: 550px;
     background: red;
     overflow: hidden;
-    background image: ("IMG/fondologin.jpg") no-repeat center / cover;
+    background: url("IMG/fondologin.jpg") no-repeat center / cover;
     border-radius: 10px;
     box-shadow: 5px 20px 5px #000;
 }
