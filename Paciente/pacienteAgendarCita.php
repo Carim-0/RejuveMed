@@ -8,8 +8,8 @@ if (!isset($_SESSION['user_id']) || $_SESSION['user_type'] !== 'Paciente') {
     die("Acceso denegado. Por favor, inicie sesión como paciente.");
 }
 
-// Función para mostrar alertas
-function showSweetAlert($icon, $title, $text, $redirect = null) {
+// Función para mostrar alertas mejorada
+function showSweetAlert($icon, $title, $text, $redirect = null, $preserveFormData = false) {
     echo "<script>
     document.addEventListener('DOMContentLoaded', function() {
         Swal.fire({
@@ -20,6 +20,20 @@ function showSweetAlert($icon, $title, $text, $redirect = null) {
         })";
     if ($redirect) {
         echo ".then((result) => { if (result.isConfirmed) { window.location.href = '$redirect'; } })";
+    } elseif ($preserveFormData) {
+        echo ".then((result) => { if (result.isConfirmed) { 
+            document.getElementById('fecha').value = localStorage.getItem('tempFecha');
+            document.getElementById('hora').value = localStorage.getItem('tempHora');
+            document.getElementById('IDtratamiento').value = localStorage.getItem('tempTratamiento');
+            updateDuration();
+            
+            const fecha = localStorage.getItem('tempFecha');
+            if (fecha) {
+                fetch(`pacienteAgendarCita.php?get_occupied_hours=1&fecha=\${fecha}`)
+                    .then(response => response.json())
+                    .then(occupiedHours => updateTimePicker(occupiedHours));
+            }
+        } })";
     }
     echo ";});
     </script>";
@@ -30,6 +44,10 @@ $IDpaciente = $_SESSION['user_id'];
 // Obtener tratamientos disponibles
 $query = "SELECT IDtratamiento, nombre, duracion FROM Tratamientos";
 $result = mysqli_query($con, $query);
+$tratamientos_data = [];
+while ($row = mysqli_fetch_assoc($result)) {
+    $tratamientos_data[] = $row;
+}
 
 // Obtener horarios ocupados si se solicita via AJAX
 if (isset($_GET['get_occupied_hours'])) {
@@ -58,65 +76,77 @@ if ($_SERVER['REQUEST_METHOD'] == "POST") {
     $hora = $_POST['hora'];
     $IDtratamiento = $_POST['IDtratamiento'];
     
+    // Guardar temporalmente los datos del formulario
+    echo "<script>
+        localStorage.setItem('tempFecha', '" . addslashes($fecha) . "');
+        localStorage.setItem('tempHora', '" . addslashes($hora) . "');
+        localStorage.setItem('tempTratamiento', '" . addslashes($IDtratamiento) . "');
+    </script>";
+    
     // Obtener la duración del tratamiento seleccionado
     $query = "SELECT duracion FROM Tratamientos WHERE IDtratamiento = '$IDtratamiento'";
     $result = mysqli_query($con, $query);
     $row = mysqli_fetch_assoc($result);
     $duracion = $row['duracion'];
 
-    $hora = $hora . ':00'; 
+    $horaCompleta = $hora . ':00'; 
     $horaMin = '10:00:00';
     $horaMax = '18:00:00';
 
-    // Validar horario laboral
-    if ($hora < $horaMin || $hora > $horaMax) {
-        showSweetAlert('error', 'Error', 'La hora debe estar entre las 10:00 AM y 6:00 PM.', 'pacienteAgendarCita.php');
+    // Validar hora dentro del horario laboral
+    if ($horaCompleta < $horaMin || $horaCompleta > $horaMax) {
+        showSweetAlert('error', 'Error', 'La hora debe estar entre las 10:00 AM y 6:00 PM.', null, true);
         exit();
     }
 
     if (!empty($fecha) && !empty($hora) && !empty($IDtratamiento)) {
-        $datetime = $fecha . ' ' . $hora;
-        $startDateTime = new DateTime($datetime);
-        $startDateTime->modify("+$duracion hours");
-        $fechaFin = $startDateTime->format('Y-m-d H:i:s');
+        $datetime = $fecha . ' ' . $horaCompleta;
+        $datetimeObj = new DateTime($datetime);
+        $datetimeFinObj = clone $datetimeObj;
+        $datetimeFinObj->modify("+$duracion hours");
+        $fechaFin = $datetimeFinObj->format('Y-m-d H:i:s');
 
-        // Validar duración máxima después de las 17:00 (incluyendo las 17:00 exactas)
-        $horaInicio = new DateTime($datetime);
+        // Validar duración máxima después de las 17:00
         $hora17 = new DateTime($fecha . ' 17:00:00');
-        
-        // Permitir las 17:00 pero solo si dura 1 hora
-        if ($horaInicio >= $hora17 && $duracion > 1) {
-            showSweetAlert('error', 'Error', 'Solo se permiten citas de 1 hora después de las 17:00.', 'pacienteAgendarCita.php');
+        if ($datetimeObj >= $hora17 && $duracion > 1) {
+            showSweetAlert('error', 'Error', 'Solo se permiten citas de 1 hora después de las 17:00.', null, true);
             exit();
         }
 
-        // Verificar que no termine después de las 18:00
+        // Validar que no termine después de las 18:00
         $hora18 = new DateTime($fecha . ' 18:00:00');
-        if ($startDateTime > $hora18) {
-            showSweetAlert('error', 'Error', 'No se pueden agendar citas que terminen después de las 18:00.', 'pacienteAgendarCita.php');
+        if ($datetimeFinObj > $hora18) {
+            showSweetAlert('error', 'Error', 'El tratamiento no puede terminar después de las 18:00. Por favor, elija una hora más temprana.', null, true);
             exit();
         }
 
-        // Verificar solapamiento de citas (modificado para permitir consecutivas)
+        // Verificar solapamiento de citas
         $query = "SELECT * FROM Citas WHERE 
                  (fecha < '$fechaFin' AND fechaFin > '$datetime')";
         $result = mysqli_query($con, $query);
 
         if (mysqli_num_rows($result) > 0) {
-            showSweetAlert('warning', 'Horario ocupado', 'Ya existe una cita en ese horario. Por favor, elija otro.', 'pacienteAgendarCita.php');
+            showSweetAlert('warning', 'Horario ocupado', 'Ya existe una cita en ese horario. Por favor, elija otro.', null, true);
         } else {
             $query = "INSERT INTO Citas (IDpaciente, IDtratamiento, fecha, fechaFin) 
                      VALUES ('$IDpaciente', '$IDtratamiento', '$datetime', '$fechaFin')";
             $result = mysqli_query($con, $query);
 
             if ($result) {
+                // Limpiar datos temporales
+                echo "<script>
+                    localStorage.removeItem('tempFecha');
+                    localStorage.removeItem('tempHora');
+                    localStorage.removeItem('tempTratamiento');
+                </script>";
                 showSweetAlert('success', '¡Éxito!', 'Cita agendada correctamente', 'verCitas_Paciente.php');
             } else {
-                showSweetAlert('error', 'Error', 'Ocurrió un error al agendar la cita');
+                error_log("Error al agendar cita: " . mysqli_error($con));
+                showSweetAlert('error', 'Error', 'Ocurrió un error al agendar la cita: ' . mysqli_error($con), null, true);
             }
         }
     } else {
-        echo "<script>alert('Por favor, complete todos los campos.');</script>";
+        showSweetAlert('error', 'Error', 'Por favor, complete todos los campos.', null, true);
     }
 }
 ?>
@@ -305,7 +335,7 @@ if ($_SERVER['REQUEST_METHOD'] == "POST") {
     </style>
 </head>
 <body>
-    <div class="appointment-container">
+<div class="appointment-container">
         <div class="appointment-header">
             <h2><i class="fas fa-calendar-plus"></i> Agendar Nueva Cita</h2>
         </div>
@@ -314,7 +344,11 @@ if ($_SERVER['REQUEST_METHOD'] == "POST") {
             <div class="form-row">
                 <div class="form-group">
                     <label for="fecha"><i class="far fa-calendar-alt"></i> Fecha*</label>
-                    <input type="date" id="fecha" name="fecha" required min="<?php echo date('Y-m-d', strtotime('+1 days')); ?>">
+                    <input type="date" id="fecha" name="fecha" required min="<?php 
+                        $minDate = new DateTime('now');
+                        $minDate->modify('+1 day');
+                        echo $minDate->format('Y-m-d'); 
+                    ?>">
                 </div>
                 
                 <div class="form-group">
@@ -322,9 +356,8 @@ if ($_SERVER['REQUEST_METHOD'] == "POST") {
                     <select id="hora" name="hora" required>
                         <option value="">Seleccione una hora</option>
                         <?php 
-                        // Generar opciones de hora de 10:00 a 17:00
                         for ($h = 10; $h <= 17; $h++) {
-                            echo "<option value='".str_pad($h, 2, '0', STR_PAD_LEFT).":00'>".str_pad($h, 2, '0', STR_PAD_LEFT).":00</option>";
+                            echo '<option value="'.str_pad($h, 2, '0', STR_PAD_LEFT).':00">'.str_pad($h, 2, '0', STR_PAD_LEFT).':00</option>';
                         }
                         ?>
                     </select>
@@ -336,11 +369,10 @@ if ($_SERVER['REQUEST_METHOD'] == "POST") {
                 <select id="IDtratamiento" name="IDtratamiento" required onchange="updateDuration()">
                     <option value="">Seleccione un tratamiento</option>
                     <?php
-                        mysqli_data_seek($result, 0);
-                        while ($row = mysqli_fetch_assoc($result)) {
-                            echo "<option value='" . htmlspecialchars($row['IDtratamiento']) . "' 
-                                  data-duracion='" . htmlspecialchars($row['duracion']) . "'>" . 
-                                  htmlspecialchars($row['nombre']) . " (Duración: " . htmlspecialchars($row['duracion']) . " hora" . ($row['duracion'] > 1 ? 's' : '') . ")</option>";
+                        foreach ($tratamientos_data as $row) {
+                            echo '<option value="'.htmlspecialchars($row['IDtratamiento']).'" 
+                                  data-duracion="'.htmlspecialchars($row['duracion']).'">'.
+                                  htmlspecialchars($row['nombre']).' (Duración: '.htmlspecialchars($row['duracion']).' hora'.($row['duracion'] > 1 ? 's' : '').')</option>';
                         }
                     ?>
                 </select>
@@ -371,35 +403,40 @@ if ($_SERVER['REQUEST_METHOD'] == "POST") {
     </div>
 
     <script>
-        document.addEventListener("DOMContentLoaded", function () {
-            initializeEventListeners();
+        // Restaurar valores del formulario si existen
+        document.addEventListener("DOMContentLoaded", function() {
+            if (localStorage.getItem('tempFecha')) {
+                document.getElementById('fecha').value = localStorage.getItem('tempFecha');
+                document.getElementById('hora').value = localStorage.getItem('tempHora');
+                document.getElementById('IDtratamiento').value = localStorage.getItem('tempTratamiento');
+                updateDuration();
+                
+                // Volver a cargar horarios ocupados si hay fecha seleccionada
+                if (localStorage.getItem('tempFecha')) {
+                    fetch(`pacienteAgendarCita.php?get_occupied_hours=1&fecha=${localStorage.getItem('tempFecha')}`)
+                        .then(response => response.json())
+                        .then(occupiedHours => updateTimePicker(occupiedHours));
+                }
+            }
             
-            // Obtener horarios ocupados cuando cambia la fecha
+            // Inicializar event listeners
+            initializeEventListeners();
+        });
+
+        function initializeEventListeners() {
+            const tratamientoSelect = document.getElementById("IDtratamiento");
+            tratamientoSelect.addEventListener("change", updateDuration);
+            
+            document.getElementById("hora").addEventListener("change", updateHoraFin);
+            
             document.getElementById("fecha").addEventListener("change", function() {
                 const fecha = this.value;
                 if (!fecha) return;
                 
                 fetch(`pacienteAgendarCita.php?get_occupied_hours=1&fecha=${fecha}`)
-                    .then(response => {
-                        if (!response.ok) {
-                            throw new Error('Error al obtener horarios');
-                        }
-                        return response.json();
-                    })
-                    .then(occupiedHours => {
-                        updateTimePicker(occupiedHours);
-                    })
-                    .catch(error => {
-                        console.error('Error:', error);
-                    });
+                    .then(response => response.json())
+                    .then(occupiedHours => updateTimePicker(occupiedHours));
             });
-        });
-
-        function initializeEventListeners() {
-            const tratamientoSelect = document.getElementById("IDtratamiento");
-            
-            tratamientoSelect.addEventListener("change", updateDuration);
-            document.getElementById("hora").addEventListener("change", updateHoraFin);
         }
 
         function updateDuration() {
@@ -442,7 +479,17 @@ if ($_SERVER['REQUEST_METHOD'] == "POST") {
                 const fechaFin = new Date(`${fechaInicio}T${horaInicio}:00`);
                 fechaFin.setHours(fechaFin.getHours() + duracion);
 
-                fechaFinInput.value = `${fechaFin.getHours().toString().padStart(2, '0')}:${fechaFin.getMinutes().toString().padStart(2, '0')}`;
+                const horaFin = fechaFin.getHours();
+                const minutoFin = fechaFin.getMinutes();
+                
+                // Permitir hasta exactamente las 18:00
+                if (horaFin > 18 || (horaFin === 18 && minutoFin > 0)) {
+                    fechaFinInput.value = `${fechaFin.getHours().toString().padStart(2, '0')}:${fechaFin.getMinutes().toString().padStart(2, '0')} (Fuera de horario)`;
+                    fechaFinInput.style.color = 'red';
+                } else {
+                    fechaFinInput.value = `${fechaFin.getHours().toString().padStart(2, '0')}:${fechaFin.getMinutes().toString().padStart(2, '0')}`;
+                    fechaFinInput.style.color = '';
+                }
             } else {
                 fechaFinInput.value = "";
             }
@@ -473,7 +520,7 @@ if ($_SERVER['REQUEST_METHOD'] == "POST") {
                     if (option.value >= startHour && option.value < endHour) {
                         option.disabled = true;
                         option.style.color = '#999';
-                        option.title = "Horario ocupado o fuera de servicio";
+                        option.title = "Horario ocupado";
                     }
                 });
             });
@@ -513,17 +560,18 @@ if ($_SERVER['REQUEST_METHOD'] == "POST") {
             const horaSelect = document.getElementById('hora');
             const tratamientoSelect = document.getElementById('IDtratamiento');
             const duracionInput = document.getElementById('duracion');
+            const fechaFinInput = document.getElementById('fechaFin');
             
             // Validar anticipación mínima de 1 día completo
             const hoy = new Date();
-            hoy.setHours(0, 0, 0, 0); // Considerar día completo
+            hoy.setHours(0, 0, 0, 0);
             
             const fechaCita = new Date(fechaInput.value);
             const diferenciaDias = Math.floor((fechaCita - hoy) / (1000 * 60 * 60 * 24));
             
             if (diferenciaDias < 1) {
                 const minAvailableDate = new Date(hoy);
-                minAvailableDate.setDate(hoy.getDate() + 2);
+                minAvailableDate.setDate(hoy.getDate() + 1);
                 
                 Swal.fire({
                     icon: 'error',
@@ -549,6 +597,16 @@ if ($_SERVER['REQUEST_METHOD'] == "POST") {
                     icon: 'error',
                     title: 'Horario ocupado',
                     text: 'La hora seleccionada no está disponible. Por favor elija otra.'
+                });
+                return false;
+            }
+            
+            // Validar que no se pase de las 18:00 horas (18:00:01 no permitido)
+            if (fechaFinInput.value.includes("(Fuera de horario)")) {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Horario no válido',
+                    text: 'El tratamiento debe terminar a las 18:00 como máximo. Por favor, elija una hora más temprana o un tratamiento más corto.'
                 });
                 return false;
             }
