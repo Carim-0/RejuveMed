@@ -52,8 +52,9 @@ session_start();
         <input type="tel" name="telefono" placeholder="Teléfono" required>
         <input type="password" name="password" placeholder="Contraseña" required>
         
-        <textarea name="detalles" placeholder="Detalles adicionales" rows="3"></textarea>
-        
+        <div class="justified">
+        <textarea name="detalles" class="input-medio" placeholder="Detalles adicionales" rows="3"></textarea>
+        </div>
         <div class="button-container">
             <button type="submit" class="buton">Registrarse</button>
             <button type="button" class="buton" onclick="window.location.href='login.php'">Volver a Login</button>
