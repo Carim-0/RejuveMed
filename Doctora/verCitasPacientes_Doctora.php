@@ -93,18 +93,25 @@ if ($_SERVER['REQUEST_METHOD'] == "POST" && isset($_POST['agendar_cita'])) {
     $paciente_id = $_POST['paciente_id'];
     $estado = 'Pendiente';
 
-     // Combinar fecha y hora
-     $datetime = $fecha . ' ' . $hora . ':00';
+    // Combinar fecha y hora
+    $datetime = $fecha . ' ' . $hora . ':00';
             
-     // Validar el timepo entre las 10 am y 6 pm
-     $horaMin = '10:00:00';
-     $horaMax = '18:00:00';
-     $horaCompleta = $hora . ':00';
-     
-     if ($horaCompleta < $horaMin || $horaCompleta > $horaMax) {
-         showSweetAlert('error', 'Error', 'La hora debe estar entre las 10:00 AM y 6:00 PM.', 'pacienteAgendarCita_Personal.php');
-         exit;
-     }
+    // Validar el timepo entre las 10 am y 6 pm
+    $horaMin = '10:00:00';
+    $horaMax = '18:00:00';
+    $horaCompleta = $hora . ':00';
+    
+    if ($horaCompleta < $horaMin || $horaCompleta > $horaMax) {
+        showSweetAlert('error', 'Error', 'La hora debe estar entre las 10:00 AM y 6:00 PM.', 'pacienteAgendarCita_Personal.php');
+        exit;
+    }
+
+    $startDateTime = new DateTime($datetime);
+    $endDateTime = clone $startDateTime;
+    $endDateTime->modify("+$duracion hours");
+                
+    $fechaFin = $endDateTime->format('Y-m-d H:i:s');
+    $datetime = $startDateTime->format('Y-m-d H:i:s');
 
     // Check for overlapping appointments
     $query = "SELECT * FROM Citas WHERE (fecha <= ? AND fechaFin >= ?)";
