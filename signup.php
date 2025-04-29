@@ -43,26 +43,23 @@ session_start();
 </head>
 <body>
 
-        <div class="signup">
-            <form method="post">
-                <label class="sign" aria-hidden="true">Registro</label>
-                
-                <input type="text" name="username" class="input-medio" placeholder="Nombre completo" required>
-                
-                <input type="text" name="edad" class="input-medio" placeholder="Edad" required>
-                
-                <input type="tel" name="telefono" class="input-medio" placeholder="Teléfono" required>
-                
-                <input type="password" name="password" class="input-medio" placeholder="Contraseña" required>
-                
-                <div class="justified">
-                <textarea name="detalles" class="input-medio" placeholder="Detalles adicionales" rows="3"></textarea>
-                </div>
-                <button type="submit" class="buton">Registrarse</button>
-                <button class="buton" onclick="window.location.href='login.php'">Volver a Login</button>
-            </form>
+<div class="signup">
+    <form method="post">
+        <label class="sign" aria-hidden="true">Registro</label>
+        
+        <input type="text" name="username" placeholder="Nombre completo" required>
+        <input type="text" name="edad" placeholder="Edad" required>
+        <input type="tel" name="telefono" placeholder="Teléfono" required>
+        <input type="password" name="password" placeholder="Contraseña" required>
+        
+        <textarea name="detalles" placeholder="Detalles adicionales" rows="3"></textarea>
+        
+        <div class="button-container">
+            <button type="submit" class="buton">Registrarse</button>
+            <button type="button" class="buton" onclick="window.location.href='login.php'">Volver a Login</button>
         </div>
-
+    </form>
+</div>
     <script src="JS/app.js" defer></script>
 </body>
 </html>

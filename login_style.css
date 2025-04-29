@@ -101,16 +101,53 @@ button:hover{
     height: 460px;
     background:#eee;
     border-radius: 70% / 10%;
-    transform: translateY(50px);
+    transform: translateY(55px);
     transition: .8s ease-in-out;
 }
-
-.signup{
+.signup {
     width: 400px;
     height: 550px;
-    background:#eee;
+    background: var(--color-white); /* Fondo blanco */
+    border-radius: 10px;
+    padding: 20px 0; /* Espacio interno */
+    box-shadow: 8px 10px 50px #000; /* Sombra igual que .main */
 }
-    
+
+.sign {
+    color: var(--color-primario);
+    font-size: 2em; /* Reducir tamaño */
+    margin: 30px 0 20px 0; /* Ajustar márgenes */
+}
+
+input, textarea {
+    width: 60%;
+    height: 20px;
+    background: #FFFFFF;
+    margin: 10px auto; /* Reducir margen superior */
+    padding: 10px;
+    border: 1px solid var(--color-terciario);
+    border-radius: 5px;
+    font-family: 'Jost', sans-serif;
+}
+
+textarea {
+    height: 60px !important; /* Altura específica para el textarea */
+    resize: vertical; /* Permite ajuste vertical */
+}
+
+.button-container {
+    display: flex;
+    flex-direction: column;
+    gap: 10px; /* Espacio entre botones */
+    width: 60%;
+    margin: 20px auto 0 auto;
+}
+
+.buton {
+    width: 100%; /* Ocupar todo el ancho del contenedor */
+    margin: 0 !important; /* Eliminar márgenes conflictivos */
+}
+
 .login label{
     color:#41668a;
     transform: scale(.6);   
