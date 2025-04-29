@@ -72,7 +72,7 @@
 
                 <div class="login">
                       <form method="post">
-                          <label aria-hidden="true">Log in</label>
+                          <label aria-hidden="true">Login</label>
                           <div class="input">
                               <input type="text" name="username" class="input-medio" placeholder="Usuario: " required><br><br>
                           </div>
