@@ -1,7 +1,7 @@
 /*Definicion de cuerpo general*/
 
 /*Definimos los colores predertminados */
-:root {
+body {
     --color-primario: #1a37b5;
     --color-secundario: #FFF9EB;
     --color-terciario: #C4C4C4;
@@ -10,197 +10,22 @@
     --color-text: #444444;
     --color-fondo: #e2dfdf;
     --color-white: #FFFFFF;
-}
-* {
     margin: 0;
     padding: 0;
-    box-sizing: border-box;
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-}
-
-body {
-    background-color: var(--color-primario);
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    padding-bottom: 20px;
-}
-
-.contenedor {
-    flex: 1;
-    padding: 10px 15px;
-    font-size: 16px;
-    border: 2px solid #333;
-    border-radius: 25px;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
-    width: 80%; /* Ajusta el ancho del contenedor */
-    max-width: 800px; /* Máximo ancho */
-    
-    
-}
-
-.contenedor-login {
-    flex: 1;
-    padding: 10px 15px;
-    font-size: 16px;
-    border: 2px solid #333;
-    border-radius: 25px;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
-    width: 80%; /* Ajusta el ancho del contenedor */
-    max-width: 500px; /* Máximo ancho */
-    background-color: var(--color-fondo);
- 
-    
-}
-
-/*Definicion de atributos para el main*/
-.contenedor-main {
-    display: flex;
-    flex-direction: column;
-    height: 100%;
-    width: 100%;
-}
-
-.titulo-main {
-    font-size: 40px;
-    font-weight: 900;
-    color: var(--color-white);
-}
-.titulo-usuario {
-    font-size: 35px;
-    font-weight: 900;
-    font-style:normal;
-    color: white;
-
-}
-
-/* Definicion de atributos para el header */
-.cabezera {
-    flex: 40%;
-    display: flex;
     justify-content: center;
     align-items: center;
-    padding: 40px 0 0;
-    background-color: var(--color-primario);
+    min-height: 100vh;
+    font-family: 'Jost',sans-serif;
+    background: linear-gradient(to bottom, #303d79,#4a6fa5, #6b8cae);
 }
 
-.cabezera-cliente {
-    color: #000;
-    flex: 40%;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    padding: 40px 0 0;
-}
-
-
-/*Definicion de atributos para los input*/
-.estilo-input {
-    display: flex;
-    justify-content: center;
-    width: 100%;
-    max-width: 800px;
-    margin-top: 20px;
-}
-.input-pequeño{
-    width: 100%;
-    max-width:200px;
-    padding: 10px;
-    border: 2px solid #000;
+.main{
+    width: 400px;
+    height: 550px;
+    background: red;
+    overflow: hidden;
+    background: src("IMG/fondologin.jpg") no-repeat center / cover;
     border-radius: 10px;
-    font-size: 16px;
-    align-items: center;
-}
-.input-medio{
-    width: 100%;
-    max-width:500px;
-    padding: 10px;
-    border: 2px solid #000;
-    border-radius: 10px;
-    font-size: 16px;
-    align-items: center;
-}
-.input-ancho{
-    width: 100%;
-    max-width:800px;
-    height: 150px;
-    padding: 10px;
-    border: 2px solid #000;
-    border-radius: 10px;
-    font-size: 16px;
-    align-items: center;
-}
-.seccion-input {
-    flex: 60%;
-    background-color: var(--color-secundario);
-    border: 1px solid #000;
-    border-radius: 64px 64px 0 0;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    padding: 20px;
-    width: 100%;
-} 
-.input {
-    width: 100%;
-    padding: 10px;
-    border: 2px solid #000;
-    border-radius: 10px;
-    font-size: 16px;
-    align-items: center;
-}
-.input-texto{
-    font-size: 28px;
+    box-shadow: 5px 20px 5px #000;
 }
 
-/* Definicion de atributos para el boton rediseño */
-
-button {
-    padding: 15px 30px;
-    font-size: 16px;
-    border: 2px solid #000;
-    border-radius: 25px;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
-    cursor: pointer;
-    align-items: centerS;
-}
-
-.buton-añadir {
-    background-color: var(--color-primario);
-    color: white;
-    border: none;
-    border-radius: 5px;
-    padding: 8px 15px;
-    font-size: 0.9rem;
-    transition: all 0.3s;
-}
-
-
-.button-añadir:hover {
-    background-color: var(--color-button-hover);
-}
-
-.buton-añadir-login {
-    background-color: var(--color-primario);
-    color: white;
-    border: none;
-    border-radius: 5px;
-    padding: 12px 25px;
-    font-size: 0.9rem;
-    transition: all 0.3s;
-}
-
-.buton-añadir-login2 {
-    background-color: var(--color-primario);
-    color: white;
-    border: none;
-    border-radius: 5px;
-    padding: 15px 30px;
-    font-size: 0.9rem;
-    transition: all 0.3s;
-    max-width:300px;
-
-}
-
-
-.button-añadir-login:hover {
-    background-color: var(--color-button-hover);
-}

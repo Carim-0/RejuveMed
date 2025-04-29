@@ -49,10 +49,10 @@
         $duracion = (int)$_POST['duracion'];
 
         if (!empty($fecha) && !empty($hora) && !empty($IDtratamiento) && !empty($IDpaciente)) {
-            // Combine date and time
+            // Combinar fecha y hora
             $datetime = $fecha . ' ' . $hora . ':00';
             
-            // Validate time range
+            // Validar el timepo entre las 10 am y 6 pm
             $horaMin = '10:00:00';
             $horaMax = '18:00:00';
             $horaCompleta = $hora . ':00';
