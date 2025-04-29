@@ -55,7 +55,6 @@
         }
     }
 ?>
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -66,30 +65,27 @@
     <title>Rejuvemet -> Login </title>
 </head>
 <body> 
-    
+
 <div class="main">
-    <div class="login-container">
-        <form method="post" class="login-form">
-            <h1 class="login-title">Login</h1>
-            
-            <div class="input-group">
-                <input type="text" name="username" placeholder="Usuario" required>
-            </div>
-            
-            <div class="input-group">
-                <input type="password" name="password" placeholder="Contraseña" required>
-            </div>
-            
-            <button type="submit" class="btn-primary">Iniciar sesión</button>
-            
-            <div class="secondary-actions">
-                <button type="button" class="btn-secondary" onclick="window.location.href='signup.php'">
-                    Regístrate
-                </button>
-            </div>
-        </form>
+        <div class="login">
+            <form method="post">
+                <label class="login-title" aria-hidden="true">Login</label>
+                
+                <div class="input-group">
+                    <input type="text" name="username" class="input-medio" placeholder="Usuario" required>
+                </div>
+                
+                <div class="input-group">
+                    <input type="password" name="password" class="input-medio" placeholder="Contraseña" required>
+                </div>
+                <button type="submit" class="buton">Iniciar sesión</button>
+                </form>
+                
+                <div class="button-container">
+                    <button class="button" onclick="window.location.href='signup.php'">Registrate</button>
+                </div>
+        </div>
     </div>
-</div>
           </section><!--fin de sección ingreso de datos-->
           <script src="JS/app.js" defer></script>
           </main><!--cierre contenedor main-->
