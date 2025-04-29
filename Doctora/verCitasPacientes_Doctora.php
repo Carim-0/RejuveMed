@@ -606,12 +606,22 @@ if ($_SERVER['REQUEST_METHOD'] == "POST" && isset($_POST['agendar_cita'])) {
           
           <div class="form-grid">
             <div class="form-group">
-              <label for="fecha">Fecha</label>
-              <input type="date" id="fecha" name="fecha"  required min="<?php echo date('Y-m-d', strtotime('+1 days')); ?>" >
+                    <label for="fecha"><i class="far fa-calendar-alt"></i> Fecha*</label>
+                    <input type="date" id="fecha" name="fecha" required min="<?php 
+                        $minDate = new DateTime('now');
+                        $minDate->modify('+1 day');
+                        echo $minDate->format('Y-m-d'); 
+                    ?>">
             </div>
             <div class="form-group">
-              <label for="hora">Hora</label>
-              <input type="time" id="hora" name="hora" required min="10:00" max="18:00"  step="3600">
+                    <label for="hora"><i class="far fa-clock"></i> Hora*</label>
+                    <select id="hora" name="hora" required>
+                        <option value="">Seleccione una hora</option>
+                        <?php 
+                        for ($h = 10; $h <= 17; $h++) {
+                            echo '<option value="'.str_pad($h, 2, '0', STR_PAD_LEFT).':00">'.str_pad($h, 2, '0', STR_PAD_LEFT).':00</option>';
+                        }
+                        ?>
             </div>
           </div>
          
