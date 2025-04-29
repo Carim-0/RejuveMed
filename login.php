@@ -78,7 +78,7 @@
                 <div class="input-group">
                     <input type="password" name="password" class="input-medio" placeholder="Contraseña" required>
                 </div>
-                <button type="submit" class="buton">Iniciar sesión</button>
+                <button type="submit" class="primary-btn">Iniciar sesión</button>
                 </form>
                 
                 <div class="button-container">

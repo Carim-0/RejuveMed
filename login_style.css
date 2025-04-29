@@ -180,6 +180,16 @@ textarea {
     border-top: 1px solid #eee;
 }
 
+.primary-btn {
+    background: #6c5ce7;
+    color: white;
+    padding: 12px 20px;
+    border: none;
+    border-radius: 8px;
+    font-size: 1rem;
+    cursor: pointer;
+}
+
 .secondary-btn {
     width: 60%;
     height: 40px;
