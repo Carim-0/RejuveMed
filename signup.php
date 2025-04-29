@@ -42,7 +42,7 @@ session_start();
     <title>Rejuvemet -> Agregar usuarios</title>
 </head>
 <body>
-    <div class="main">
+
         <div class="signup">
             <form method="post">
                 <label aria-hidden="true">Registro</label>
@@ -55,7 +55,7 @@ session_start();
                 
                 <input type="password" name="password" class="input-medio" placeholder="Contraseña" required>
                 
-                <textarea name="detalles" class="input-medio" placeholder="Detalles adicionales" rows="3"></textarea>
+                <textarea aling="center" name="detalles" class="input-medio" placeholder="Detalles adicionales" rows="3"></textarea>
 
                 <button type="submit" class="buton">Registrarse</button>
                 
@@ -64,7 +64,7 @@ session_start();
                 </div>
             </form>
         </div>
-    </div>
+
     <script src="JS/app.js" defer></script>
 </body>
 </html>
