@@ -100,7 +100,7 @@ button:hover{
 .login{
     height: 460px;
     background:#eee;
-    border-radius: 60% / 40%;
+    border-radius: 60% / 10%;
     transform: translateY(40px);
     transition: .8s ease-in-out;
 }
@@ -135,4 +135,8 @@ button:hover{
     margin-top: 1.5rem;
 }
     
+.justified {
+    display: flex;
+    justify-content: center;
+}
 
