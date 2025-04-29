@@ -93,20 +93,18 @@ if ($_SERVER['REQUEST_METHOD'] == "POST" && isset($_POST['agendar_cita'])) {
     $paciente_id = $_POST['paciente_id'];
     $estado = 'Pendiente';
 
-    // Combine date and time into a single datetime value
-    $datetime = $fecha . ' ' . $hora;
-
-    // Calculate fechaFin by adding the selected duration to the start time
-    $startDateTime = new DateTime($datetime);
-    $startDateTime->modify("+$duracion hours");
-    $fechaFin = $startDateTime->format('Y-m-d H:i:s');
-
-    // Validate that the hour is within the allowed range
-    if ($hora < "10:00:00" || $hora > "18:00:00" || $startDateTime->format('H:i') > "18:00") {
-        echo "<script>alert('La hora debe estar entre las 10:00 AM y las 6:00 PM.');</script>";
-        echo "<script>window.location.href = 'verCitasPacientes_Doctora.php';</script>";
-        exit;
-    }
+     // Combinar fecha y hora
+     $datetime = $fecha . ' ' . $hora . ':00';
+            
+     // Validar el timepo entre las 10 am y 6 pm
+     $horaMin = '10:00:00';
+     $horaMax = '18:00:00';
+     $horaCompleta = $hora . ':00';
+     
+     if ($horaCompleta < $horaMin || $horaCompleta > $horaMax) {
+         showSweetAlert('error', 'Error', 'La hora debe estar entre las 10:00 AM y 6:00 PM.', 'pacienteAgendarCita_Personal.php');
+         exit;
+     }
 
     // Check for overlapping appointments
     $query = "SELECT * FROM Citas WHERE (fecha <= ? AND fechaFin >= ?)";
