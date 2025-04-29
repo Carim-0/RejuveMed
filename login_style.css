@@ -27,7 +27,7 @@ body {
     overflow: hidden;
     background: url("IMG/fondologin.jpg") no-repeat center / cover;
     border-radius: 10px;
-    box-shadow: 5px 60px 5px #000;
+    box-shadow: 5px 15px 10px #000;
 }
 
 #ckk{
