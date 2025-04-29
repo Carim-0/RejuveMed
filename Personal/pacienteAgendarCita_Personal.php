@@ -27,6 +27,13 @@ function showSweetAlert($icon, $title, $text, $redirect = null, $preserveFormDat
             document.getElementById('hora').value = localStorage.getItem('tempHora');
             document.getElementById('IDtratamiento').value = localStorage.getItem('tempTratamiento');
             updateDuration();
+            
+            const fecha = localStorage.getItem('tempFecha');
+            if (fecha) {
+                fetch(`pacienteAgendarCita_Personal.php?get_occupied_hours=1&fecha=\${fecha}`)
+                    .then(response => response.json())
+                    .then(occupiedHours => updateTimePicker(occupiedHours));
+            }
         } })";
     }
     echo ";});
@@ -106,7 +113,7 @@ if ($_SERVER['REQUEST_METHOD'] == "POST") {
         $query = "SELECT duracion FROM Tratamientos WHERE IDtratamiento = '$IDtratamiento'";
         $duracion_result = mysqli_query($con, $query);
         if (!$duracion_result || mysqli_num_rows($duracion_result) == 0) {
-            showSweetAlert('error', 'Error', 'Tratamiento no válido.', null, true);
+            showSweetAlert('error', 'Error', 'Tratamiento no válido o no encontrado.', null, true);
             exit;
         }
         
@@ -148,7 +155,14 @@ if ($_SERVER['REQUEST_METHOD'] == "POST") {
             // Validar que no pase de las 18:00 horas (permitir exactamente 18:00)
             $horaFin = $datetimeFinLocal->format('H:i:s');
             if ($horaFin > $horaMax) {
-                showSweetAlert('error', 'Error', 'El tratamiento no puede terminar después de las 18:00. Por favor, elija una hora más temprana.', null, true);
+                showSweetAlert('error', 'Error', 'El tratamiento no puede terminar después de las 18:00. Por favor, elija una hora más temprana o un tratamiento más corto.', null, true);
+                exit;
+            }
+            
+            // Validar citas después de 17:00 (incluyendo las 17:00 exactas)
+            $hora17 = new DateTime($fecha . ' 17:00:00');
+            if ($datetimeLocal >= $hora17 && $duracion > 1) {
+                showSweetAlert('error', 'Error', 'Solo se permiten citas de 1 hora después de las 17:00.', null, true);
                 exit;
             }
             
@@ -167,7 +181,7 @@ if ($_SERVER['REQUEST_METHOD'] == "POST") {
             }
 
             if (mysqli_num_rows($result) > 0) {
-                showSweetAlert('warning', 'Horario ocupado', 'Ya existe una cita en ese horario.', null, true);
+                showSweetAlert('warning', 'Horario ocupado', 'Ya existe una cita en ese horario. Por favor, elija otro.', null, true);
             } else {
                 // Insert appointment
                 $query = "INSERT INTO Citas (IDpaciente, IDtratamiento, fecha, fechaFin) 
@@ -183,14 +197,14 @@ if ($_SERVER['REQUEST_METHOD'] == "POST") {
                     </script>";
                     showSweetAlert('success', '¡Éxito!', 'Cita agendada correctamente', 'verCitasPacientes_Personal.php');
                 } else {
-                    showSweetAlert('error', 'Error', 'Error al agendar: ' . mysqli_error($con), null, true);
+                    showSweetAlert('error', 'Error', 'Error al agendar la cita: ' . mysqli_error($con), null, true);
                 }
             }
         } catch (Exception $e) {
-            showSweetAlert('error', 'Error', 'Formato de fecha/hora inválido.', null, true);
+            showSweetAlert('error', 'Error', 'Formato de fecha/hora inválido: ' . $e->getMessage(), null, true);
         }
     } else {
-        showSweetAlert('error', 'Error', 'Complete todos los campos.', null, true);
+        showSweetAlert('error', 'Error', 'Por favor, complete todos los campos requeridos.', null, true);
     }
 }
 ?>
@@ -575,6 +589,14 @@ if ($_SERVER['REQUEST_METHOD'] == "POST") {
                 
                 // Actualizar hora de fin automáticamente
                 updateHoraFin();
+                
+                // Actualizar disponibilidad de horarios
+                const fecha = document.getElementById("fecha").value;
+                if (fecha) {
+                    fetch(`pacienteAgendarCita_Personal.php?get_occupied_hours=1&fecha=${fecha}`)
+                        .then(response => response.json())
+                        .then(occupiedHours => updateTimePicker(occupiedHours));
+                }
             } else {
                 duracionDisplay.textContent = "Seleccione un tratamiento";
                 duracionInput.value = "";
@@ -594,7 +616,7 @@ if ($_SERVER['REQUEST_METHOD'] == "POST") {
 
             if (duracion && horaInicio && fechaInicio) {
                 const [hours, minutes] = horaInicio.split(":").map(Number);
-                const fechaFin = new Date(`${fechaInicio}T${horaInicio}`);
+                const fechaFin = new Date(`${fechaInicio}T${horaInicio}:00`);
                 fechaFin.setHours(fechaFin.getHours() + duracion);
 
                 const horaFin = fechaFin.getHours();
@@ -616,12 +638,16 @@ if ($_SERVER['REQUEST_METHOD'] == "POST") {
         function updateTimePicker(occupiedHours) {
             const timeSelect = document.getElementById("hora");
             const options = timeSelect.querySelectorAll("option");
+            const tratamientoSelect = document.getElementById("IDtratamiento");
+            const duracion = tratamientoSelect.options[tratamientoSelect.selectedIndex]?.getAttribute("data-duracion") || 0;
+            const fecha = document.getElementById("fecha").value;
             
             // Reset all options
             options.forEach(option => {
                 if (option.value !== "") {
                     option.disabled = false;
                     option.style.color = '';
+                    option.title = '';
                 }
             });
             
@@ -634,9 +660,39 @@ if ($_SERVER['REQUEST_METHOD'] == "POST") {
                     if (option.value >= startHour && option.value < endHour) {
                         option.disabled = true;
                         option.style.color = '#999';
+                        option.title = "Horario ocupado";
                     }
                 });
             });
+            
+            // Validar horarios que excedan el límite
+            if (fecha && duracion) {
+                options.forEach(option => {
+                    if (option.value && !option.disabled) {
+                        const horaInicio = new Date(`${fecha}T${option.value}:00`);
+                        const horaFin = new Date(horaInicio);
+                        horaFin.setHours(horaFin.getHours() + parseInt(duracion));
+                        
+                        // Horario de cierre a las 18:00
+                        const hora18 = new Date(`${fecha}T18:00:00`);
+                        
+                        // Validar que no termine después de las 18:00
+                        if (horaFin > hora18) {
+                            option.disabled = true;
+                            option.style.color = '#999';
+                            option.title = "Esta cita excedería el horario de cierre (18:00)";
+                        }
+                        
+                        // Validar citas después de 17:00 (incluyendo las 17:00 exactas)
+                        const hora17 = new Date(`${fecha}T17:00:00`);
+                        if (horaInicio >= hora17 && duracion > 1) {
+                            option.disabled = true;
+                            option.style.color = '#999';
+                            option.title = "Solo se permiten citas de 1 hora después de las 17:00";
+                        }
+                    }
+                });
+            }
         }
 
         function validateForm() {
@@ -645,7 +701,8 @@ if ($_SERVER['REQUEST_METHOD'] == "POST") {
                 Swal.fire({
                     icon: 'error',
                     title: 'Paciente requerido',
-                    text: 'Por favor seleccione un paciente de la lista.'
+                    text: 'Por favor seleccione un paciente de la lista.',
+                    confirmButtonColor: '#3085d6'
                 });
                 return false;
             }
@@ -665,7 +722,8 @@ if ($_SERVER['REQUEST_METHOD'] == "POST") {
                 Swal.fire({
                     icon: 'error',
                     title: 'Anticipación requerida',
-                    text: `Debes agendar con al menos 1 día completo de anticipación. La primera fecha disponible es ${minAvailableDate.toLocaleDateString()}`
+                    text: `Debes agendar con al menos 1 día completo de anticipación. La primera fecha disponible es ${minAvailableDate.toLocaleDateString()}`,
+                    confirmButtonColor: '#3085d6'
                 });
                 return false;
             }
@@ -676,7 +734,8 @@ if ($_SERVER['REQUEST_METHOD'] == "POST") {
                 Swal.fire({
                     icon: 'error',
                     title: 'Horario no válido',
-                    text: 'El tratamiento debe terminar a las 18:00 como máximo. Por favor, elija una hora más temprana.'
+                    text: 'El tratamiento debe terminar a las 18:00 como máximo. Por favor, elija una hora más temprana o un tratamiento más corto.',
+                    confirmButtonColor: '#3085d6'
                 });
                 return false;
             }
@@ -684,10 +743,12 @@ if ($_SERVER['REQUEST_METHOD'] == "POST") {
             // Validar si la hora seleccionada está ocupada
             const horaSelect = document.getElementById('hora');
             if (horaSelect.options[horaSelect.selectedIndex].disabled) {
+                const motivo = horaSelect.options[horaSelect.selectedIndex].title || 'La hora seleccionada no está disponible';
                 Swal.fire({
                     icon: 'error',
-                    title: 'Horario ocupado',
-                    text: 'La hora seleccionada no está disponible. Por favor elija otra.'
+                    title: 'Horario no disponible',
+                    text: motivo,
+                    confirmButtonColor: '#3085d6'
                 });
                 return false;
             }
