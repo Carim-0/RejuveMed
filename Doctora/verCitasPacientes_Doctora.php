@@ -600,7 +600,10 @@ if ($_SERVER['REQUEST_METHOD'] == "POST" && isset($_POST['agendar_cita'])) {
 </ul>
 
         <!-- Formulario de Nueva Cita -->
-        <h3 class="section-title"><i class="fas fa-plus-circle"></i> Nueva Cita</h3>
+        <div class="appointment-container">
+        <div class="appointment-header">
+            <h2><i class="fas fa-calendar-plus"></i> Agendar Nueva Cita</h2>
+        </div>  
         <form method="POST" id="citaForm" class="appointment-form">
           <input type="hidden" name="paciente_id" value="<?= $paciente_actual['IDpaciente'] ?>">
           
@@ -614,15 +617,8 @@ if ($_SERVER['REQUEST_METHOD'] == "POST" && isset($_POST['agendar_cita'])) {
                     ?>">
             </div>
             <div class="form-group">
-                    <label for="hora"><i class="far fa-clock"></i> Hora*</label>
-                    <select id="hora" name="hora" required>
-                        <option value="">Seleccione una hora</option>
-                        <?php 
-                        for ($h = 10; $h <= 17; $h++) {
-                            echo '<option value="'.str_pad($h, 2, '0', STR_PAD_LEFT).':00">'.str_pad($h, 2, '0', STR_PAD_LEFT).':00</option>';
-                        }
-                        ?>
-                    </select>
+              <label for="hora">Hora</label>
+              <input type="time" id="hora" name="hora" required min="10:00" max="18:00"  step="3600">
             </div>
           </div>
          
