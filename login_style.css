@@ -2,7 +2,7 @@
 
 /*Definimos los colores predertminados */
 body {
-    --color-primario: #1a37b5;
+    --color-primario: #4a6fa5;
     --color-secundario: #FFF9EB;
     --color-terciario: #C4C4C4;
     --color-button: #fe652b;
@@ -71,7 +71,7 @@ button{
     justify-content: center;
     display: block ;
     color: #FFFFFF;
-    background: #1a37b5;
+    background: #4a6fa5;
     font-size: 1em;
     font-weight: bold;
     margin-top: 20px;
@@ -83,7 +83,7 @@ button{
 }
 
 button:hover{
-    background:#1a37b5;
+    background:#4a6fa5;
 }
 
 .login{
@@ -95,7 +95,7 @@ button:hover{
 }
     
 .login label{
-    color:#6b8cae;
+    color:#41668a;
     transform: scale(.6);   
 }
     
