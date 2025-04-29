@@ -100,7 +100,7 @@ button:hover{
 .login{
     height: 460px;
     background:#eee;
-    border-radius: 40% / 40%;
+    border-radius: 60% / 40%;
     transform: translateY(40px);
     transition: .8s ease-in-out;
 }
@@ -114,6 +114,25 @@ button:hover{
 .login label{
     color:#41668a;
     transform: scale(.6);   
+}
+
+/* Espaciado entre elementos */
+.input-group {
+    margin-bottom: 1.2rem;
+}
+
+.login-title {
+    display: block;
+    margin-bottom: 2rem;
+    font-size: 1.5rem;
+}
+
+.buton {
+    margin-top: 1rem;
+}
+
+.button-container {
+    margin-top: 1.5rem;
 }
     
 

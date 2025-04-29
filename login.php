@@ -67,20 +67,27 @@
 </head>
 <body> 
 
-            <div class="main">
-                <!-- <input type="checkbox" id="ckk" aria-hidden="true"> -->
-
-                <div class="login">
-                    <form method="post">
-                        <label  aria-hidden="true">Login</label>
-                        <input type="text" name="username" class="input-medio" placeholder="Usuario: " required><br><br>
-                        <input type="password" name="password" class="input-medio" placeholder="Contraseña: " required><br><br>
-                        <button type="submit" class="buton" aling="center">Iniciar sesión</button>
-                    </form>
-                      <div class="button">
-                          <button class="buton" onclick="window.location.href='signup.php'">Registrate</button>
-                      </div>
+<div class="main">
+        <div class="login">
+            <form method="post">
+                <label class="login-title" aria-hidden="true">Login</label>
+                
+                <div class="input-group">
+                    <input type="text" name="username" class="input-medio" placeholder="Usuario" required>
                 </div>
+                
+                <div class="input-group">
+                    <input type="password" name="password" class="input-medio" placeholder="Contraseña" required>
+                </div>
+
+                <button type="submit" class="buton">Iniciar sesión</button>
+                
+                <div class="button-container">
+                    <button class="button" onclick="window.location.href='signup.php'">Registrate</button>
+                </div>
+            </form>
+        </div>
+    </div>
           </section><!--fin de sección ingreso de datos-->
           <script src="JS/app.js" defer></script>
           </main><!--cierre contenedor main-->
