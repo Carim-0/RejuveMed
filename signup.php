@@ -59,10 +59,7 @@ session_start();
                 <textarea name="detalles" class="input-medio" placeholder="Detalles adicionales" rows="3"></textarea>
                 </div>
                 <button type="submit" class="buton">Registrarse</button>
-                
-                <div class="button">
-                    <button class="buton" onclick="window.location.href='login.php'">Volver a Login</button>
-                </div>
+                <button class="buton" onclick="window.location.href='login.php'">Volver a Login</button>
             </form>
         </div>
 
