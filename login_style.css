@@ -16,8 +16,8 @@ body {
     align-items: center;
     display: flex;
     min-height: 100vh;
-    font-family: 'Jost',sans-serif;
-    background: linear-gradient(to bottom, #161f44,#28436b, #6b8cae);
+    font-family: 'Jost', sans-serif;
+    background: linear-gradient(to bottom, #eaeaeb,#535455, #262627);
 }
 
 .main{
@@ -25,9 +25,9 @@ body {
     height: 550px;
     background: red;
     overflow: hidden;
-    background: url("IMG/fondologin.jpg") no-repeat center / cover;
+    background: url("IMG/fondo2.jpg") no-repeat center / cover;
     border-radius: 10px;
-    box-shadow: 8px 10px 30px #000;
+    box-shadow: 8px 10px 50px #000;
 }
 
 #ckk{
@@ -77,7 +77,7 @@ button{
     margin-top: 20px;
     border:none;
     outline: none;
-    border-radius: 25px;
+    border-radius: 10px;
     transition: 2s ease-in;
     cursor: pointer;
 }

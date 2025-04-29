@@ -73,15 +73,11 @@
                 <div class="login">
                       <form method="post">
                           <label aria-hidden="true">Login</label>
-                          <div class="input">
-                              <input type="text" name="username" class="input-medio" placeholder="Usuario: " required><br><br>
-                          </div>
-                          <div class="input">
-                              <input type="password" name="password" class="input-medio" placeholder="Contraseña: " required><br><br>
-                          </div>
-                          <div class="input">
-                              <button type="submit" class="buton" aling="center">Iniciar sesión</button>
-                          </div>
+                            <input type="text" name="username" class="input-medio" placeholder="Usuario: " required><br><br>
+                            <input type="password" name="password" class="input-medio" placeholder="Contraseña: " required><br><br>
+                     
+                             <button type="submit" class="buton" aling="center">Iniciar sesión</button>
+                          
                       </form>
                       <div class="button">
                           <button class="buton" onclick="window.location.href='signup.php'">Registrate</button>
