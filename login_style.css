@@ -99,7 +99,7 @@ button:hover{
     height: 460px;
     background:#eee;
     border-radius: 70% / 10%;
-    transform: translateY(55px);
+    transform: translateY(70px);
     transition: .8s ease-in-out;
 }
 .signup {
