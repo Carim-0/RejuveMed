@@ -62,25 +62,15 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="login_style.css">
+    <link href = "https://fonts.googleapis.com/css2?family=Jost:wght@500&display=swap" rel ="login_style.css">
     <title>Rejuvemet -> Login </title>
 </head>
 <body> 
-        <!--Inicializamos con el contenedor main-->
-        <main class="contenedor-main">
-            <!--Inicializamos de cabezera-->
-            <header class="cabezera-cliente">
-              <img src="IMG/imagenlogin.png" height="60px" width="60px" aling="center" >
-              <h1 class="titulo-usuario">Iniciar sesión</h1>
-            </header>
-            <!--Inicializacion de parte de ingreso de datos-->
-          <section class="seccion-input">
-            <div class="contenedor-login">
-                      <div class="estilo-input">
-                      <img src="IMG/logoRejuvemet.png" alt="Imagen representativa login" height="200px" width="200px" aling="center">
-                      </div>
-                      <div class="estilo-input">
-                      <h2 class="seccion-titulo">Ingresa tus datos</h2>
-                      </div>
+
+            <div class="main">
+                <!-- <input type="checkbox" id="ckk" aria-hidden="true"> -->
+
+                <div class="login">
                       <form method="post">
                           <div class="estilo-input">
                               <input type="text" name="username" class="input-medio" placeholder="Usuario: " required><br><br>
@@ -92,12 +82,10 @@
                               <button type="submit" class="buton-añadir-login" aling="center">Iniciar sesión</button>
                           </div>
                       </form>
-                      <div class="estilo-input">
+                      <div class="btnSign-input">
                           <button class="buton-añadir-login" onclick="window.location.href='signup.php'">Registrate</button>
                       </div>
-                      <br><br>
-                      <h2 class="seccion-titulo">¿Olvido su contraseña?</h2>
-            </div>
+                </div>
           </section><!--fin de sección ingreso de datos-->
           <script src="JS/app.js" defer></script>
           </main><!--cierre contenedor main-->
