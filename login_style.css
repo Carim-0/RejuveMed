@@ -27,7 +27,7 @@ body {
     overflow: hidden;
     background: url("IMG/fondologin.jpg") no-repeat center / cover;
     border-radius: 10px;
-    box-shadow: 10px 12px 10px #000;
+    box-shadow: 10px 12px 30px #000;
 }
 
 #ckk{
@@ -90,7 +90,7 @@ button:hover{
 .login{
     height: 460px;
     background:#eee;
-    border-radius: 80% / 10%;
+    border-radius: 60% / 800%;
     transform: translateY(180px);
     transition: .8s ease-in-out;
 }
