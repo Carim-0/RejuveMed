@@ -76,8 +76,10 @@
                         <input type="text" name="username" class="input-medio" placeholder="Usuario: " required><br><br>
                         <input type="password" name="password" class="input-medio" placeholder="Contraseña: " required><br><br>
                         <button type="submit" class="buton" aling="center">Iniciar sesión</button>
-                        <button class="buton" onclick="window.location.href='signup.php'">Registrate</button>
                     </form>
+                      <div class="button">
+                          <button class="buton" onclick="window.location.href='signup.php'">Registrate</button>
+                      </div>
                 </div>
           </section><!--fin de sección ingreso de datos-->
           <script src="JS/app.js" defer></script>
