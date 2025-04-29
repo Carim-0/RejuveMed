@@ -46,6 +46,7 @@ label{
     font-weight: bold;
     cursor: pointer;
     transition: .5s ease-in-out;
+    margin: 30px 0 20px 0; /* Ajustar márgenes */
 }
 
 .sign{
@@ -100,7 +101,6 @@ button:hover{
     border-radius: 70% / 10%;
     transform: translateY(55px);
     transition: .8s ease-in-out;
-    margin: 30px 0 20px 0; /* Ajustar márgenes */
 }
 .signup {
     width: 400px;
