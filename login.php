@@ -70,7 +70,7 @@
             <div class="main">
                 <!-- <input type="checkbox" id="ckk" aria-hidden="true"> -->
 
-                <div class="estilo-input">
+                <div class="login">
                       <form method="post">
                           <label aria-hidden="true">Log in</label>
                           <div class="input">
