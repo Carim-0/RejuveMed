@@ -321,6 +321,10 @@
         <button class="main-button" onclick="location.href='tablaPacientes.php'">
             <i class="fas fa-users"></i> Ver Pacientes
         </button>
+
+        <button class="main-button" onclick="location.href='calendario_Personal.php'">
+            <i class="fas fa-calendar"></i> Calendario
+        </button>
         
          <!-- Botón de Citas de Hoy con badge -->
          <div class="citas-btn-container">
