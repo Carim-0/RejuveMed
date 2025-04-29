@@ -86,12 +86,12 @@ button:hover{
     background:#1a37b5;
 }
 
-.login{
-    height: 460px;
-    background:#eee;
-    border-radius: 60% / 10%;
-    transform: translateY(180px);
-    transition: .8s ease-in-out;
+.estilo-input {
+    display: flex;
+    justify-content: center;
+    width: 100%;
+    max-width: 800px;
+    margin-top: 20px;
 }
     
 .login label{
