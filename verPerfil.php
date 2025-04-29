@@ -262,11 +262,15 @@
         </div>
         
         <button class="btn-edit-password" onclick="window.location.href='editarPerfil.php'">
-            <i class="fas fa-key"></i> Editar Contraseña/Telefono
+            <i class="fas fa-pencil"></i> Editar 
         </button>
         
         <button class="btn-salir" onclick="window.location.href='logout.php'">
             <i class="fas fa-sign-out-alt"></i> Cerrar Sesión
+        </button>
+
+        <button class="btn-salir" onclick="history.back()">
+        <i class="fas fa-arrow-left"></i> Volver
         </button>
     </div>
 

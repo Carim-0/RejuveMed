@@ -301,12 +301,12 @@
             </div>
             
             <button type="submit" name="update_profile" class="btn-edit-password">
-                <i class="fas fa-key"></i> Confirmar cambios
+                <i class="fas fa-save"></i> Confirmar cambios
             </button>
         </form>
         
         <button class="btn-salir" onclick="window.location.href='verPerfil.php'">
-            <i class="fas fa-sign-out-alt"></i> Cancelar
+            <i class="fas fa-cancel"></i> Cancelar
         </button>
     </div>
 
