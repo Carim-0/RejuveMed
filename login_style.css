@@ -17,7 +17,7 @@ body {
     display: flex;
     min-height: 100vh;
     font-family: 'Jost', sans-serif;
-    background: linear-gradient(to bottom right, #b4b4b4,#5a5a63,#34343b, #1a1a1f);
+    background: linear-gradient(to bottom right, #b4b4b4,#5a5a63,#34343b, #181824);
 }
 
 .main{
@@ -89,7 +89,7 @@ button:hover{
 .login{
     height: 460px;
     background:#eee;
-    border-radius: 45% / 10%;
+    border-radius: 20% / 10%;
     transform: translateY(40px);
     transition: .8s ease-in-out;
 }
