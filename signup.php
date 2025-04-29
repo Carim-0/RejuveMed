@@ -45,7 +45,7 @@ session_start();
 
         <div class="signup">
             <form method="post">
-                <label aria-hidden="true">Registro</label>
+                <label class="sign" aria-hidden="true">Registro</label>
                 
                 <input type="text" name="username" class="input-medio" placeholder="Nombre completo" required>
                 

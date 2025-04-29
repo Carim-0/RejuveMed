@@ -51,6 +51,17 @@ label{
     transition: .5s ease-in-out;
 }
 
+.sign{
+    color: #3b5b8b;
+    font-size: 3em;
+    justify-content: center;
+    display: flex;
+    margin: 60px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: .5s ease-in-out;
+}
+
 input{
     width: 60%;
     height: 20px;
