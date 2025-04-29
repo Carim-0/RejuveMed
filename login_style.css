@@ -17,7 +17,7 @@ body {
     display: flex;
     min-height: 100vh;
     font-family: 'Jost', sans-serif;
-    background: linear-gradient(to bottom, #c1c1c2,#33353b, #1a1a1f);
+    background: linear-gradient(to bottom right, #b4b4b4,#5a5a63,#34343b, #1a1a1f);
 }
 
 .main{
@@ -90,7 +90,7 @@ button:hover{
     height: 460px;
     background:#eee;
     border-radius: 60% / 10%;
-    transform: translateY(60px);
+    transform: translateY(40px);
     transition: .8s ease-in-out;
 }
     
