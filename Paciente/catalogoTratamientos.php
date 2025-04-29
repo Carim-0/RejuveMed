@@ -206,6 +206,10 @@
     <button class="main-button" onclick="window.location.href='VerHistorial_Paciente.php'">
         <i class="fas fa-history"></i> Ver Historial Clínico
     </button>
+
+    <button class="main-button" onclick="window.location.href='calendario_Paciente.php'">
+        <i class="fas fa-calendar"></i> Calendario
+    </button>
 </div>
 
 
