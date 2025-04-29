@@ -63,6 +63,10 @@ if (isset($_GET['id']) && is_numeric($_GET['id'])) {
         $query_delete_historial = "DELETE FROM `Historial Medico` WHERE IDpaciente = $id_paciente";
         mysqli_query($con, $query_delete_historial);
         
+        //eliminar citas si existen
+        $query_delete_citas = "DELETE FROM Citas WHERE IDpaciente = $id_paciente";
+        mysqli_query($con, $query_delete_citas);
+
         // 5. Eliminar el paciente
         $query_delete_paciente = "DELETE FROM Pacientes WHERE IDpaciente = $id_paciente";
         $result_delete = mysqli_query($con, $query_delete_paciente);
