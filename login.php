@@ -67,9 +67,10 @@
 <body> 
 
 <div class="main">
+        <label class="login-title" aria-hidden="true">Login</label>
         <div class="login">
             <form method="post">
-                <label class="login-title" aria-hidden="true">Login</label>
+                
                 
                 <div class="input-group">
                     <input type="text" name="username" class="input-medio" placeholder="Usuario" required>
