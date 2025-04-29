@@ -93,6 +93,12 @@ button:hover{
     transform: translateY(40px);
     transition: .8s ease-in-out;
 }
+
+.signup{
+    width: 400px;
+    height: 550px;
+    background:#eee;
+}
     
 .login label{
     color:#41668a;

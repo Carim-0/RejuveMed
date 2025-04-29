@@ -43,7 +43,7 @@ session_start();
 </head>
 <body>
     <div class="main">
-        <div class="login">
+        <div class="signup">
             <form method="post">
                 <label aria-hidden="true">Registro</label>
                 
