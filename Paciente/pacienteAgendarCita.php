@@ -55,7 +55,7 @@ if (isset($_GET['get_occupied_hours'])) {
     $occupiedHours = [];
     
     $query = "SELECT TIME(fecha) as hora, TIME(fechaFin) as horaFin FROM Citas 
-             WHERE DATE(fecha) = '$fecha'";
+         WHERE DATE(fecha) = '$fecha' AND estado != 'Cancelada'";
     $result = mysqli_query($con, $query);
     
     while ($row = mysqli_fetch_assoc($result)) {
@@ -122,7 +122,7 @@ if ($_SERVER['REQUEST_METHOD'] == "POST") {
 
         // Verificar solapamiento de citas
         $query = "SELECT * FROM Citas WHERE 
-                 (fecha < '$fechaFin' AND fechaFin > '$datetime')";
+         (fecha < '$fechaFin' AND fechaFin > '$datetime') AND estado != 'Cancelada'";
         $result = mysqli_query($con, $query);
 
         if (mysqli_num_rows($result) > 0) {
@@ -300,10 +300,11 @@ if ($_SERVER['REQUEST_METHOD'] == "POST") {
             background-color: rgba(74, 111, 165, 0.1);
         }
         
-        option:disabled {
-            color: #999 !important;
-            background-color: #f5f5f5;
-        }
+        option:disabled, option.disabled-option {
+    color: #999 !important;
+    background-color: #f5f5f5 !important;
+    cursor: not-allowed;
+}
         
         .duration-display {
             background-color: #f5f5f5;
@@ -496,64 +497,70 @@ if ($_SERVER['REQUEST_METHOD'] == "POST") {
         }
         
         function updateTimePicker(occupiedHours) {
-            const timeSelect = document.getElementById("hora");
-            const options = timeSelect.querySelectorAll("option");
-            const tratamientoSelect = document.getElementById("IDtratamiento");
-            const duracion = tratamientoSelect.options[tratamientoSelect.selectedIndex]?.getAttribute("data-duracion") || 0;
-            const fecha = document.getElementById("fecha").value;
+    const timeSelect = document.getElementById("hora");
+    const options = timeSelect.querySelectorAll("option");
+    const tratamientoSelect = document.getElementById("IDtratamiento");
+    const duracion = tratamientoSelect.options[tratamientoSelect.selectedIndex]?.getAttribute("data-duracion") || 0;
+    const fecha = document.getElementById("fecha").value;
+    
+    // Reset all options
+    options.forEach(option => {
+        if (option.value !== "") {
+            option.disabled = false;
+            option.style.color = '';
+            option.title = '';
+            option.classList.remove('disabled-option');
+        }
+    });
+    
+    // Deshabilitar horarios ocupados
+    if (occupiedHours && occupiedHours.length > 0) {
+        occupiedHours.forEach(range => {
+            const startHour = range.start.substring(0, 5); // Formato HH:MM
+            const endHour = range.end.substring(0, 5);
             
-            // Reset all options
             options.forEach(option => {
-                if (option.value !== "") {
-                    option.disabled = false;
-                    option.style.color = '';
-                    option.title = '';
+                if (option.value && option.value >= startHour && option.value < endHour) {
+                    option.disabled = true;
+                    option.style.color = '#999';
+                    option.title = "Horario ocupado";
+                    option.classList.add('disabled-option');
                 }
             });
-            
-            // Deshabilitar horarios ocupados
-            occupiedHours.forEach(range => {
-                const startHour = range.start.substring(0, 5); // Formato HH:MM
-                const endHour = range.end.substring(0, 5);
+        });
+    }
+    
+    // Validar horarios que excedan el límite
+    if (fecha && duracion) {
+        options.forEach(option => {
+            if (option.value && !option.disabled) {
+                const horaInicio = new Date(`${fecha}T${option.value}:00`);
+                const horaFin = new Date(horaInicio);
+                horaFin.setHours(horaFin.getHours() + parseInt(duracion));
                 
-                options.forEach(option => {
-                    if (option.value >= startHour && option.value < endHour) {
-                        option.disabled = true;
-                        option.style.color = '#999';
-                        option.title = "Horario ocupado";
-                    }
-                });
-            });
-            
-            // Validar horarios que excedan el límite
-            if (fecha && duracion) {
-                options.forEach(option => {
-                    if (option.value && !option.disabled) {
-                        const horaInicio = new Date(`${fecha}T${option.value}:00`);
-                        const horaFin = new Date(horaInicio);
-                        horaFin.setHours(horaFin.getHours() + parseInt(duracion));
-                        
-                        // Horario de cierre a las 18:00
-                        const hora18 = new Date(`${fecha}T18:00:00`);
-                        
-                        // Validar que no termine después de las 18:00
-                        if (horaFin > hora18) {
-                            option.disabled = true;
-                            option.style.color = '#999';
-                            option.title = "Esta cita excedería el horario de cierre (18:00)";
-                        }
-                        
-                        // Validar citas después de 17:00 (incluyendo las 17:00 exactas)
-                        const hora17 = new Date(`${fecha}T17:00:00`);
-                        if (horaInicio >= hora17 && duracion > 1) {
-                            option.disabled = true;
-                            option.style.color = '#999';
-                            option.title = "Solo se permiten citas de 1 hora después de las 17:00";
-                        }
-                    }
-                });
+                // Horario de cierre a las 18:00
+                const hora18 = new Date(`${fecha}T18:00:00`);
+                
+                // Validar que no termine después de las 18:00
+                if (horaFin > hora18) {
+                    option.disabled = true;
+                    option.style.color = '#999';
+                    option.title = "Esta cita excedería el horario de cierre (18:00)";
+                    option.classList.add('disabled-option');
+                }
+                
+                // Validar citas después de 17:00
+                const hora17 = new Date(`${fecha}T17:00:00`);
+                if (horaInicio >= hora17 && duracion > 1) {
+                    option.disabled = true;
+                    option.style.color = '#999';
+                    option.title = "Solo se permiten citas de 1 hora después de las 17:00";
+                    option.classList.add('disabled-option');
+                }
             }
-        }
+        });
+    }
+}
         
         function validateForm() {
             const fechaInput = document.getElementById('fecha');
