@@ -114,7 +114,7 @@ if ($_SERVER['REQUEST_METHOD'] == "POST" && isset($_POST['agendar_cita'])) {
     $datetime = $startDateTime->format('Y-m-d H:i:s');
 
     // Check for overlapping appointments
-    $query = "SELECT * FROM Citas WHERE (fecha <= ? AND fechaFin >= ?)";
+    $query = "SELECT * FROM Citas WHERE (fecha <= ? AND fechaFin >= ?) AND estado = 'Pendiente'";
     $stmt = $con->prepare($query);
     $stmt->bind_param("ss", $fechaFin, $datetime);
     $stmt->execute();
