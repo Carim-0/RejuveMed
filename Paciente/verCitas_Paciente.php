@@ -76,7 +76,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['editar_cita'])) {
         $nueva_fecha_fin->modify("+$duracion hours");
         
         $query = "SELECT * FROM Citas WHERE 
-                 (fecha < ? AND fechaFin > ?) AND IDcita != ?";
+                 (fecha < ? AND fechaFin > ?) AND IDcita != ? and estado = 'Pendiente'";
         $stmt = $con->prepare($query);
         $fecha_fin_str = $nueva_fecha_fin->format('Y-m-d H:i:s');
         $fecha_str = $nueva_fecha_hora->format('Y-m-d H:i:s');

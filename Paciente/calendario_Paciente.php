@@ -3,14 +3,19 @@ session_start();
 include("../connection.php");
 
 // Fetch data from the Citas table
-$query = "SELECT IDcita, fecha, estado, IDpaciente, IDtratamiento FROM Citas";
+$query = "SELECT c.IDcita, c.fecha, c.fechaFin, c.estado, c.IDpaciente, p.nombre as paciente 
+          FROM Citas c
+          JOIN Pacientes p ON c.IDpaciente = p.IDpaciente
+          WHERE c.estado = 'Pendiente'";
 $result = mysqli_query($con, $query);
 
 $events = [];
 while ($row = mysqli_fetch_assoc($result)) {
+    $startTime = date('H:i', strtotime($row['fecha']));
+    $endTime = date('H:i', strtotime($row['fechaFin']));
     $events[] = [
         'id' => $row['IDcita'],
-        'title' => 'Cita - ' . $row['estado'],
+        'title' => $startTime . ' - ' . $endTime ,
         'start' => $row['fecha'],
         'url' => 'verCitasPacientes_Doctora.php?paciente_id=' . $row['IDpaciente']
     ];
@@ -206,6 +211,11 @@ $events_json = json_encode($events);
                 eventClick: function (info) {
                     // Prevent any action when clicking on an event
                     info.jsEvent.preventDefault();
+                },
+                eventContent: function (info) {
+                    return {
+                        html: `<div>${info.event.title.replace("\n", "<br>")}</div>`
+                    };
                 }
             });
 
