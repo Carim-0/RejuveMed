@@ -3,14 +3,20 @@ session_start();
 include("../connection.php");
 
 // Fetch data from the Citas table
-$query = "SELECT IDcita, fecha, estado, IDpaciente, IDtratamiento FROM Citas";
+$query = "SELECT c.IDcita, c.fecha, c.fechaFin, c.estado, c.IDpaciente, t.nombre as tratamiento, p.nombre as paciente 
+          FROM Citas c
+          JOIN Tratamientos t ON c.IDtratamiento = t.IDtratamiento
+          JOIN Pacientes p ON c.IDpaciente = p.IDpaciente
+          WHERE c.estado = 'Pendiente'";
 $result = mysqli_query($con, $query);
 
 $events = [];
 while ($row = mysqli_fetch_assoc($result)) {
+    $startTime = date('H:i', strtotime($row['fecha']));
+    $endTime = date('H:i', strtotime($row['fechaFin']));
     $events[] = [
         'id' => $row['IDcita'],
-        'title' => 'Cita - ' . $row['estado'],
+        'title' => $startTime . ' - ' . $endTime . "\n" . $row['tratamiento'] . "\nPaciente: " . $row['paciente'],
         'start' => $row['fecha'],
         'url' => 'verCitasPacientes_Personal.php?paciente_id=' . $row['IDpaciente']
     ];
@@ -209,6 +215,11 @@ $events_json = json_encode($events);
                         window.location.href = info.event.url;
                         info.jsEvent.preventDefault(); // Prevent default browser behavior
                     }
+                },
+                eventContent: function (info) {
+                    return {
+                        html: `<div>${info.event.title.replace(/\n/g, "<br>")}</div>`
+                    };
                 }
             });
 
