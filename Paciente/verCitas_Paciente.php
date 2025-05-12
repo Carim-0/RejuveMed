@@ -617,7 +617,7 @@ $stmt->close();
                         c.estado
                       FROM Citas c
                       JOIN Tratamientos t ON c.IDtratamiento = t.IDtratamiento
-                      WHERE c.IDpaciente = ?
+                      WHERE c.IDpaciente = ? AND c.estado != 'Cancelada'
                       ORDER BY c.fecha";
             
             $stmt = $con->prepare($query);
