@@ -23,6 +23,38 @@ function showSweetAlert($icon, $title, $text, $redirect = null) {
   </script>";
 }
 
+// Manejar solicitud AJAX para horarios ocupados
+if (isset($_GET['get_occupied_hours'])) {
+    $fecha = $_GET['fecha'];
+    $occupiedHours = [];
+    
+    try {
+        $query = "SELECT TIME(fecha) as hora, TIME(fechaFin) as horaFin FROM Citas 
+                 WHERE DATE(fecha) = ? AND estado != 'Cancelada'";
+        $stmt = $con->prepare($query);
+        $stmt->bind_param("s", $fecha);
+        $stmt->execute();
+        $result = $stmt->get_result();
+        
+        while ($row = $result->fetch_assoc()) {
+            $occupiedHours[] = [
+                'start' => $row['hora'],
+                'end' => $row['horaFin']
+            ];
+        }
+        
+        header('Content-Type: application/json');
+        echo json_encode($occupiedHours);
+        exit();
+        
+    } catch (Exception $e) {
+        error_log("Error al obtener horarios ocupados: " . $e->getMessage());
+        header('HTTP/1.1 500 Internal Server Error');
+        echo json_encode(['error' => $e->getMessage()]);
+        exit();
+    }
+}
+
 // Procesar búsqueda de pacientes
 $pacientes = [];
 if ($_SERVER['REQUEST_METHOD'] === 'GET' && isset($_GET['search'])) {
@@ -80,12 +112,12 @@ if ($_SERVER['REQUEST_METHOD'] == "POST" && isset($_POST['agendar_cita'])) {
     $fecha = $_POST['fecha'];
     $hora = $_POST['hora'];
     $IDtratamiento = $_POST['IDtratamiento'];
-    $duracion = (int)$_POST['duracion']; // Use the selected duration
+    $duracion = (int)$_POST['duracion'];
     $paciente_id = $_POST['paciente_id'];
     $estado = 'Pendiente';
 
     // Combine date and time into a single datetime value
-    $datetime = $fecha . ' ' . $hora;
+    $datetime = $fecha . ' ' . $hora . ':00';
 
     // Calculate fechaFin by adding the selected duration to the start time
     $startDateTime = new DateTime($datetime);
@@ -93,22 +125,20 @@ if ($_SERVER['REQUEST_METHOD'] == "POST" && isset($_POST['agendar_cita'])) {
     $fechaFin = $startDateTime->format('Y-m-d H:i:s');
 
     // Validate that the hour is within the allowed range
-    if ($hora < "10:00:00" || $hora > "18:00:00" || $startDateTime->format('H:i') > "18:00") {
-        echo "<script>alert('La hora debe estar entre las 10:00 AM y las 6:00 PM.');</script>";
-        echo "<script>window.location.href = 'verCitasPacientes_Personal.php';</script>";
+    if ($hora < "10:00" || $hora > "18:00" || $startDateTime->format('H:i') > "18:00") {
+        showSweetAlert('error', 'Horario no válido', 'La hora debe estar entre las 10:00 AM y las 6:00 PM.', null);
         exit;
     }
 
     // Check for overlapping appointments
-    $query = "SELECT * FROM Citas WHERE (fecha <= ? AND fechaFin >= ?)";
+    $query = "SELECT * FROM Citas WHERE (fecha <= ? AND fechaFin >= ?) AND estado != 'Cancelada'";
     $stmt = $con->prepare($query);
     $stmt->bind_param("ss", $fechaFin, $datetime);
     $stmt->execute();
     $result = $stmt->get_result();
-    $stmt->close();
-
+    
     if ($result->num_rows > 0) {
-        showSweetAlert('warning', 'Horario ocupado', 'Ya existe una cita en ese horario. Por favor, elija otro.', 'verCitasPacientes_Personal.php');
+        showSweetAlert('warning', 'Horario ocupado', 'Ya existe una cita en ese horario. Por favor, elija otro.', null);
     } else {
         // Insert the new appointment into the Citas table
         $query = "INSERT INTO Citas (fecha, fechaFin, IDpaciente, IDtratamiento, estado) VALUES (?, ?, ?, ?, ?)";
@@ -147,6 +177,7 @@ if ($_SERVER['REQUEST_METHOD'] == "POST" && isset($_POST['agendar_cita'])) {
       --danger-color: #dc3545;
       --border-radius: 8px;
       --box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+      --disabled-color: #cccccc;
     }
 
     * {
@@ -327,8 +358,22 @@ if ($_SERVER['REQUEST_METHOD'] == "POST" && isset($_POST['agendar_cita'])) {
       padding: 15px;
       border-radius: var(--border-radius);
       margin-bottom: 15px;
-      background-color: rgba(74, 111, 165, 0.05);
       border-left: 4px solid var(--primary-color);
+    }
+
+    .appointment-pendiente {
+      background-color: rgba(74, 111, 165, 0.1);
+      border-left-color: var(--primary-color);
+    }
+
+    .appointment-cancelada {
+      background-color: rgba(220, 53, 69, 0.1);
+      border-left-color: var(--danger-color);
+    }
+
+    .appointment-completada {
+      background-color: rgba(40, 167, 69, 0.1);
+      border-left-color: var(--success-color);
     }
 
     .appointment-field {
@@ -341,6 +386,32 @@ if ($_SERVER['REQUEST_METHOD'] == "POST" && isset($_POST['agendar_cita'])) {
     .appointment-value {
       color: var(--dark-color);
       margin-bottom: 10px;
+    }
+
+    .appointment-status {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      padding: 5px 10px;
+      border-radius: 20px;
+      font-size: 14px;
+      font-weight: 500;
+      margin-bottom: 15px;
+    }
+
+    .status-pendiente {
+      background-color: rgba(255, 193, 7, 0.2);
+      color: blue;
+    }
+
+    .status-cancelada {
+      background-color: rgba(220, 53, 69, 0.2);
+      color: var(--danger-color);
+    }
+
+    .status-completada {
+      background-color: rgba(40, 167, 69, 0.2);
+      color: var(--success-color);
     }
 
     .appointment-actions {
@@ -457,6 +528,21 @@ if ($_SERVER['REQUEST_METHOD'] == "POST" && isset($_POST['agendar_cita'])) {
       color: var(--secondary-color);
     }
 
+    /* Time picker styles */
+    option:disabled, option.disabled-option {
+      color: #999 !important;
+      background-color: #f5f5f5 !important;
+      cursor: not-allowed;
+    }
+    
+    .duration-display {
+      background-color: #f5f5f5;
+      padding: 12px 15px;
+      border-radius: 8px;
+      border: 1px solid #ddd;
+      font-size: 15px;
+    }
+
     /* Responsive */
     @media (max-width: 1024px) {
       body {
@@ -549,35 +635,48 @@ if ($_SERVER['REQUEST_METHOD'] == "POST" && isset($_POST['agendar_cita'])) {
 
         <h3 class="section-title"><i class="fas fa-calendar-check"></i> Citas Agendadas</h3>
         <ul class="appointments-list">
-    <?php if (!empty($citas)): ?>
-        <?php foreach ($citas as $cita): ?>
-            <li class="appointment-item">
+          <?php if (!empty($citas)): ?>
+            <?php foreach ($citas as $cita): 
+              // Determinar clase CSS según el estado
+              $clase_estado = 'appointment-' . strtolower($cita['estado']);
+              $clase_status = 'status-' . strtolower($cita['estado']);
+              
+              // Formatear fecha y hora
+              $fecha_obj = new DateTime($cita['fecha']);
+              $fecha_formateada = $fecha_obj->format('d/m/Y H:i');
+            ?>
+              <li class="appointment-item <?= $clase_estado ?>">
+                <span class="appointment-status <?= $clase_status ?>">
+                  <?php 
+                    $icono = (strtolower($cita['estado']) == 'pendiente') ? 'fa-clock' : 
+                            ((strtolower($cita['estado']) == 'cancelada') ? 'fa-times-circle' : 'fa-check-circle');
+                  ?>
+                  <i class="fas <?= $icono ?>"></i> <?= htmlspecialchars($cita['estado']) ?>
+                </span>
+                
                 <div class="appointment-field">Fecha y Hora</div>
-                <div class="appointment-value"><?= htmlspecialchars($cita['fecha']) ?></div>
+                <div class="appointment-value"><?= htmlspecialchars($fecha_formateada) ?></div>
                 
                 <div class="appointment-field">Tratamiento</div>
                 <div class="appointment-value"><?= htmlspecialchars($cita['tratamiento']) ?></div>
-                
-                <div class="appointment-field">Estado</div>
-                <div class="appointment-value"><?= htmlspecialchars($cita['estado']) ?></div>
                 
                 <div class="appointment-field">Duración</div>
                 <div class="appointment-value"><?= htmlspecialchars($cita['duracion_real']) ?> hora<?= $cita['duracion_real'] > 1 ? 's' : '' ?></div>
                 
                 <div class="appointment-actions">
-                    <a href="editarCita_Personal.php?id=<?= $cita['IDcita'] ?>" class="edit-link">
-                        <i class="fas fa-edit"></i> Editar Cita
-                    </a>
+                  <a href="editarCita_Personal.php?id=<?= $cita['IDcita'] ?>" class="edit-link">
+                    <i class="fas fa-edit"></i> Editar Cita
+                  </a>
                 </div>
-            </li>
-        <?php endforeach; ?>
-    <?php else: ?>
-        <div class="empty-state">
-            <i class="far fa-calendar-times"></i>
-            <p>No hay citas agendadas</p>
-        </div>
-    <?php endif; ?>
-</ul>
+              </li>
+            <?php endforeach; ?>
+          <?php else: ?>
+            <div class="empty-state">
+              <i class="far fa-calendar-times"></i>
+              <p>No hay citas agendadas</p>
+            </div>
+          <?php endif; ?>
+        </ul>
 
         <!-- Formulario de Nueva Cita -->
         <h3 class="section-title"><i class="fas fa-plus-circle"></i> Nueva Cita</h3>
@@ -586,17 +685,24 @@ if ($_SERVER['REQUEST_METHOD'] == "POST" && isset($_POST['agendar_cita'])) {
           
           <div class="form-grid">
             <div class="form-group">
-              <label for="fecha">Fecha</label>
-              <input type="date" id="fecha" name="fecha" required min="<?php echo date('Y-m-d', strtotime('+1 days')); ?>" >
+              <label for="fecha"><i class="far fa-calendar-alt"></i> Fecha*</label>
+              <input type="date" id="fecha" name="fecha" required>
             </div>
             <div class="form-group">
-              <label for="hora">Hora</label>
-              <input type="time" id="hora" name="hora" required min="10:00" max="18:00"  step="3600">
+              <label for="hora"><i class="far fa-clock"></i> Hora*</label>
+              <select id="hora" name="hora" required>
+                <option value="">Seleccione una hora</option>
+                <?php 
+                for ($h = 10; $h <= 17; $h++) {
+                  echo '<option value="'.str_pad($h, 2, '0', STR_PAD_LEFT).':00">'.str_pad($h, 2, '0', STR_PAD_LEFT).':00</option>';
+                }
+                ?>
+              </select>
             </div>
           </div>
          
           <div class="form-group">
-            <label for="tratamiento">Tratamiento</label>
+            <label for="IDtratamiento"><i class="fas fa-pills"></i> Tratamiento*</label>
             <select id="IDtratamiento" name="IDtratamiento" required>
                 <option value="">Seleccione un tratamiento</option>
                 <?php
@@ -613,13 +719,12 @@ if ($_SERVER['REQUEST_METHOD'] == "POST" && isset($_POST['agendar_cita'])) {
 
           <div class="form-grid">
             <div class="form-group">
-              <label for="duracion">Duración</label>
-              <select id="duracion" name="duracion" required>
-                <option value="">Seleccione la duración</option>
-              </select>
+              <label><i class="fas fa-hourglass-half"></i> Duración</label>
+              <div class="duration-display" id="duracion-display">Seleccione un tratamiento</div>
+              <input type="hidden" id="duracion" name="duracion">
             </div>
             <div class="form-group">
-              <label for="horaFin">Hora de Fin</label>
+              <label for="horaFin"><i class="fas fa-stopwatch"></i> Hora de Fin</label>
               <input type="text" id="horaFin" name="horaFin" readonly>
             </div>
           </div>
@@ -651,53 +756,225 @@ if ($_SERVER['REQUEST_METHOD'] == "POST" && isset($_POST['agendar_cita'])) {
   <script>
     document.addEventListener("DOMContentLoaded", function () {
         const tratamientoSelect = document.getElementById("IDtratamiento");
-        const duracionSelect = document.getElementById("duracion");
-        const horaInput = document.getElementById("hora");
+        const duracionDisplay = document.getElementById("duracion-display");
+        const duracionInput = document.getElementById("duracion");
+        const horaSelect = document.getElementById("hora");
         const horaFinInput = document.getElementById("horaFin");
+        const fechaInput = document.getElementById("fecha");
 
-        // Populate the duracion combo box based on the selected treatment
-        function updateDuracionOptions() {
+        // Populate the duracion based on the selected treatment
+        function updateDuracion() {
             const selectedOption = tratamientoSelect.options[tratamientoSelect.selectedIndex];
-            const maxDuracion = selectedOption.getAttribute("data-duracion");
+            const duracion = selectedOption.getAttribute("data-duracion");
 
-            // Clear existing options
-            duracionSelect.innerHTML = '<option value="">Seleccione la duración</option>';
-
-            // Populate the combo box with values from 1 to maxDuracion
-            if (maxDuracion) {
-                for (let i = 1; i <= parseInt(maxDuracion, 10); i++) {
-                    const option = document.createElement("option");
-                    option.value = i;
-                    option.textContent = `${i} hora${i > 1 ? 's' : ''}`;
-                    duracionSelect.appendChild(option);
+            if (duracion) {
+                duracionDisplay.textContent = `${duracion} hora${duracion > 1 ? 's' : ''}`;
+                duracionInput.value = duracion;
+                updateHoraFin();
+                
+                // Update available hours when treatment changes
+                if (fechaInput.value) {
+                    fetchOccupiedHours(fechaInput.value);
                 }
+            } else {
+                duracionDisplay.textContent = "Seleccione un tratamiento";
+                duracionInput.value = "";
+                horaFinInput.value = "";
             }
-
-            // Clear hora de fin when treatment changes
-            horaFinInput.value = "";
         }
 
         // Calculate and update hora de fin based on selected duration
         function updateHoraFin() {
-            const selectedDuracion = parseInt(duracionSelect.value, 10);
-            const horaInicio = horaInput.value;
+            const selectedDuracion = parseInt(duracionInput.value, 10);
+            const horaInicio = horaSelect.value;
+            const fecha = fechaInput.value;
 
-            if (selectedDuracion && horaInicio) {
+            if (selectedDuracion && horaInicio && fecha) {
                 const [hours, minutes] = horaInicio.split(":").map(Number);
-                const horaFin = new Date();
-                horaFin.setHours(hours + selectedDuracion, minutes);
-                horaFinInput.value = `${horaFin.getHours().toString().padStart(2, '0')}:${horaFin.getMinutes().toString().padStart(2, '0')}`;
+                const horaFin = new Date(`${fecha}T${horaInicio}:00`);
+                horaFin.setHours(horaFin.getHours() + selectedDuracion);
+                
+                const horaFinStr = `${horaFin.getHours().toString().padStart(2, '0')}:${horaFin.getMinutes().toString().padStart(2, '0')}`;
+                
+                // Permitir hasta exactamente las 18:00
+                if (horaFin.getHours() > 18 || (horaFin.getHours() === 18 && horaFin.getMinutes() > 0)) {
+                    horaFinInput.value = `${horaFinStr} (Fuera de horario)`;
+                    horaFinInput.style.color = 'red';
+                } else {
+                    horaFinInput.value = horaFinStr;
+                    horaFinInput.style.color = '';
+                }
             } else {
                 horaFinInput.value = "";
             }
         }
 
+        // Fetch occupied hours for a specific date
+        async function fetchOccupiedHours(fecha) {
+            try {
+                // Mostrar estado de carga
+                horaSelect.disabled = true;
+                const selectedValue = horaSelect.value;
+                horaSelect.innerHTML = '<option value="">Cargando horarios...</option>';
+                
+                const response = await fetch(`verCitasPacientes_Personal.php?get_occupied_hours=1&fecha=${fecha}`);
+                if (!response.ok) throw new Error('Error al obtener horarios');
+                
+                const occupiedHours = await response.json();
+                updateTimePicker(occupiedHours, selectedValue);
+            } catch (error) {
+                console.error('Error:', error);
+                horaSelect.innerHTML = '<option value="">Error al cargar horarios</option>';
+            } finally {
+                horaSelect.disabled = false;
+            }
+        }
+
+        // Update time picker based on occupied hours
+        function updateTimePicker(occupiedHours, selectedValue = null) {
+            // Generar opciones de hora
+            horaSelect.innerHTML = '<option value="">Seleccione una hora</option>';
+            
+            for (let h = 10; h <= 17; h++) {
+                const hora = h.toString().padStart(2, '0') + ':00';
+                const option = document.createElement('option');
+                option.value = hora;
+                option.textContent = hora;
+                
+                // Verificar disponibilidad
+                const isAvailable = isHourAvailable(hora, fechaInput.value, occupiedHours);
+                
+                if (!isAvailable.available) {
+                    option.disabled = true;
+                    option.classList.add('disabled-option');
+                    option.title = isAvailable.reason;
+                }
+                
+                // Restaurar selección si está disponible
+                if (selectedValue && hora === selectedValue && !option.disabled) {
+                    option.selected = true;
+                }
+                
+                horaSelect.appendChild(option);
+            }
+            
+            updateHoraFin();
+        }
+
+        // Función para verificar disponibilidad de hora
+        function isHourAvailable(hora, fecha, occupiedHours) {
+            const duracion = parseInt(document.getElementById("duracion").value, 10) || 0;
+            
+            // Verificar si la hora está ocupada
+            if (occupiedHours && occupiedHours.length > 0) {
+                const horaOcupada = occupiedHours.some(range => {
+                    return hora >= range.start.substring(0, 5) && hora < range.end.substring(0, 5);
+                });
+                
+                if (horaOcupada) {
+                    return {
+                        available: false,
+                        reason: "Horario ocupado"
+                    };
+                }
+            }
+            
+            // Verificar límites de horario
+            if (!fecha || !duracion) return { available: true };
+            
+            const horaInicio = new Date(`${fecha}T${hora}:00`);
+            const horaFin = new Date(horaInicio);
+            horaFin.setHours(horaFin.getHours() + duracion);
+            
+            // Validar horario de cierre (18:00)
+            const hora18 = new Date(`${fecha}T18:00:00`);
+            if (horaFin > hora18) {
+                return {
+                    available: false,
+                    reason: "Excede horario de cierre (18:00)"
+                };
+            }
+            
+            // Validar citas después de 17:00
+            const hora17 = new Date(`${fecha}T17:00:00`);
+            if (horaInicio >= hora17 && duracion > 1) {
+                return {
+                    available: false,
+                    reason: "Solo 1 hora después de las 17:00"
+                };
+            }
+            
+            return { available: true };
+        }
+
         // Attach event listeners
-        tratamientoSelect.addEventListener("change", updateDuracionOptions);
-        duracionSelect.addEventListener("change", updateHoraFin);
-        horaInput.addEventListener("input", updateHoraFin);
+        tratamientoSelect.addEventListener("change", updateDuracion);
+        horaSelect.addEventListener("change", updateHoraFin);
+        fechaInput.addEventListener("change", function() {
+            const fecha = this.value;
+            if (!fecha) return;
+            
+            fetchOccupiedHours(fecha);
+        });
+
+        // Form validation
+        document.getElementById("citaForm").addEventListener("submit", function(e) {
+            const fecha = fechaInput.value;
+            const hora = horaSelect.value;
+            const tratamiento = tratamientoSelect.value;
+            const duracion = duracionInput.value;
+            const horaFin = horaFinInput.value;
+            
+            // Validar campos requeridos
+            if (!fecha || !hora || !tratamiento || !duracion) {
+                e.preventDefault();
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Campos incompletos',
+                    text: 'Por favor complete todos los campos requeridos.'
+                });
+                return;
+            }
+            
+            // Validar si la hora seleccionada está ocupada
+            const horaOption = horaSelect.options[horaSelect.selectedIndex];
+            if (horaOption.disabled) {
+                e.preventDefault();
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Horario ocupado',
+                    text: horaOption.title || 'La hora seleccionada no está disponible. Por favor elija otra.'
+                });
+                return;
+            }
+            
+            // Validar que no se pase de las 18:00 horas
+            if (horaFin.includes("(Fuera de horario)")) {
+                e.preventDefault();
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Horario no válido',
+                    text: 'El tratamiento debe terminar a las 18:00 como máximo. Por favor, elija una hora más temprana o un tratamiento más corto.'
+                });
+                return;
+            }
+            
+            // Validar hora dentro del rango permitido
+            if (hora < "10:00" || hora > "18:00") {
+                e.preventDefault();
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Horario no válido',
+                    text: 'La hora debe estar entre las 10:00 AM y las 6:00 PM.'
+                });
+                return;
+            }
+        });
+
+        // Inicializar duración si hay valores en el formulario
+        updateDuracion();
     });
-</script>
+  </script>
 </body>
 </html>
 <?php $con->close(); ?>

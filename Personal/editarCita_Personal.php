@@ -20,7 +20,7 @@ if (isset($_GET['id'])) {
     $cita_id = $_GET['id'];
     
     // Obtener información de la cita
-    $query = "SELECT c.*, t.nombre as tratamiento_nombre, p.nombre as paciente_nombre 
+    $query = "SELECT c.*, t.nombre as tratamiento_nombre, p.nombre as paciente_nombre, p.IDpaciente
               FROM Citas c
               JOIN Tratamientos t ON c.IDtratamiento = t.IDtratamiento
               JOIN Pacientes p ON c.IDpaciente = p.IDpaciente
@@ -41,6 +41,43 @@ $query = "SELECT IDtratamiento, nombre, duracion FROM Tratamientos ORDER BY nomb
 $result = $con->query($query);
 $tratamientos = $result->fetch_all(MYSQLI_ASSOC);
 
+// Obtener pacientes para autocomplete
+$pacientes_query = "SELECT IDpaciente, nombre FROM Pacientes";
+$pacientes_result = $con->query($pacientes_query);
+$pacientes = [];
+while ($row = $pacientes_result->fetch_assoc()) {
+    $pacientes[] = [
+        'id' => $row['IDpaciente'],
+        'nombre_completo' => $row['nombre']
+    ];
+}
+
+// Obtener horarios ocupados si se solicita via AJAX
+if (isset($_GET['get_occupied_hours'])) {
+    $fecha = $_GET['fecha'];
+    $occupiedHours = [];
+    
+    $query = "SELECT TIME(fecha) as hora, TIME(fechaFin) as horaFin 
+          FROM Citas 
+          WHERE DATE(fecha) = ? AND estado != 'Cancelada' AND IDcita != ?";
+    
+    $stmt = $con->prepare($query);
+    $stmt->bind_param("si", $fecha, $cita_id);
+    $stmt->execute();
+    $result = $stmt->get_result();
+    
+    while ($row = $result->fetch_assoc()) {
+        $occupiedHours[] = [
+            'start' => $row['hora'],
+            'end' => $row['horaFin']
+        ];
+    }
+    
+    header('Content-Type: application/json');
+    echo json_encode($occupiedHours);
+    exit;
+}
+
 // Procesar actualización de cita
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['actualizar_cita'])) {
     $cita_id = $_POST['cita_id'];
@@ -48,8 +85,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['actualizar_cita'])) {
     $hora = $_POST['hora'];
     $estado = $_POST['estado'];
     $tratamiento_id = $_POST['tratamiento'];
+    $IDpaciente = $_POST['IDpaciente'];
 
-    // Fetch the duration of the selected tratamiento
+    // Obtener la duración del tratamiento seleccionado
     $query = "SELECT duracion FROM Tratamientos WHERE IDtratamiento = ?";
     $stmt = $con->prepare($query);
     $stmt->bind_param("i", $tratamiento_id);
@@ -59,53 +97,68 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['actualizar_cita'])) {
     $stmt->close();
 
     // Combine date and time into a single datetime value
-    $datetime = $fecha . ' ' . $hora;
+    $horaCompleta = $hora . ':00';
+    $datetime = $fecha . ' ' . $horaCompleta;
 
-    // Calculate fechaFin by adding the duration to the start time
-    $startDateTime = new DateTime($datetime);
-    $startDateTime->modify("+$duracion hours");
-    $fechaFin = $startDateTime->format('Y-m-d H:i:s');
-
-    // Get the current date
-    $currentDate = date('Y-m-d');
-
-    // Validate the date
-    if ($fecha <= $currentDate) {
-        $mensaje = "La fecha tiene que ser después de mañana como mínimo.";
+    // Definir horario laboral
+    $horaMin = '10:00:00';
+    $horaMax = '18:00:00';
+    
+    // Validar tiempo mínimo de anticipación (1 día completo)
+    $now = new DateTime('now');
+    $now->setTime(0, 0, 0); // Considerar el día completo
+    
+    $datetimeLocal = new DateTime($datetime);
+    $diferencia = $now->diff($datetimeLocal);
+    
+    if ($diferencia->days < 1 || $datetimeLocal <= $now) {
+        $mensaje = "Debes agendar con al menos 1 día completo de anticipación.";
     }
-
-    // Validate the date
-    if ($fecha <= $currentDate) {
-        $mensaje = "La fecha debe ser un día futuro. No puede ser hoy ni una fecha pasada.";
-    }
-    // Validate the hour range
-    elseif ($hora < "10:00:00" || $hora > "18:00:00" || $startDateTime->format('H:i') > "18:00") {
-        $mensaje = "La hora debe estar entre las 10:00 AM y las 6:00 PM.";
-    }
-    // Check for overlapping appointments
-    else {
-        $query = "SELECT * FROM Citas WHERE 
-                  (fecha <= ? AND fechaFin >= ?) AND IDcita != ? AND estado = 'Pendiente'";
-        $stmt = $con->prepare($query);
-        $stmt->bind_param("ssi", $fechaFin, $datetime, $cita_id);
-        $stmt->execute();
-        $overlapping = $stmt->get_result();
-        $stmt->close();
-
-        if ($overlapping->num_rows > 0) {
-            $mensaje = "Ya existe una cita en ese horario. Por favor, elija otro horario.";
+    // Validar horario laboral
+    elseif ($horaCompleta < $horaMin || $horaCompleta > $horaMax) {
+        $mensaje = "La hora debe estar entre las 10:00 AM y 6:00 PM.";
+    } else {
+        // Calcular fecha de fin
+        $datetimeFinLocal = clone $datetimeLocal;
+        $datetimeFinLocal->modify("+$duracion hours");
+        
+        // Validar que no pase de las 18:00 horas
+        $horaFin = $datetimeFinLocal->format('H:i:s');
+        if ($horaFin > $horaMax) {
+            $mensaje = "El tratamiento no puede terminar después de las 18:00. Por favor, elija una hora más temprana o un tratamiento más corto.";
+        }
+        // Validar citas después de 17:00 (incluyendo las 17:00 exactas)
+        elseif ($datetimeLocal->format('H:i:s') >= '17:00:00' && $duracion > 1) {
+            $mensaje = "Solo se permiten citas de 1 hora después de las 17:00.";
         } else {
-            // Update the cita in the database
-            $query = "UPDATE Citas SET fecha = ?, fechaFin = ?, estado = ?, IDtratamiento = ? WHERE IDcita = ?";
-            $stmt = $con->prepare($query);
-            $stmt->bind_param("sssii", $datetime, $fechaFin, $estado, $tratamiento_id, $cita_id);
+            // Formatear para consulta SQL
+            $fechaBD = $datetimeLocal->format('Y-m-d H:i:s');
+            $fechaFinBD = $datetimeFinLocal->format('Y-m-d H:i:s');
 
-            if ($stmt->execute()) {
-                $mensaje = "Cita actualizada correctamente.";
-            } else {
-                $mensaje = "Error al actualizar la cita: " . $con->error;
-            }
+            // Check for overlapping appointments
+            $query = "SELECT * FROM Citas WHERE 
+                (fecha < ? AND fechaFin > ?) AND IDcita != ? AND estado != 'Cancelada'";
+            $stmt = $con->prepare($query);
+            $stmt->bind_param("ssi", $fechaFinBD, $fechaBD, $cita_id);
+            $stmt->execute();
+            $overlapping = $stmt->get_result();
             $stmt->close();
+
+            if ($overlapping->num_rows > 0) {
+                $mensaje = "Ya existe una cita en ese horario. Por favor, elija otro horario.";
+            } else {
+                // Update the cita in the database
+                $query = "UPDATE Citas SET fecha = ?, fechaFin = ?, estado = ?, IDtratamiento = ?, IDpaciente = ? WHERE IDcita = ?";
+                $stmt = $con->prepare($query);
+                $stmt->bind_param("sssiii", $fechaBD, $fechaFinBD, $estado, $tratamiento_id, $IDpaciente, $cita_id);
+
+                if ($stmt->execute()) {
+                    $mensaje = "Cita actualizada correctamente.";
+                } else {
+                    $mensaje = "Error al actualizar la cita: " . $con->error;
+                }
+                $stmt->close();
+            }
         }
     }
 }
@@ -118,6 +171,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['actualizar_cita'])) {
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Editar Cita - RejuveMed</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="https://code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <style>
         :root {
             --primary-color: #4a6fa5;
@@ -347,6 +403,48 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['actualizar_cita'])) {
             font-size: 20px;
         }
         
+        /* Autocomplete styles */
+        .ui-autocomplete {
+            max-height: 200px;
+            overflow-y: auto;
+            overflow-x: hidden;
+            background-color: #fff;
+            border: 1px solid #ddd;
+            border-radius: var(--border-radius);
+            box-shadow: var(--box-shadow);
+            z-index: 1000 !important;
+        }
+        
+        .ui-menu-item {
+            padding: 8px 12px;
+            cursor: pointer;
+            font-size: 14px;
+        }
+        
+        .ui-menu-item:hover {
+            background-color: var(--primary-color);
+            color: white;
+        }
+        
+        .ui-helper-hidden-accessible {
+            display: none;
+        }
+        
+        /* Estilo para opciones deshabilitadas */
+        option:disabled, option.disabled-option {
+            color: #999 !important;
+            background-color: #f5f5f5 !important;
+            cursor: not-allowed;
+        }
+
+        .duration-display {
+            background-color: #f5f5f5;
+            padding: 12px 15px;
+            border-radius: 8px;
+            border: 1px solid #ddd;
+            font-size: 15px;
+        }
+
         @media (max-width: 768px) {
             .form-grid {
                 grid-template-columns: 1fr;
@@ -414,30 +512,52 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['actualizar_cita'])) {
             </div>
             
             <div class="form-container">
-                <form method="POST">
+                <form method="POST" id="citaForm">
                     <input type="hidden" name="cita_id" value="<?= $cita['IDcita'] ?>">
+                    
+                    <div class="form-group">
+                        <label for="paciente"><i class="fas fa-user"></i> Paciente*</label>
+                        <input type="text" id="paciente" name="paciente" placeholder="Buscar paciente..." 
+                               value="<?= htmlspecialchars($cita['paciente_nombre']) ?>" autocomplete="off">
+                        <input type="hidden" id="IDpaciente" name="IDpaciente" value="<?= $cita['IDpaciente'] ?>">
+                    </div>
                     
                     <div class="form-grid">
                         <div class="form-group">
                             <label for="fecha"><i class="far fa-calendar-alt"></i> Fecha*</label>
                             <input type="date" id="fecha" name="fecha" required 
+                                   min="<?php 
+                                        $minDate = new DateTime('now');
+                                        $minDate->modify('+1 day');
+                                        echo $minDate->format('Y-m-d'); 
+                                   ?>"
                                    value="<?= htmlspecialchars(date('Y-m-d', strtotime($cita['fecha']))) ?>">
                         </div>
                         
                         <div class="form-group">
                             <label for="hora"><i class="far fa-clock"></i> Hora*</label>
-                            <input type="time" id="hora" name="hora" required 
-                                   value="<?= htmlspecialchars(date('H:i', strtotime($cita['fecha']))) ?>">
+                            <select id="hora" name="hora" required>
+                                <option value="">Seleccione una hora</option>
+                                <?php 
+                                // Generar opciones de hora de 10:00 a 17:00
+                                for ($h = 10; $h <= 17; $h++) {
+                                    $horaFormato = str_pad($h, 2, '0', STR_PAD_LEFT) . ':00';
+                                    $selected = date('H:i', strtotime($cita['fecha'])) == $horaFormato ? 'selected' : '';
+                                    echo "<option value='$horaFormato' $selected>$horaFormato</option>";
+                                }
+                                ?>
+                            </select>
                         </div>
                         
                         <div class="form-group">
                             <label for="tratamiento"><i class="fas fa-pills"></i> Tratamiento*</label>
-                            <select id="tratamiento" name="tratamiento" required>
+                            <select id="tratamiento" name="tratamiento" required onchange="updateDuration()">
+                                <option value="">Seleccione un tratamiento</option>
                                 <?php foreach ($tratamientos as $tratamiento): ?>
                                     <option value="<?= $tratamiento['IDtratamiento'] ?>" 
                                             data-duracion="<?= $tratamiento['duracion'] ?>"
                                             <?= $tratamiento['IDtratamiento'] == $cita['IDtratamiento'] ? 'selected' : '' ?>>
-                                        <?= htmlspecialchars($tratamiento['nombre']) ?>
+                                        <?= htmlspecialchars($tratamiento['nombre']) ?> (Duración: <?= $tratamiento['duracion'] ?> hora<?= $tratamiento['duracion'] > 1 ? 's' : '' ?>)
                                     </option>
                                 <?php endforeach; ?>
                             </select>
@@ -453,14 +573,20 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['actualizar_cita'])) {
                         </div>
                         
                         <div class="form-group">
-                            <label for="duracion"><i class="fas fa-hourglass-half"></i> Duración</label>
-                            <input type="text" id="duracion" name="duracion" readonly 
-                                   value="<?= htmlspecialchars($tratamientos[array_search($cita['IDtratamiento'], array_column($tratamientos, 'IDtratamiento'))]['duracion'] ?? '') ?> horas">
+                            <label><i class="fas fa-hourglass-half"></i> Duración</label>
+                            <div class="duration-display" id="duracion-display">
+                                <?php 
+                                    $duracionActual = $tratamientos[array_search($cita['IDtratamiento'], array_column($tratamientos, 'IDtratamiento'))]['duracion'] ?? 0;
+                                    echo $duracionActual . ' hora' . ($duracionActual > 1 ? 's' : '');
+                                ?>
+                            </div>
+                            <input type="hidden" id="duracion" name="duracion" value="<?= $duracionActual ?>">
                         </div>
                         
                         <div class="form-group">
                             <label for="fechaFin"><i class="fas fa-stopwatch"></i> Hora de Fin</label>
-                            <input type="text" id="fechaFin" name="fechaFin" readonly>
+                            <input type="text" id="fechaFin" name="fechaFin" readonly
+                                   value="<?= date('H:i', strtotime($cita['fechaFin'])) ?>">
                         </div>
                     </div>
                     
@@ -477,57 +603,215 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['actualizar_cita'])) {
         <?php endif; ?>
     </div>
 
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.min.js"></script>
     <script>
-        // Validación de fecha/hora futura
-        document.querySelector('form').addEventListener('submit', function(e) {
-            const fecha = document.getElementById('fecha').value;
-            const hora = document.getElementById('hora').value;
-            const ahora = new Date();
-            const fechaCita = new Date(fecha + 'T' + hora);
+        $(function() {
+            var pacientes = <?php echo json_encode($pacientes); ?>;
             
-            if (fechaCita < ahora) {
-                if (!confirm('La fecha y hora de la cita son en el pasado. ¿Desea continuar?')) {
-                    e.preventDefault();
+            // Prepare data for autocomplete
+            var pacienteData = pacientes.map(function(paciente) {
+                return {
+                    label: paciente.nombre_completo,
+                    value: paciente.nombre_completo,
+                    id: paciente.id
+                };
+            });
+            
+            // Initialize autocomplete
+            $("#paciente").autocomplete({
+                source: pacienteData,
+                minLength: 2,
+                select: function(event, ui) {
+                    $("#IDpaciente").val(ui.item.id);
+                    $("#paciente").val(ui.item.label);
+                    return false;
+                },
+                focus: function(event, ui) {
+                    $("#paciente").val(ui.item.label);
+                    return false;
                 }
-            }
+            }).autocomplete("instance")._renderItem = function(ul, item) {
+                return $("<li>")
+                    .append("<div>" + item.label + "</div>")
+                    .appendTo(ul);
+            };
         });
 
-        document.addEventListener("DOMContentLoaded", function () {
+        document.addEventListener("DOMContentLoaded", function() {
+            // Escuchar cambios en la fecha para cargar horarios ocupados
+            document.getElementById("fecha").addEventListener("change", function() {
+                const fecha = this.value;
+                if (!fecha) return;
+                
+                fetch(`editar_cita.php?get_occupied_hours=1&fecha=${fecha}&id=<?= $cita['IDcita'] ?? '' ?>`)
+                    .then(response => response.json())
+                    .then(occupiedHours => updateTimePicker(occupiedHours));
+            });
+
+            // Inicializar campos
+            updateDuration();
+        });
+
+        function updateDuration() {
             const tratamientoSelect = document.getElementById("tratamiento");
-            const horaInput = document.getElementById("hora");
-            const fechaInput = document.getElementById("fecha");
+            const duracionDisplay = document.getElementById("duracion-display");
             const duracionInput = document.getElementById("duracion");
             const fechaFinInput = document.getElementById("fechaFin");
+            const horaInicioSelect = document.getElementById("hora");
+            const fechaInicioInput = document.getElementById("fecha");
 
-            // Update duracion and fechaFin when the tratamiento or hora changes
-            function updateFields() {
-                const selectedOption = tratamientoSelect.options[tratamientoSelect.selectedIndex];
-                const duracion = selectedOption.getAttribute("data-duracion");
-                const horaInicio = horaInput.value;
-                const fechaInicio = fechaInput.value;
+            const selectedOption = tratamientoSelect.options[tratamientoSelect.selectedIndex];
+            const duracion = selectedOption.getAttribute("data-duracion");
 
-                // Update duracion field
-                duracionInput.value = duracion ? `${duracion} horas` : "";
-
-                // Calculate and update fechaFin field
-                if (duracion && horaInicio && fechaInicio) {
-                    const [hours, minutes] = horaInicio.split(":").map(Number);
-                    const duracionHoras = parseInt(duracion, 10);
-                    const fechaFin = new Date(`${fechaInicio}T${horaInicio}`);
-                    fechaFin.setHours(fechaFin.getHours() + duracionHoras);
-                    fechaFinInput.value = `${fechaFin.getHours().toString().padStart(2, '0')}:${fechaFin.getMinutes().toString().padStart(2, '0')}`;
-                } else {
-                    fechaFinInput.value = "";
+            if (duracion) {
+                duracionDisplay.textContent = `${duracion} hora${duracion > 1 ? 's' : ''}`;
+                duracionInput.value = duracion;
+                
+                // Actualizar hora de fin automáticamente
+                updateHoraFin();
+                
+                // Actualizar disponibilidad de horarios
+                const fecha = document.getElementById("fecha").value;
+                if (fecha) {
+                    fetch(`editar_cita.php?get_occupied_hours=1&fecha=${fecha}&id=<?= $cita['IDcita'] ?? '' ?>`)
+                        .then(response => response.json())
+                        .then(occupiedHours => updateTimePicker(occupiedHours));
                 }
+            } else {
+                duracionDisplay.textContent = "Seleccione un tratamiento";
+                duracionInput.value = "";
+                fechaFinInput.value = "";
             }
+        }
 
-            // Attach event listeners
-            tratamientoSelect.addEventListener("change", updateFields);
-            horaInput.addEventListener("input", updateFields);
-            fechaInput.addEventListener("input", updateFields);
+        function updateHoraFin() {
+            const duracionInput = document.getElementById("duracion");
+            const fechaFinInput = document.getElementById("fechaFin");
+            const horaInicioSelect = document.getElementById("hora");
+            const fechaInicioInput = document.getElementById("fecha");
 
-            // Initialize fields on page load
-            updateFields();
+            const duracion = parseInt(duracionInput.value, 10);
+            const horaInicio = horaInicioSelect.value;
+            const fechaInicio = fechaInicioInput.value;
+
+            if (duracion && horaInicio && fechaInicio) {
+                const [hours, minutes] = horaInicio.split(":").map(Number);
+                const fechaFin = new Date(`${fechaInicio}T${horaInicio}:00`);
+                fechaFin.setHours(fechaFin.getHours() + duracion);
+
+                const horaFin = fechaFin.getHours();
+                const minutoFin = fechaFin.getMinutes();
+                
+                // Permitir hasta exactamente las 18:00
+                if (horaFin > 18 || (horaFin === 18 && minutoFin > 0)) {
+                    fechaFinInput.value = `${fechaFin.getHours().toString().padStart(2, '0')}:${fechaFin.getMinutes().toString().padStart(2, '0')} (Fuera de horario)`;
+                    fechaFinInput.style.color = 'red';
+                } else {
+                    fechaFinInput.value = `${fechaFin.getHours().toString().padStart(2, '0')}:${fechaFin.getMinutes().toString().padStart(2, '0')}`;
+                    fechaFinInput.style.color = '';
+                }
+            } else {
+                fechaFinInput.value = "";
+            }
+        }
+
+        function updateTimePicker(occupiedHours) {
+            const timeSelect = document.getElementById("hora");
+            const options = timeSelect.querySelectorAll("option");
+            const tratamientoSelect = document.getElementById("tratamiento");
+            const duracion = tratamientoSelect.options[tratamientoSelect.selectedIndex]?.getAttribute("data-duracion") || 0;
+            const fecha = document.getElementById("fecha").value;
+            
+            // Reset all options
+            options.forEach(option => {
+                if (option.value !== "") {
+                    option.disabled = false;
+                    option.style.color = '';
+                    option.title = '';
+                    option.classList.remove('disabled-option');
+                }
+            });
+            
+            // Deshabilitar horarios ocupados
+            if (occupiedHours && occupiedHours.length > 0) {
+                occupiedHours.forEach(range => {
+                    const startHour = range.start.substring(0, 5); // Formato HH:MM
+                    const endHour = range.end.substring(0, 5);
+                    
+                    options.forEach(option => {
+                        if (option.value && option.value >= startHour && option.value < endHour) {
+                            option.disabled = true;
+                            option.style.color = '#999';
+                            option.title = "Horario ocupado";
+                            option.classList.add('disabled-option');
+                        }
+                    });
+                });
+            }
+            
+            // Validar horarios que excedan el límite
+            if (fecha && duracion) {
+                options.forEach(option => {
+                    if (option.value && !option.disabled) {
+                        const horaInicio = new Date(`${fecha}T${option.value}:00`);
+                        const horaFin = new Date(horaInicio);
+                        horaFin.setHours(horaFin.getHours() + parseInt(duracion));
+                        
+                        // Horario de cierre a las 18:00
+                        const hora18 = new Date(`${fecha}T18:00:00`);
+                        
+                        // Validar que no termine después de las 18:00
+                        if (horaFin > hora18) {
+                            option.disabled = true;
+                            option.style.color = '#999';
+                            option.title = "Esta cita excedería el horario de cierre (18:00)";
+                            option.classList.add('disabled-option');
+                        }
+                        
+                        // Validar citas después de 17:00
+                        const hora17 = new Date(`${fecha}T17:00:00`);
+                        if (horaInicio >= hora17 && duracion > 1) {
+                            option.disabled = true;
+                            option.style.color = '#999';
+                            option.title = "Solo se permiten citas de 1 hora después de las 17:00";
+                            option.classList.add('disabled-option');
+                        }
+                    }
+                });
+            }
+        }
+
+        // Validación del formulario antes de enviar
+        document.getElementById('citaForm').addEventListener('submit', function(e) {
+            // Validar que no se pase de las 18:00 horas
+            const fechaFinInput = document.getElementById('fechaFin');
+            if (fechaFinInput.value.includes("(Fuera de horario)")) {
+                e.preventDefault();
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Horario no válido',
+                    text: 'El tratamiento debe terminar a las 18:00 como máximo. Por favor, elija una hora más temprana o un tratamiento más corto.',
+                    confirmButtonColor: '#3085d6'
+                });
+                return false;
+            }
+            
+            // Validar si la hora seleccionada está ocupada
+            const horaSelect = document.getElementById('hora');
+            if (horaSelect.options[horaSelect.selectedIndex].disabled) {
+                e.preventDefault();
+                const motivo = horaSelect.options[horaSelect.selectedIndex].title || 'La hora seleccionada no está disponible';
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Horario no disponible',
+                    text: motivo,
+                    confirmButtonColor: '#3085d6'
+                });
+                return false;
+            }
+            
+            return true;
         });
     </script>
 </body>
