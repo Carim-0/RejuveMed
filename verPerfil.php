@@ -11,10 +11,17 @@
     $user_id = $_SESSION['user_id']; // Get the current user's ID
     $user_type = $_SESSION['user_type']; // Get the current user's type
 
-    // Fetch the user's data based on their type
+    // Determine the return URL based on user type and ID
+    $return_url = '';
     if ($user_type === 'Paciente') {
+        $return_url = './Paciente/catalogoTratamientos.php';
         $query = "SELECT * FROM Pacientes WHERE IDpaciente = '$user_id' LIMIT 1";
     } elseif ($user_type === 'Personal') {
+        if ($user_id == 1) {
+            $return_url = './Doctora/tablaTratamientos.php';
+        } else {
+            $return_url = './Personal/CtalogoRecepcionista.php';
+        }
         $query = "SELECT * FROM Personal WHERE IDpersonal = '$user_id' LIMIT 1";
     } else {
         die("Tipo de usuario no válido.");
@@ -194,6 +201,28 @@
             background-color: #3a5a8a; 
         }
         
+        .btn-volver {
+            width: 100%;
+            padding: 12px;
+            background-color: #6c757d;
+            color: white;
+            border: none;
+            border-radius: var(--border-radius);
+            font-size: 16px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: background-color 0.3s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            margin-top: 10px;
+        }
+        
+        .btn-volver:hover {
+            background-color: #5a6268;
+        }
+        
         @media (max-width: 768px) {
             .profile-details {
                 grid-template-columns: 1fr;
@@ -269,8 +298,8 @@
             <i class="fas fa-sign-out-alt"></i> Cerrar Sesión
         </button>
 
-        <button class="btn-salir" onclick="history.back()">
-        <i class="fas fa-arrow-left"></i> Volver
+        <button class="btn-volver" onclick="window.location.href='<?php echo $return_url; ?>'">
+            <i class="fas fa-arrow-left"></i> Volver
         </button>
     </div>
 
